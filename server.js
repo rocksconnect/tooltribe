@@ -76,9 +76,9 @@ const ADDRESS = '0.0.0.0';
 /*let server = net.createServer(deviceTrackerHistoryService.onClientConnected);
 server.listen(PORT, ADDRESS);
 console.log(`socket started at: ${ADDRESS}:${PORT}`);
-
+*/
 app.listen(port, () => {
     logger.info('server started - ', port);
-});*/
+});
 
 module.exports = app;
