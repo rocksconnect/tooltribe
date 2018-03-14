@@ -1,8 +1,8 @@
 /**
- * @file(asset.router.js) All routing of asset
- * @author Shakshi Pandey <shakshi.kumari@limitlessmobile.com>
+ * @file(user.router.js) All routing of User
+ * @author Shakshi Pandey <shakshipandey11@gmail.com>
  * @version 1.0.0
- * @lastModifed 5-Feb-2018
+ * @lastModifed 12-March-2018
  * @lastModifedBy Shakshi
  */
 
@@ -19,7 +19,7 @@ router.get('/oneUser', (req, res) => {
     userService.getOne(req, res);
 });
 
-router.post('/addUser', (req, res) => {
+router.post('/register', (req, res) => {
     userService.addUser(req, res);
 });
 

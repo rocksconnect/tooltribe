@@ -17,6 +17,8 @@ import nm from 'nodemailer'
 import rand from 'csprng'
 
 
+
+
 /**
  * [service is a object ]
  * @type {Object}
@@ -33,13 +35,13 @@ const service = {};
 
 service.getAll = async (req,res) =>{
     //console.log("hiiiiii");
-    if(!req.query.clientId){
+    if(!req.query._id){
        return res.send({"success":false,"code":"500","msg":msg.clientId});
     }
     let clientId = utility.removeQuotationMarks(req.query.clientId);
 	try{
 		let dataToFind = {
-			query:{clientId:clientId}
+			query:{_id:req.query._id}
 		};
 		const user = await User.getAll(dataToFind);
         logger.info('sending all user...');
@@ -76,10 +78,6 @@ service.getOne=async(req,res)=>{
 
 }
 
-
-
-
-
 /**
  * @description [calculation before add user to db and after adding users ]
  * @param  {[object]}
@@ -87,7 +85,32 @@ service.getOne=async(req,res)=>{
  * @return {[object]}
  */
 service.addUser = async (req, res) => {
-    let clientId = utility.removeQuotationMarks(req.body.clientId);
+
+    if(!req.body.email){
+      return res.send({success:false, code:500, msg:"EmailId is missing"})
+    }
+    if(!req.body.password){
+      return res.send({success:false, code:500, msg:"Password is missing"})
+    }
+    if(!req.body.address){
+      return res.send({success:false, code:500, msg:"Address is missing"})
+    }
+    if(!req.body.city){
+      return res.send({success:false, code:500, msg:"City is missing"})
+    }
+    if(!req.body.state){
+      return res.send({success:false, code:500, msg:"State is missing"})
+    }
+    if(!req.body.pincode){
+      return res.send({success:false, code:500, msg:"Pincode is missing"})
+    }
+    if(!req.body.mobile){
+      return res.send({success:false, code:500, msg:"Mobile is missing"})
+    }
+    if(!req.body.name){
+      return res.send({success:false, code:500, msg:"Name is missing"})
+    }
+    
     var temp =rand(100,30);
     var newPassword=temp+req.body.password;
     var token= crypto.createHash('sha512').update(req.body.password+rand).digest("hex");
@@ -95,28 +118,26 @@ service.addUser = async (req, res) => {
 
     let userToAdd = User({
 
-        clientId:clientId,
-        parentId:req.body.parentId,
-        token:token,
-        salt:temp,
-        temp_str:"",
-	    emailId: req.body.emailId,
-	    password: hashed_password,
-	    name: req.body.name,
-        userTypeId: req.body.userTypeId,
-        address:req.body.address,
-        sector:req.body.sector,
-        city:req.body.city,
-        state:req.body.state,
-        country:req.body.country,
-        status:req.body.status || "Active",
-        createAt: new Date(),
-        updatedAt: new Date()
+      token:token,
+      salt:temp,
+      temp_str:"",
+      email: req.body.email,
+      password: hashed_password,
+      phone:req.body.phone,
+      address:req.body.address,
+      city:req.body.city,
+      state: req.body.state,
+      googleId: data.socialType == 'google' ? data.socialId : null, 
+      facebookId: data.socialType == 'facebook' ? data.socialId : null,
+      //country: req.body.country,
+      pincode: req.body.pincode,
+      name:req.body.name,
+      status:req.body.status || "Active",
+      createAt: new Date(),
+      updatedAt: new Date()
     });
     try {
-        if(!req.body.clientId || !req.body.userTypeId|| !req.body.name || !req.body.password || !req.body.emailId){
-          return res.send({"success":false, "code":"500","msg":msg.param});
-        }
+        
         const savedUser = await User.addUser(userToAdd);
         logger.info('Adding user...');
       //  console.log(savedUser);
@@ -182,29 +203,40 @@ service.deleteUser = async (req, res) => {
  */
 
 service.login = async (req, res) =>{
-
+    var query = {};
+    if(req.body.socialType == 'google' && req.body.socialId !== undefined ){
+      query = { googleId: req.body.socialId }
+    } else if(req.body.socialType == 'facebook' && req.body.socialId !== undefined ) {
+      query = { facebookId: req.body.socialId }
+    } else if(req.body.email !== undefined  && req.body.password !== undefined ) {
+      query = { email: req.body.email }
+    } else {
+      query = null
+    }
+    if(!query || !req.body.email){
+        return res.send({success:false, code:500, msg:msg.emailId});
+    }
+    if(!query || !req.body.password){
+        return res.send({success:false, code:500, msg:msg.password})
+    }
+    console.log("1111111111")
     try{
-        if(!req.body.emailId){
-            res.send({success:false, code:500, msg:msg.emailId});
-        }
-        if(!req.body.password){
-            res.send({success:false, code:500, msg:msg.password})
-        }
-        const loggedUser = await User.login(req.body);
+       
+        const loggedUser = await User.login(query);
         console.log(loggedUser, "loggedUser")
-        if(loggedUser.length !=0 )
+        if(loggedUser )
         {   var temp=loggedUser.salt;
             var hash_db=loggedUser.password;
             var id=loggedUser.token;
             var userId=loggedUser.userId;
-            var clientId=loggedUser.clientId;
             var name=loggedUser.name;
-            var emailId=loggedUser.emailId;
+            var email=loggedUser.email;
             var newpass=temp+req.body.password;
             var hashed_password1=crypto.createHash('sha512').update(newpass).digest("hex");
             if(hash_db==hashed_password1)
             {
-                res.send({success:true, code:200, msg:successMsg.loginUser, data:loggedUser });
+                var token = jwt.sign({name:loggedUser.name,email:loggedUser.email,_id:loggedUser._id}, 'shhhhh');
+                res.send({success:true, code:200, msg:successMsg.loginUser, data:token });
             }
             else
             {
@@ -217,6 +249,7 @@ service.login = async (req, res) =>{
             res.send({success:false, code:500, msg:"EmailId or password does not match"})
         }
     }catch(error){
+      console.log(error,"error")
         res.send({success:false, code:500, msg:msg.login, err:error})
     }
 }
@@ -233,7 +266,7 @@ var smtpTransport=nm.createTransport(
 
 service.forgetPassword= async(req,res)=>
 {
-       var temp=rand(24,24);
+    var temp=rand(24,24);
     try{
          const logUser=await User.forgetPassword(req.body);
         //  console.log(logUser);

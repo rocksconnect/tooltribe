@@ -3,24 +3,23 @@ import AutoIncrement from "mongoose-auto-increment";
 AutoIncrement.initialize(mongoose);
 
 const UserSchema = mongoose.Schema({
-    clientId:{ type: Number },
-    parentId:{type:String},
+  
     token:{type:String},
     salt:{type:String},
     temp_str:{type:String},
     userId: {type: Number },
-    emailId: {type: String , index:{unique:true} },
+    email: {type: String , index:{unique:true} },
     password: {type: String },
-    name:{type: String },
-    userTypeId: {type: Number},
+    fullname:{type: String },
     address:{type: String },
-    sector:{type: String },
     city:{type: String },
     state:{type: String },
-    country:{type: String },
     status:{type: String },
-    accountIds:[{type:String}],
-    locations:[{type:String}],
+    pincode:{type:String},
+    phone:{type:String},
+    imgPath:{type:String},
+    googleId: { type: String }, 
+    facebookId: { type: String },
     createAt:{type: Date},
     updatedAt:{type: Date}
   }, {collection : 'user'});
@@ -88,7 +87,7 @@ UserModel.getCount = (userToCount)=>{
  * @return {[type]}      [object]
  */
 UserModel.login = (user) =>{
-    return UserModel.findOne({emailId:user.emailId},{clientId:1,password:1, userId:1, name:1,emailId:1, userType:1,salt:1, status:1 });
+    return UserModel.findOne({email:user.email},{clientId:1,password:1, userId:1, name:1,email:1, userType:1,salt:1, status:1 });
 }
 
 UserModel.forgetPassword = (user)=>{

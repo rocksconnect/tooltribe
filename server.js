@@ -35,18 +35,58 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', index);
-// app.use('/users', users);
-//
+
+
 app.use(cors())
+
+var loginRequired = function(req, res, next) {
+  if (req.user) {
+    next();
+  } else {
+    return res.status(401).json({ success:false, code:401, msg: 'Unauthorized user!' });
+  }
+};
+
+var tokenExpired = function(req, res, next) {
+  
+  return res.status(200).json({ success:false, code:419, msg: 'Token expires, Please login!!' });
+  
+};
 
 app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Origin', "*");
   res.header('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  next();
+    if(req.url == '/login' || req.url == '/register' || req.url == '/account_email_validation' || req.url == '/forget_password_email' || req.url == '/forget_password_reset' || req.url == '/' || req.url == '/terms' || req.url == '/privacy' || req.url == '/aboutus' || req.url == '/support' || req.url == '/adminLogin'){
+      
+        next()
+    }else{
+        if(req.headers && req.headers.authorization ){
+          jsonwebtoken.verify(req.headers.authorization, "shhhhh", function(err,decode){
+             console.log(err,decode,"err decode")
+              if(err){
+                req.user = undefined;
+                if(err.name == "TokenExpiredError"){
+                  tokenExpired(req, res, next)
+                }else{
+                  loginRequired(req, res, next);
+                }
+              }else{
+              console.log(req.user)
+                req.user = decode;
+                loginRequired(req, res, next);
+              }
+          } )
+
+        }else{
+              req.user = undefined;
+              loginRequired(req, res, next);
+        }
+        next();
+    }
 })
 
+app.use('/', index);
 
 app.use(usertype);
 app.use(user);
