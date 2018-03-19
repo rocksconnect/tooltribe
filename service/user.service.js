@@ -101,14 +101,26 @@ service.addUser = async (req, res) => {
     if(!req.body.state){
       return res.send({success:false, code:500, msg:"State is missing"})
     }
-    if(!req.body.pincode){
-      return res.send({success:false, code:500, msg:"Pincode is missing"})
+    if(!req.body.zipCode){
+      return res.send({success:false, code:500, msg:"ZipCode is missing"})
     }
-    if(!req.body.mobile){
-      return res.send({success:false, code:500, msg:"Mobile is missing"})
+    if(!req.body.phone){
+      return res.send({success:false, code:500, msg:"Phone is missing"})
     }
-    if(!req.body.name){
-      return res.send({success:false, code:500, msg:"Name is missing"})
+    if(!req.body.fullName){
+      return res.send({success:false, code:500, msg:"FullName is missing"})
+    }
+    if(!req.body.trade){
+      return res.send({success:false, code:500, msg:"trade is missing"})
+    }
+    if(!req.body.company){
+      return res.send({success:false, code:500, msg:"Company name is missing"})
+    }
+    if(!req.body.IdProof){
+      return res.send({success:false, code:500, msg:"IdProof is missing"})
+    }
+    if(!req.body.IdProofNumber){
+      return res.send({success:false, code:500, msg:"IdProof Number is missing"})
     }
     
     var temp =rand(100,30);
@@ -127,11 +139,16 @@ service.addUser = async (req, res) => {
       address:req.body.address,
       city:req.body.city,
       state: req.body.state,
-      googleId: data.socialType == 'google' ? data.socialId : null, 
-      facebookId: data.socialType == 'facebook' ? data.socialId : null,
+      googleId: req.body.socialType == 'google' ? req.body.socialId : null, 
+      facebookId: req.body.socialType == 'facebook' ? req.body.socialId : null,
       //country: req.body.country,
-      pincode: req.body.pincode,
-      name:req.body.name,
+      zipCode: req.body.zipCode,
+      fullName:req.body.fullName,
+      trade:req.body.trade,
+      company:req.body.company,
+      IdProof:req.body.IdProof,
+      IdProofNubmer: req.body.IdProofNubmer,
+      signature:req.body.signature,
       status:req.body.status || "Active",
       createAt: new Date(),
       updatedAt: new Date()
@@ -139,12 +156,21 @@ service.addUser = async (req, res) => {
     try {
         
         const savedUser = await User.addUser(userToAdd);
+        var objToMail = {
+          to: req.body.email,
+          subject:"Registration",
+          text:"Welcome in tooltribe",
+          errMsg:"Error in sending mail",
+          successMsg:"successfully send mail"
+        }
+        const mailToUser = await utility.sendMail(objToMail);
+        console.log("mailToUser",mailToUser)
         logger.info('Adding user...');
       //  console.log(savedUser);
         res.send({"success":true, "code":"200", "msg":successMsg.addUser,"data":savedUser});
     }
     catch(err) {
-        logger.error('Error in getting User- ' + err);
+        logger.error('Error in adding User- ' + err);
         res.send({"success":false, "code":"500", "msg":msg.addUser,"err":err});
     }
 }
