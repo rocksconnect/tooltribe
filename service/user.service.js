@@ -87,7 +87,7 @@ service.getOne=async(req,res)=>{
 service.addUser = async (req, res) => {
 
     if(!req.body.email){
-      return res.send({success:false, code:500, msg:"EmailId is missing"})
+      return res.send({success:false, code:500, msg:"Email is missing"})
     }
     if(!req.body.password){
       return res.send({success:false, code:500, msg:"Password is missing"})
@@ -181,7 +181,6 @@ service.editUser = async(req,res)=>{
     }
     let userEdit={
         address:req.body.address,
-        sector:req.body.sector,
         city:req.body.city,
         state:req.body.state,
         country:req.body.country,
@@ -235,8 +234,10 @@ service.login = async (req, res) =>{
     } else if(req.body.socialType == 'facebook' && req.body.socialId !== undefined ) {
       query = { facebookId: req.body.socialId }
     } else if(req.body.email !== undefined  && req.body.password !== undefined ) {
+        console.log("2222222")
       query = { email: req.body.email }
     } else {
+         console.log("2222222888",req.body.email,req.body.password)
       query = null
     }
     if(!query || !req.body.email){
@@ -280,99 +281,108 @@ service.login = async (req, res) =>{
     }
 }
 
-var smtpTransport=nm.createTransport(
-    {
-        service:'Gmail',
-        auth:{
-            user:"guptaswati21696@gmail.com",
-            pass:"vyashimishtu@121"
-        }
-    }
-);
-
 service.forgetPassword= async(req,res)=>
 {
+    if(!req.body.email){
+        return res.send({success:false, code:500, msg:"Email is missing"})
+    }
     var temp=rand(24,24);
     try{
-         const logUser=await User.forgetPassword(req.body);
+        const logUser=await User.forgetPassword(req.body);
         //  console.log(logUser);
          if(logUser.length!=0)
          {
             logUser[0].temp_str=temp
             console.log(logUser[0].temp_str);
-        User.findOneAndUpdate({"emailId":req.body.emailId}, {$set:{temp_str:logUser[0].temp_str}}, {new: true}, function(err, doc){
-    if(err){
-        console.log("Something wrong when updating data!");
-          }
-
-         console.log(doc);
-        });
+            var updatedUser = await User.findOneUpdate({query:{email:req.body.email},data:{$set:{temp_str:logUser[0].temp_str}}});
             var  mailOption = 
-              {
-                  from:"geniusguptaswati@gmail.com",
-                  to:req.body.emailId,
-                  subject:"reset password",
-                  text:"Hello" + req.body.emailId +".Code to reset your Password is" +temp+".\n\nRegards,\nAdmin,\Thank You.",
-               }
-            smtpTransport.sendMail(mailOption,function(err,result)
-           {
-                if(err)
-                {  console.log(err);
-                   return res.send({"success":false,"code":"500","msg":"resetting password fail"});
-                  
-                }
-                else
-                return res.send({"success":true,"code":"200","msg":"Check your email and enter varification code"});
-            })
+            {
+              to:req.body.email,
+              subject:"reset password",
+              text:"Hello " + req.body.email +".Code to reset your Password is" +temp+".\n\nRegards,\nAdmin,\Thank You.",
+              errMsg:"resetting password fail",
+              successMsg:"Check your email and enter varification code"
+            }
+            var sendMail = await utility.sendMail(mailOption)
+            return res.send({"success":true,"code":"200","msg":"Check your email and enter varification code"});
+            
+        }else{
+            return res.send({"success":false,"code":"500","msg":"Email does not exist in our system"});
         }
     }
     catch(err)
     {
-         res.send({"success":false,"code":"500","msg":"Email does not exit!!",data:err})
+         res.send({"success":false,"code":"500","msg":"Email does not exist!!",data:err})
     }
 }
 
 service.forgetPasswordReset=async (req,res)=>{
-try{
-       const logUser=await User.forgetPasswordReset(req.body);
-       console.log(logUser);
-       if(logUser.length!=0);
-       {
-          var temp = logUser[0].temp_str;
-          console.log(temp);
-          var temp2=rand(24,24);
-          var new_pass= temp2 + req.body.npass;
-          console.log(new_pass);
-          var new_hashed_pass= crypto.createHash('sha512').update(new_pass).digest("hex");
-          console.log(new_hashed_pass);
-          console.log(req.body.code);
-          if(temp==req.body.code){
-              console.log("me aa gyi");
-              User.findOneAndUpdate({"emailId":req.body.emailId},{$set:{password:new_hashed_pass,salt:temp2 ,temp_str:""}},{new:true}, function(err,result){
-                  if(err)
-                  {
-                   return res.send({"success":false,"msg":"password not changed"});
-                  }
-                  else
-                    return res.send({"success":true,"msg":"password changed succesfully"});
-              })
-
-          }
-          else{
-          res.send({"msg":"code not match"});
-          }
-       }
+    if(!req.body.email){
+        return res.send({success:false, code:500, msg:"Email is missing"})
+    }
+    if(!req.body.newPassword){
+        return res.send({success:false, code:500, msg:"New Password is missing"})
+    }
+    if(!req.body.code){
+        return res.send({success:false, code:500, msg:"Code is missing"})
+    }
+    try{
+           const logUser=await User.forgetPasswordReset(req.body);
+           console.log(logUser);
+           if(logUser.length!=0);
+           {
+              var temp = logUser[0].temp_str;
+              console.log(temp);
+              var temp2=rand(24,24);
+              var new_pass= temp2 + req.body.newPassword;
+              console.log(new_pass);
+              var new_hashed_pass= crypto.createHash('sha512').update(new_pass).digest("hex");
+              console.log(new_hashed_pass);
+              console.log(req.body.code);
+              if(temp==req.body.code){
+                  
+                var updatedUser = await User.findOneUpdate({
+                    query:{
+                        email:req.body.email
+                    },
+                    data:{
+                        $set:{
+                            password:new_hashed_pass,salt:temp2 ,temp_str:""
+                        }
+                    }
+                });
+                
+                if(!updatedUser)
+                {
+                    return res.send({"success":false,"msg":"Password does not changed"});
+                }
+                else
+                    return res.send({"success":true,"msg":"Password changed successfully"});
+              }
+              else{
+              res.send({success:false, code:500,"msg":"code does not match"});
+              }
+           }
     }
     catch(err){
-        res.send({"msg":"not valid emailid"});
+        res.send({success:false, code:500, "msg":"Email is not valid"});
     }
 }
 service.changePassword = async(req,res)=>{
+    if(!req.body.email){
+        return res.send({success:false, code:500, msg:"Email is missing"})
+    }
+    if(!req.body.newPassword){
+        return res.send({success:false, code:500, msg:"New Password is missing"})
+    }
+    if(!req.body.oldPassword){
+        return res.send({success:false, code:500, msg:"Old Password is missing"})
+    }
     try{
         
         var temp1 = rand(160,36);
         // console.log(temp1);
-        var newPass1= temp1 + req.body.newpass;
+        var newPass1= temp1 + req.body.newPassword;
         // console.log(newPass1);
         var hashed_pass2 = crypto.createHash('sha512').update(newPass1).digest("hex");
         console.log(hashed_pass2);
@@ -382,11 +392,11 @@ service.changePassword = async(req,res)=>{
          {
                var temp= changepass[0].salt;
                var hash_db=changepass[0].password;
-               var newPass2=temp+ req.body.oldpass;
+               var newPass2=temp+ req.body.oldPassword;
                var new_hashed_pass1=crypto.createHash('sha512').update(newPass2).digest("hex");
                 if(hash_db==new_hashed_pass1)
                 {
-                    User.findOneAndUpdate({"emailId":req.body.emailId}, {$set:{password:hashed_pass2,salt:temp1}}, {new: true}, function(err, doc){
+                    User.findOneAndUpdate({"email":req.body.email}, {$set:{password:hashed_pass2,salt:temp1}}, {new: true}, function(err, doc){
                         if(err)
                         {
                             return res.send({"success":false,"code":"500","msg":"old password not match"});
@@ -396,11 +406,13 @@ service.changePassword = async(req,res)=>{
                             return res.send({"success":true,"code":"200","msg":" password changed successfully"});
                         }
                     })
+                }else{
+                    return res.send({"success":false,"code":"500","msg":"old password does not match"});
                 }
          }
          else
          {
-           return  res.send({"success":false,"code":"500","msg":"emailId not exit!!"});
+           return  res.send({"success":false,"code":"500","msg":"emailId not exist!!"});
          }
     }
     catch(err)

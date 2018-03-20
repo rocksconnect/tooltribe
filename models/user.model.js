@@ -96,10 +96,10 @@ UserModel.login = (user) =>{
 }
 
 UserModel.forgetPassword = (user)=>{
-    return UserModel.find({emailId:user.emailId});
+    return UserModel.find({email:user.email});
 }
 UserModel.forgetPasswordReset=(user)=>{
-    return UserModel.find({emailId:user.emailId});
+    return UserModel.find({email:user.email});
 }
 UserModel.changePassword=(user)=>{
     return UserModel.find({emailId:user.emailId});
@@ -107,5 +107,7 @@ UserModel.changePassword=(user)=>{
 UserModel.update=(user)=>{
     return UserModel.update(userToEdit.query,userToEdit.set);
 }
-
+UserModel.findOneUpdate = (userObj)=>{
+    return UserModel.findOneAndUpdate(userObj.query,userObj.data, {new: true})
+}
 export default UserModel;
