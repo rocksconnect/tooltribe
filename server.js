@@ -9,9 +9,12 @@ import config from './core/config/config.dev';
 import connectToDb from './db/connect';
 import usertype from './routes/usertype.router.js';
 import user from './routes/user.router.js';
+import userservice from './service/user.service.js';
 import index from './routes/index.router.js';
 import net from 'net';
 import cors from 'cors';
+import jwt from 'jsonwebtoken'
+
 
 const port = config.serverPort;
 logger.stream = {
@@ -20,7 +23,13 @@ logger.stream = {
     }
 };
 
-connectToDb();
+async function connectToMongo(){
+    var data = await connectToDb();
+    userservice.RegisterSuperAdmin(config.superAdminLoginDetails);
+    console.log(data)
+}
+connectToMongo();
+
 
 var app = express();
 // view engine setup
@@ -41,6 +50,7 @@ app.use(cors())
 
 var loginRequired = function(req, res, next) {
   if (req.user) {
+    console.log("222 jj")
     next();
   } else {
     return res.status(401).json({ success:false, code:401, msg: 'Unauthorized user!' });
@@ -62,7 +72,7 @@ app.use(function(req, res, next) {
         next()
     }else{
         if(req.headers && req.headers.authorization ){
-          jsonwebtoken.verify(req.headers.authorization, "shhhhh", function(err,decode){
+          jwt.verify(req.headers.authorization, "shhhhh", function(err,decode){
              console.log(err,decode,"err decode")
               if(err){
                 req.user = undefined;
@@ -82,11 +92,11 @@ app.use(function(req, res, next) {
               req.user = undefined;
               loginRequired(req, res, next);
         }
-        next();
+        
     }
 })
 
-app.use('/', index);
+app.use(index);
 
 app.use(usertype);
 app.use(user);

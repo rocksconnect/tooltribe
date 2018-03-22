@@ -23,7 +23,7 @@ router.post('/register', (req, res) => {
     userService.addUser(req, res);
 });
 
-router.post('/editUser', (req, res) => {
+router.post('/updateProfile', (req, res) => {
     userService.editUser(req, res);
 });
 

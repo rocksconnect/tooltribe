@@ -25,6 +25,7 @@ const UserSchema = mongoose.Schema({
     imgPath:{type:String},
     googleId: { type: String }, 
     facebookId: { type: String },
+    userType:{type:String},
     createAt:{type: Date},
     updatedAt:{type: Date}
   }, {collection : 'user'});
@@ -71,9 +72,9 @@ UserModel.addUser = (userToAdd) => {
     return userToAdd.save();
 }
 
-UserModel.editUser = (userToEdit) =>{
-    console.log(userToEdit);
-    return UserModel.update(userToEdit.query,{$set:{temp_str:"ttdd21"}});
+UserModel.editUser = (objToUpdate) =>{
+    console.log(objToUpdate,"8888");
+    return UserModel.update(objToUpdate.query,objToUpdate.data);
 }
 
 
@@ -104,9 +105,7 @@ UserModel.forgetPasswordReset=(user)=>{
 UserModel.changePassword=(user)=>{
     return UserModel.find({emailId:user.emailId});
 }
-UserModel.update=(user)=>{
-    return UserModel.update(userToEdit.query,userToEdit.set);
-}
+
 UserModel.findOneUpdate = (userObj)=>{
     return UserModel.findOneAndUpdate(userObj.query,userObj.data, {new: true})
 }

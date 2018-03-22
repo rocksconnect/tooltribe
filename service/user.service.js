@@ -127,7 +127,7 @@ service.addUser = async (req, res) => {
     var newPassword=temp+req.body.password;
     var token= crypto.createHash('sha512').update(req.body.password+rand).digest("hex");
     var hashed_password=crypto.createHash('sha512').update(newPassword).digest("hex");
-
+    
     let userToAdd = User({
 
       token:token,
@@ -150,6 +150,7 @@ service.addUser = async (req, res) => {
       IdProofNubmer: req.body.IdProofNubmer,
       signature:req.body.signature,
       status:req.body.status || "Active",
+      userType:"",
       createAt: new Date(),
       updatedAt: new Date()
     });
@@ -174,23 +175,70 @@ service.addUser = async (req, res) => {
         res.send({"success":false, "code":"500", "msg":msg.addUser,"err":err});
     }
 }
+/**
+ * @description [calculation before add superadmin to db  ]
+ * @param  {[object]}
+ * @param  {[object]}
+ * @return {[object]}
+ */
+service.RegisterSuperAdmin = async (detailsToReg) => {
 
-service.editUser = async(req,res)=>{
-    if(!req.body._id){
-        res.send({"success":false,"code":500,"msg":msg._id})
+    console.log("RegisterSuperAdmin called")
+    var temp =rand(100,30);
+    var newPassword=temp+detailsToReg.password;
+    var token= crypto.createHash('sha512').update(detailsToReg.password+rand).digest("hex");
+    var hashed_password=crypto.createHash('sha512').update(newPassword).digest("hex");
+    
+    
+    let userToAdd = User({
+
+      token:token,
+      salt:temp,
+      temp_str:"",
+      email: detailsToReg.email,
+      password: hashed_password,
+      status: "Active",
+      userType:"SuperAdmin",
+      createAt: new Date(),
+      updatedAt: new Date()
+    });
+    try {
+        
+        const savedUser = await User.addUser(userToAdd);
+        
+        
+        logger.info('Register superAdmin...');
+      //  console.log(savedUser);
+        
     }
-    let userEdit={
-        address:req.body.address,
-        city:req.body.city,
-        state:req.body.state,
-        country:req.body.country,
-        status:req.body.status,
-        updatedAt: new Date()
+    catch(err) {
+        logger.error('Error in adding superadmin- ' + err);
+        
+    }
+}
+service.editUser = async(req,res)=>{
+    console.log("hiii",req.user)
+    if(!req.user._id){
+        res.send({"success":false,"code":500,"msg":msg._id})
+        
+    }
+    var dataToEdit = {};
+   
+    for(var key in req.body){
+        console.log(key," = key")
+        if(key!=='userType' && key!=='password' && key!=='_id' && req.body[key]!=='undefined' && req.body[key]!==null && req.body[key]!==''){
+          dataToEdit[key]=req.body[key];
+        }
+    }
+    console.log("step 2",dataToEdit)
+    if(!dataToEdit){
+        return res.send({success:false,code:500, msg:"Data is missing"})
     }
     let userToEdit={
-        query:{"_id":req.body._id},
-        data:{"$set":userEdit}
+        query:{"_id":req.user._id},
+        data:{"$set":dataToEdit}
     };
+
     try{
         const editUser= await User.editUser(userToEdit);
         logger.info("update user");
@@ -199,7 +247,7 @@ service.editUser = async(req,res)=>{
 
     }
     catch(err){
-        logger.error('Error in getting user- ' + err);
+        logger.error('Error in updaing user- ' + err);
         res.send({"success":false, "code":"500", "msg":msg.editUser,"err":err});
     }
 }
@@ -262,7 +310,7 @@ service.login = async (req, res) =>{
             var hashed_password1=crypto.createHash('sha512').update(newpass).digest("hex");
             if(hash_db==hashed_password1)
             {
-                var token = jwt.sign({name:loggedUser.name,email:loggedUser.email,_id:loggedUser._id}, 'shhhhh');
+                var token = jwt.sign({name:loggedUser.name,email:loggedUser.email,_id:loggedUser._id,userType:loggedUser.userType}, 'shhhhh');
                 res.send({success:true, code:200, msg:successMsg.loginUser, data:token });
             }
             else
