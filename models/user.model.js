@@ -4,6 +4,11 @@ AutoIncrement.initialize(mongoose);
 
 const UserSchema = mongoose.Schema({
   
+    deviceId:{type:String},
+    deviceToken:{type:String},
+    latitude:{type:String},
+    longitude:{type:String},
+    deviceType:{type:String},
     token:{type:String},
     salt:{type:String},
     temp_str:{type:String},
@@ -26,6 +31,7 @@ const UserSchema = mongoose.Schema({
     googleId: { type: String }, 
     facebookId: { type: String },
     userType:{type:String},
+    socialType:{type:String},
     createAt:{type: Date},
     updatedAt:{type: Date}
   }, {collection : 'user'});
@@ -93,7 +99,7 @@ UserModel.getCount = (userToCount)=>{
  * @return {[type]}      [object]
  */
 UserModel.login = (user) =>{
-    return UserModel.findOne({email:user.email},{clientId:1,password:1, userId:1, name:1,email:1, userType:1,salt:1, status:1 });
+    return UserModel.findOne({email:user.email},{});
 }
 
 UserModel.forgetPassword = (user)=>{

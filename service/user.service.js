@@ -85,9 +85,24 @@ service.getOne=async(req,res)=>{
  * @return {[object]}
  */
 service.addUser = async (req, res) => {
-
+    
     if(!req.body.email){
       return res.send({success:false, code:500, msg:"Email is missing"})
+    }
+    if(!req.body.deviceId){
+      return res.send({success:false, code:500, msg:"deviceId is missing"})
+    }
+    if(!req.body.deviceToken){
+      return res.send({success:false, code:500, msg:"deviceToken is missing"})
+    }
+    if(!req.body.deviceType){
+      return res.send({success:false, code:500, msg:"deviceType is missing"})
+    } 
+    if(!req.body.latitude){
+      return res.send({success:false, code:500, msg:"latitude is missing"})
+    }
+    if(!req.body.longitude){
+      return res.send({success:false, code:500, msg:"longitude is missing"})
     }
     if(!req.body.password){
       return res.send({success:false, code:500, msg:"Password is missing"})
@@ -110,17 +125,20 @@ service.addUser = async (req, res) => {
     if(!req.body.fullName){
       return res.send({success:false, code:500, msg:"FullName is missing"})
     }
-    if(!req.body.trade){
-      return res.send({success:false, code:500, msg:"trade is missing"})
+    if(!req.body.tradeId){
+      return res.send({success:false, code:500, msg:"tradeId is missing"})
     }
     if(!req.body.company){
-      return res.send({success:false, code:500, msg:"Company name is missing"})
+      return res.send({success:false, code:500, msg:"Company is missing"})
     }
     if(!req.body.IdProof){
       return res.send({success:false, code:500, msg:"IdProof is missing"})
     }
     if(!req.body.IdProofNumber){
       return res.send({success:false, code:500, msg:"IdProof Number is missing"})
+    }
+    if(!req.body.socialType){
+      return res.send({success:false, code:500, msg:"SocialType is missing"})
     }
     
     var temp =rand(100,30);
@@ -135,16 +153,21 @@ service.addUser = async (req, res) => {
       temp_str:"",
       email: req.body.email,
       password: hashed_password,
+      deviceId:req.body.deviceId,
+      deviceType:req.body.deviceType,
+      deviceToken:req.body.deviceToken,
+      longitude:req.body.longitude,
+      latitude:req.body.latitude,
       phone:req.body.phone,
       address:req.body.address,
       city:req.body.city,
       state: req.body.state,
       googleId: req.body.socialType == 'google' ? req.body.socialId : null, 
       facebookId: req.body.socialType == 'facebook' ? req.body.socialId : null,
-      //country: req.body.country,
+      socialType: req.body.socialType,
       zipCode: req.body.zipCode,
       fullName:req.body.fullName,
-      trade:req.body.trade,
+      tradeId:req.body.tradeId,
       company:req.body.company,
       IdProof:req.body.IdProof,
       IdProofNubmer: req.body.IdProofNubmer,
@@ -157,6 +180,7 @@ service.addUser = async (req, res) => {
     try {
         
         const savedUser = await User.addUser(userToAdd);
+        
         var objToMail = {
           to: req.body.email,
           subject:"Registration",
@@ -167,8 +191,9 @@ service.addUser = async (req, res) => {
         const mailToUser = await utility.sendMail(objToMail);
         console.log("mailToUser",mailToUser)
         logger.info('Adding user...');
-      //  console.log(savedUser);
-        res.send({"success":true, "code":"200", "msg":successMsg.addUser,"data":savedUser});
+        console.log(savedUser);
+        
+        res.send({"success":true, "code":"200", "msg":successMsg.addUser});
     }
     catch(err) {
         logger.error('Error in adding User- ' + err);
@@ -311,7 +336,38 @@ service.login = async (req, res) =>{
             if(hash_db==hashed_password1)
             {
                 var token = jwt.sign({name:loggedUser.name,email:loggedUser.email,_id:loggedUser._id,userType:loggedUser.userType}, 'shhhhh');
-                res.send({success:true, code:200, msg:successMsg.loginUser, data:token });
+
+                var data ={
+                  _id:loggedUser._id,
+                  email:loggedUser.email,
+                  fullName:loggedUser.fullName,
+                  deviceId:loggedUser.deviceId,
+                  deviceType:loggedUser.deviceType,
+                  deviceToken:loggedUser.deviceToken,
+                  longitude:loggedUser.longitude,
+                  latitude:loggedUser.latitude,
+                  phone:loggedUser.phone,
+                  address:loggedUser.address,
+                  city:loggedUser.city,
+                  state: loggedUser.state,
+                  googleId: loggedUser.socialType == 'google' ? loggedUser.socialId : null, 
+                  facebookId: loggedUser.socialType == 'facebook' ? loggedUser.socialId : null,
+                  socialType: loggedUser.socialType,
+                  zipCode: loggedUser.zipCode,
+                  fullName:loggedUser.fullName,
+                  tradeId:loggedUser.tradeId,
+                  company:loggedUser.company,
+                  IdProof:loggedUser.IdProof,
+                  IdProofNubmer: loggedUser.IdProofNubmer,
+                  signature:loggedUser.signature,
+                  status:loggedUser.status ,
+                  userType:loggedUser.userType,
+                  createAt: loggedUser.createAt,
+
+                }
+               
+
+                res.send({success:true, code:200, msg:successMsg.loginUser, data:data, token:token });
             }
             else
             {
@@ -417,7 +473,7 @@ service.forgetPasswordReset=async (req,res)=>{
     }
 }
 service.changePassword = async(req,res)=>{
-    if(!req.body.email){
+    if(!req.user.email){
         return res.send({success:false, code:500, msg:"Email is missing"})
     }
     if(!req.body.newPassword){
@@ -444,7 +500,7 @@ service.changePassword = async(req,res)=>{
                var new_hashed_pass1=crypto.createHash('sha512').update(newPass2).digest("hex");
                 if(hash_db==new_hashed_pass1)
                 {
-                    User.findOneAndUpdate({"email":req.body.email}, {$set:{password:hashed_pass2,salt:temp1}}, {new: true}, function(err, doc){
+                    User.findOneAndUpdate({"email":req.user.email}, {$set:{password:hashed_pass2,salt:temp1}}, {new: true}, function(err, doc){
                         if(err)
                         {
                             return res.send({"success":false,"code":"500","msg":"old password not match"});

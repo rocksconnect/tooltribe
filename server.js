@@ -9,6 +9,8 @@ import config from './core/config/config.dev';
 import connectToDb from './db/connect';
 import usertype from './routes/usertype.router.js';
 import user from './routes/user.router.js';
+import trade from './routes/trade.router.js';
+import category from './routes/category.router.js';
 import userservice from './service/user.service.js';
 import index from './routes/index.router.js';
 import net from 'net';
@@ -67,9 +69,14 @@ app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Origin', "*");
   res.header('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    if(req.url == '/login' || req.url == '/register' || req.url == '/account_email_validation' || req.url == '/forgetPassword' || req.url == '/forgetPasswordReset' || req.url == '/' || req.url == '/terms' || req.url == '/privacy' || req.url == '/aboutus' || req.url == '/support' || req.url == '/changePassword'){
-      
-        next()
+    if(req.url == '/getTrade' || req.url == '/login' || req.url == '/register' || req.url == '/account_email_validation' || req.url == '/forgetPassword' || req.url == '/forgetPasswordReset' || req.url == '/' || req.url == '/terms' || req.url == '/privacy' || req.url == '/aboutus' || req.url == '/support'){
+        if(req.headers && req.headers.authorization && req.headers.authorization == 'Key@123'){
+            next()
+        }else{
+            req.user = undefined;
+            loginRequired(req, res, next);
+        }
+        
     }else{
         if(req.headers && req.headers.authorization ){
           jwt.verify(req.headers.authorization, "shhhhh", function(err,decode){
@@ -100,6 +107,8 @@ app.use(index);
 
 app.use(usertype);
 app.use(user);
+app.use(trade);
+app.use(category);
 
 
 // catch 404 and forward to error handler
