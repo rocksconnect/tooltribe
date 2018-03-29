@@ -23,7 +23,7 @@ const UserSchema = mongoose.Schema({
     zipCode:{type:String},
     phone:{type:String},
     trade:{type:String},
-    company:{type:String},
+    companyId:{type:String},
     idProof:{type:String},
     idProofNubmer:{type:String},
     signature:{type:String},
@@ -34,6 +34,8 @@ const UserSchema = mongoose.Schema({
     socialType:{type:String},
     pathOfIdProof:{type:String},
     pathOfProfileImg :{type:String},
+    termsOfServices:{type:String},
+    privacyPolicy:{type:String},
     createAt:{type: Date},
     updatedAt:{type: Date}
   }, {collection : 'user'});

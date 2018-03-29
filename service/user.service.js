@@ -7,6 +7,7 @@
  */
 
 import User from '../models/user.model'
+import Company from '../models/company.model'
 import logger from '../core/logger/app.logger'
 import successMsg from '../core/message/success.msg'
 import msg from '../core/message/error.msg.js'
@@ -128,8 +129,8 @@ service.addUser = async (req, res) => {
     if(!req.body.tradeId){
       return res.send({success:false, code:500, msg:"tradeId is missing"})
     }
-    if(!req.body.company){
-      return res.send({success:false, code:500, msg:"Company is missing"})
+    if(!req.body.companyId && !req.body.companyName ){
+      return res.send({success:false, code:500, msg:"CompanyId or companyName  is missing"})
     }
     if(!req.body.idProof){
       return res.send({success:false, code:500, msg:"idProof is missing"})
@@ -140,21 +141,38 @@ service.addUser = async (req, res) => {
     if(!req.body.socialType){
       return res.send({success:false, code:500, msg:"SocialType is missing"})
     }
+    if(!req.body.termsOfServices){
+      return res.send({success:false, code:500, msg:"termsOfServices is missing"})
+    }
+    if(!req.body.privacyPolicy){
+      return res.send({success:false, code:500, msg:"privacyPolicy is missing"})
+    }
+    
     if(!req.files){
       return res.send({success:false, code:400, msg:"No files were uploaded."})//res.status(400).send('No files were uploaded.');
     }
 
     let idProofImage = req.files.idProofImage;
     let profileImage = req.files.profileImage;
+    console.log(profileImage,"profileImage")
 
-    var idProofImageUploaded = await sampleFile.mv('./public/images/'+req.files.idProofImage.name);
-    var profileImagUploaded = await sampleFile.mv('./public/images/'+req.files.profileImage.name);
+    var idProofImageUploaded = await idProofImage.mv('./public/images/'+req.files.idProofImage.name);
+    var profileImagUploaded = await profileImage.mv('./public/images/'+req.files.profileImage.name);
 
     var temp =rand(100,30);
     var newPassword=temp+req.body.password;
     var token= crypto.createHash('sha512').update(req.body.password+rand).digest("hex");
     var hashed_password=crypto.createHash('sha512').update(newPassword).digest("hex");
-    
+
+    var savedCompany;
+    if(req.body.companyName){
+         var companyToAdd = Company({
+            companyName:req.body.companyName
+        })
+        savedCompany = await Company.addCompany(companyToAdd);
+        console.log(savedCompany,"savedCompany")
+    }
+       
     let userToAdd = User({
 
       token:token,
@@ -177,12 +195,14 @@ service.addUser = async (req, res) => {
       zipCode: req.body.zipCode,
       fullName:req.body.fullName,
       tradeId:req.body.tradeId,
-      company:req.body.company,
+      companyId:savedCompany?savedCompany._id:req.body.companyId,
       idProof:req.body.idProof,
       idProofNubmer: req.body.idProofNubmer,
       signature:req.body.signature,
       pathOfIdProof:'/images/'+req.files.idProofImage.name,
       pathOfProfileImg:'/images/'+req.files.profileImage.name,
+      termsOfServices:req.body.termsOfServices,
+      privacyPolicy:req.body.privacyPolicy,
       status:req.body.status || "Active",
       userType:"",
       createAt: new Date(),
@@ -367,7 +387,7 @@ service.login = async (req, res) =>{
                   zipCode: loggedUser.zipCode,
                   fullName:loggedUser.fullName,
                   tradeId:loggedUser.tradeId,
-                  company:loggedUser.company,
+                  companyId:loggedUser.companyId,
                   idProof:loggedUser.idProof,
                   idProofNubmer: loggedUser.idProofNubmer,
                   signature:loggedUser.signature,
@@ -375,6 +395,8 @@ service.login = async (req, res) =>{
                   userType:loggedUser.userType,
                   pathOfIdProof:loggedUser.pathOfIdProof,
                   pathOfProfileImg:loggedUser.pathOfProfileImg,
+                  privacyPolicy:loggedUser.privacyPolicy,
+                  termsOfServices:loggedUser.termsOfServices,
                   createAt: loggedUser.createAt
 
                 }
