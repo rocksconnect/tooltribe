@@ -17,6 +17,7 @@ import index from './routes/index.router.js';
 import net from 'net';
 import cors from 'cors';
 import jwt from 'jsonwebtoken'
+import fileUpload from 'express-fileupload';
 
 
 const port = config.serverPort;
@@ -35,6 +36,8 @@ connectToMongo();
 
 
 var app = express();
+app.use(fileUpload());
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
@@ -46,6 +49,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+//app.use('/public',express.static(path.join(__dirname, 'public')));
 
 
 
@@ -66,46 +70,63 @@ var tokenExpired = function(req, res, next) {
   
 };
 
-app.use(function(req, res, next) {
-  res.header('Access-Control-Allow-Origin', "*");
-  res.header('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    if(req.url == '/allIdProof' || req.url == '/getTrade' || req.url == '/login' || req.url == '/register' || req.url == '/account_email_validation' || req.url == '/forgetPassword' || req.url == '/forgetPasswordReset' || req.url == '/' || req.url == '/terms' || req.url == '/privacy' || req.url == '/aboutus' || req.url == '/support'){
-        if(req.headers && req.headers.authorization && req.headers.authorization == 'Key@123'){
-            next()
-        }else{
-            req.user = undefined;
-            loginRequired(req, res, next);
-        }
+// app.use(function(req, res, next) {
+//   res.header('Access-Control-Allow-Origin', "*");
+//   res.header('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE');
+//   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+//     if(req.url == '/upload' || req.url == '/updateIdProofType' || req.url == '/getTrade' || req.url == '/login' || req.url == '/register' || req.url == '/account_email_validation' || req.url == '/forgetPassword' || req.url == '/forgetPasswordReset' || req.url == '/' || req.url == '/terms' || req.url == '/privacy' || req.url == '/aboutus' || req.url == '/support'){
+//         if(req.headers && req.headers.authorization && req.headers.authorization == 'Key@123'){
+//             next()
+//         }else{
+//             req.user = undefined;
+//             loginRequired(req, res, next);
+//         }
         
-    }else{
-        if(req.headers && req.headers.authorization ){
-          jwt.verify(req.headers.authorization, "shhhhh", function(err,decode){
-             console.log(err,decode,"err decode")
-              if(err){
-                req.user = undefined;
-                if(err.name == "TokenExpiredError"){
-                  tokenExpired(req, res, next)
-                }else{
-                  loginRequired(req, res, next);
-                }
-              }else{
-              console.log(req.user)
-                req.user = decode;
-                loginRequired(req, res, next);
-              }
-          } )
+//     }else{
+//         if(req.headers && req.headers.authorization ){
+//           jwt.verify(req.headers.authorization, "shhhhh", function(err,decode){
+//              console.log(err,decode,"err decode")
+//               if(err){
+//                 req.user = undefined;
+//                 if(err.name == "TokenExpiredError"){
+//                   tokenExpired(req, res, next)
+//                 }else{
+//                   loginRequired(req, res, next);
+//                 }
+//               }else{
+//               console.log(req.user)
+//                 req.user = decode;
+//                 loginRequired(req, res, next);
+//               }
+//           } )
 
-        }else{
-              req.user = undefined;
-              loginRequired(req, res, next);
-        }
+//         }else{
+//               req.user = undefined;
+//               loginRequired(req, res, next);
+//         }
         
-    }
-})
+//     }
+// })
+
+// default options - use for file uplaod
+app.post('/upload', function(req, res) {
+    console.log(1,req.body)
+  if (!req.files)
+    return res.status(400).send('No files were uploaded.');
+ 
+  // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
+  let sampleFile = req.files.sampleFile;
+ 
+  // Use the mv() method to place the file somewhere on your server
+  sampleFile.mv('images/filename.jpg', function(err) {
+    if (err)
+      return res.status(500).send(err);
+ 
+    res.send('File uploaded!');
+  });
+});
 
 app.use(index);
-
 app.use(usertype);
 app.use(user);
 app.use(trade);
@@ -130,6 +151,8 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
+
+
 const PORT = 3030;
 const ADDRESS = '0.0.0.0';
 
@@ -137,7 +160,7 @@ const ADDRESS = '0.0.0.0';
 server.listen(PORT, ADDRESS);
 console.log(`socket started at: ${ADDRESS}:${PORT}`);
 */
-app.listen(port, () => {
+app.listen(8080, () => {
     logger.info('server started - ', port);
 });
 

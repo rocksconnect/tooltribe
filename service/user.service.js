@@ -131,16 +131,25 @@ service.addUser = async (req, res) => {
     if(!req.body.company){
       return res.send({success:false, code:500, msg:"Company is missing"})
     }
-    if(!req.body.IdProof){
-      return res.send({success:false, code:500, msg:"IdProof is missing"})
+    if(!req.body.idProof){
+      return res.send({success:false, code:500, msg:"idProof is missing"})
     }
-    if(!req.body.IdProofNumber){
-      return res.send({success:false, code:500, msg:"IdProof Number is missing"})
+    if(!req.body.idProofNumber){
+      return res.send({success:false, code:500, msg:"idProof Number is missing"})
     }
     if(!req.body.socialType){
       return res.send({success:false, code:500, msg:"SocialType is missing"})
     }
-    
+    if(!req.files){
+      return res.send({success:false, code:400, msg:"No files were uploaded."})//res.status(400).send('No files were uploaded.');
+    }
+
+    let idProofImage = req.files.idProofImage;
+    let profileImage = req.files.profileImage;
+
+    var idProofImageUploaded = await sampleFile.mv('./public/images/'+req.files.idProofImage.name);
+    var profileImagUploaded = await sampleFile.mv('./public/images/'+req.files.profileImage.name);
+
     var temp =rand(100,30);
     var newPassword=temp+req.body.password;
     var token= crypto.createHash('sha512').update(req.body.password+rand).digest("hex");
@@ -169,9 +178,11 @@ service.addUser = async (req, res) => {
       fullName:req.body.fullName,
       tradeId:req.body.tradeId,
       company:req.body.company,
-      IdProof:req.body.IdProof,
-      IdProofNubmer: req.body.IdProofNubmer,
+      idProof:req.body.idProof,
+      idProofNubmer: req.body.idProofNubmer,
       signature:req.body.signature,
+      pathOfIdProof:'/images/'+req.files.idProofImage.name,
+      pathOfProfileImg:'/images/'+req.files.profileImage.name,
       status:req.body.status || "Active",
       userType:"",
       createAt: new Date(),
@@ -357,12 +368,14 @@ service.login = async (req, res) =>{
                   fullName:loggedUser.fullName,
                   tradeId:loggedUser.tradeId,
                   company:loggedUser.company,
-                  IdProof:loggedUser.IdProof,
-                  IdProofNubmer: loggedUser.IdProofNubmer,
+                  idProof:loggedUser.idProof,
+                  idProofNubmer: loggedUser.idProofNubmer,
                   signature:loggedUser.signature,
                   status:loggedUser.status ,
                   userType:loggedUser.userType,
-                  createAt: loggedUser.createAt,
+                  pathOfIdProof:loggedUser.pathOfIdProof,
+                  pathOfProfileImg:loggedUser.pathOfProfileImg,
+                  createAt: loggedUser.createAt
 
                 }
                

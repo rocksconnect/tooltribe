@@ -31,6 +31,8 @@ const service = {};
  */
 
 service.addCategory = async (req,res)=>{
+	
+	
 	if(!req.body.category){
 		return res.send({success:false, code:500, msg:"Category is missing"});
 	}
@@ -38,11 +40,23 @@ service.addCategory = async (req,res)=>{
 		return res.send({success:false, code:500, msg:"Status is missing"});
 	}
 	try{
+		console.log(req.files.categoryImage,"req.files.categoryImage")
+		if (!req.files)
+		    return res.status(400).send('No categories files were uploaded.');
+
 		var categoryToAdd = Category({
 			category:req.body.category,
 			status:req.body.status,
-			trash:false,
+			fileName:req.files.categoryImage.name,
+			path:'/images/'+req.files.categoryImage.name,
+			trash:false
 		})
+		
+		 
+		// The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
+		let sampleFile = req.files.categoryImage;
+		var fileUploaded = await sampleFile.mv('./public/images/'+req.files.categoryImage.name);
+		 
 		var savedCategory = await Category.addCategory(categoryToAdd);
 		if(savedCategory){
 			return res.send({success:true, code:200, msg:"Category added succesfully"});
@@ -50,6 +64,7 @@ service.addCategory = async (req,res)=>{
 			return res.send({success:false, code:500, msg:"Error in adding Category"});
 		}
 	}catch(error){
+		console.log(error,"errorerrorerror")
 		return res.send({success:false, code:500, msg:"Error in adding Category", err:error});
 	}
 }
@@ -144,4 +159,5 @@ service.updateCategory = async (req,res)=>{
 		return res.send({success:false, code:500, msg:"Error in updating Category", err:error});
 	}
 }
+
 export default service;

@@ -9,6 +9,7 @@
 import express from "express";
 import userService from "../service/user.service";
 
+
 const router = express.Router()
 
 router.get('/allUser', (req, res) => {
@@ -44,8 +45,9 @@ router.post('/forgetPasswordReset',(req,res)=>{
 router.post('/changePassword',(req,res)=>{
     userService.changePassword(req,res);
 })
- router.post('/updateUser',(req,res)=>{
+router.post('/updateUser',(req,res)=>{
      userService.update(req,res);
- })
+})
+
 
 export default router;

@@ -24,14 +24,16 @@ const UserSchema = mongoose.Schema({
     phone:{type:String},
     trade:{type:String},
     company:{type:String},
-    IdProof:{type:String},
-    IdProofNubmer:{type:String},
+    idProof:{type:String},
+    idProofNubmer:{type:String},
     signature:{type:String},
     imgPath:{type:String},
     googleId: { type: String }, 
     facebookId: { type: String },
     userType:{type:String},
     socialType:{type:String},
+    pathOfIdProof:{type:String},
+    pathOfProfileImg :{type:String},
     createAt:{type: Date},
     updatedAt:{type: Date}
   }, {collection : 'user'});

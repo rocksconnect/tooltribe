@@ -15,6 +15,9 @@ const CategorySchema = mongoose.Schema({
     categoryId:{type:String},
     status:{type:String},
     trash:{type:String},
+    fileName:{type:String},
+    bufferData: {type:String},
+    path : {type:String},
     createAt:{type: Date,default:Date.now()},
     updatedAt:{type: Date,default:Date.now()}
   }, {collection : 'category'});
