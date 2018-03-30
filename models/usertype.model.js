@@ -35,6 +35,17 @@ UserTypeModel.getAll = (dataToFind) => {
     return UserTypeModel.find(dataToFind.query,dataToFind.projection);
 }
 
+
+/**
+ *@description [is used for getting all data of devices from db]
+ * @return {object}
+ */
+UserTypeModel.getAllData = () => {
+    return UserTypeModel.find();
+}
+
+
+
 /**
  *@description [is used for getting one data of devices from db]
  * @return {object}

@@ -37,7 +37,7 @@ const service = {};
 service.getAll = async (req,res) =>{
     //console.log("hiiiiii");
     if(!req.query._id){
-       return res.send({"success":false,"code":"500","msg":msg.clientId});
+       return res.send({"success":false,"code":500,"msg":msg.clientId});
     }
     let clientId = utility.removeQuotationMarks(req.query.clientId);
 	try{
@@ -69,11 +69,11 @@ service.getOne=async(req,res)=>{
     
      const getOneUser=await User.getOne(userToFind);
      logger.info('get one user-' +getOneUser);
-     res.send({"success":true,"code":"200","msg":successMsg.getOneUser,"data":getOneUser});
+     res.send({"success":true,"code":200,"msg":successMsg.getOneUser,"data":getOneUser});
  }
  catch(err){
      logger.error('Failed to get user- ' + err);
-     res.send({"success":false, "code":"500", "msg":msg.getUser,"err":err});
+     res.send({"success":false, "code":500, "msg":msg.getUser,"err":err});
 
  }
 
@@ -224,11 +224,11 @@ service.addUser = async (req, res) => {
         logger.info('Adding user...');
         console.log(savedUser);
         
-        res.send({"success":true, "code":"200", "msg":successMsg.addUser});
+        res.send({"success":true, "code":200, "msg":successMsg.addUser});
     }
     catch(err) {
         logger.error('Error in adding User- ' + err);
-        res.send({"success":false, "code":"500", "msg":msg.addUser,"err":err});
+        res.send({"success":false, "code":500, "msg":msg.addUser,"err":err});
     }
 }
 /**
@@ -304,23 +304,23 @@ service.editUser = async(req,res)=>{
     }
     catch(err){
         logger.error('Error in updaing user- ' + err);
-        res.send({"success":false, "code":"500", "msg":msg.editUser,"err":err});
+        res.send({"success":false, "code":500, "msg":msg.editUser,"err":err});
     }
 }
 
 service.deleteUser = async (req, res) => {
     let userToDelete = req.body.userId;
     if(!req.body.userId){
-        ({"success":false,"code":"500","msg":msg.userId });
+        ({"success":false,"code":500,"msg":msg.userId });
     }
     try{
         const removedUser = await User.removeUser(userToDelete);
         logger.info('Deleted user-' + removedUser);
-        res.send({"success":true, "code":"200", "msg":successMsg.deleteUser,"data":removedUser});
+        res.send({"success":true, "code":200, "msg":successMsg.deleteUser,"data":removedUser});
     }
     catch(err) {
         logger.error('Failed to delete User- ' + err);
-        res.send({"success":false, "code":"500", "msg":msg.deleteUser,"err":err});
+        res.send({"success":false, "code":500, "msg":msg.deleteUser,"err":err});
     }
 }
 
@@ -406,7 +406,7 @@ service.login = async (req, res) =>{
             }
             else
             {
-               res.send({"success":false,"code":"500","msg":"password does not match"})
+               res.send({"success":false,"code":500,"msg":"password does not match"})
             }
 
         }
@@ -443,15 +443,15 @@ service.forgetPassword= async(req,res)=>
               successMsg:"Check your email and enter varification code"
             }
             var sendMail = await utility.sendMail(mailOption)
-            return res.send({"success":true,"code":"200","msg":"Check your email and enter varification code"});
+            return res.send({"success":true,"code":const,"msg":"Check your email and enter varification code"});
             
         }else{
-            return res.send({"success":false,"code":"500","msg":"Email does not exist in our system"});
+            return res.send({"success":false,"code":500,"msg":"Email does not exist in our system"});
         }
     }
     catch(err)
     {
-         res.send({"success":false,"code":"500","msg":"Email does not exist!!",data:err})
+         res.send({"success":false,"code":500,"msg":"Email does not exist!!",data:err})
     }
 }
 
@@ -538,25 +538,25 @@ service.changePassword = async(req,res)=>{
                     User.findOneAndUpdate({"email":req.user.email}, {$set:{password:hashed_pass2,salt:temp1}}, {new: true}, function(err, doc){
                         if(err)
                         {
-                            return res.send({"success":false,"code":"500","msg":"old password not match"});
+                            return res.send({"success":false,"code":500,"msg":"old password not match"});
                         }
                         else
                         {
-                            return res.send({"success":true,"code":"200","msg":" password changed successfully"});
+                            return res.send({"success":true,"code":const,"msg":" password changed successfully"});
                         }
                     })
                 }else{
-                    return res.send({"success":false,"code":"500","msg":"old password does not match"});
+                    return res.send({"success":false,"code":500,"msg":"old password does not match"});
                 }
          }
          else
          {
-           return  res.send({"success":false,"code":"500","msg":"emailId not exist!!"});
+           return  res.send({"success":false,"code":500,"msg":"emailId not exist!!"});
          }
     }
     catch(err)
     {
-      res.send({"success":false,"code":"500","msg":"password changing fail"});
+      res.send({"success":false,"code":500,"msg":"password changing fail"});
 
     }
 }
