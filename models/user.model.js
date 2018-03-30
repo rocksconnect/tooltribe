@@ -36,6 +36,8 @@ const UserSchema = mongoose.Schema({
     pathOfProfileImg :{type:String},
     termsOfServices:{type:String},
     privacyPolicy:{type:String},
+    refralCode:{type:String},
+    myRefralCode:{type:String},
     createAt:{type: Date},
     updatedAt:{type: Date}
   }, {collection : 'user'});

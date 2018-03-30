@@ -39,6 +39,9 @@ service.addCategory = async (req,res)=>{
 	if(!req.body.status){
 		return res.send({success:false, code:500, msg:"Status is missing"});
 	}
+	if(!req.body.desc){
+		return res.send({success:false, code:500, msg:"Description is missing"});
+	}
 	try{
 		console.log(req.files.categoryImage,"req.files.categoryImage")
 		if (!req.files)
@@ -47,6 +50,7 @@ service.addCategory = async (req,res)=>{
 		var categoryToAdd = Category({
 			category:req.body.category,
 			status:req.body.status,
+			desc:req.body.desc,
 			fileName:req.files.categoryImage.name,
 			path:'/images/'+req.files.categoryImage.name,
 			trash:false
@@ -140,7 +144,17 @@ service.updateCategory = async (req,res)=>{
           dataToEdit[key]=req.body[key];
         }
     }
+    // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
+	let sampleFile = req.files.categoryImage;
+	var fileUploaded = await sampleFile.mv('./public/images/'+req.files.categoryImage.name);
+
+	if(req.files && req.files.categoryImage){
+		dataToEdit.fileName=req.files.categoryImage.name;
+		dataToEdit.path='/images/'+req.files.categoryImage.name;
+	}
+
     console.log("step 2",dataToEdit)
+
     if(!dataToEdit){
         return res.send({success:false,code:500, msg:"Data is missing"})
     }
