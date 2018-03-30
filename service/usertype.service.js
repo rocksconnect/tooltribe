@@ -80,7 +80,6 @@ service.getAll = async (req,res) =>{
  * @return {[object]}
  */
 service.editUsertype = async (req, res) => {
-
     if(!req.body.userTypeId){
         res.send({"success":false, "code":500, "msg":"userTypeId is missing"});
     }
@@ -88,6 +87,7 @@ service.editUsertype = async (req, res) => {
         res.send({"success":false, "code":500, "msg":msg.userType});
     }
     
+
     let userTypeToUpdate = {
         query:{userTypeId:req.body.userTypeId},
 
@@ -109,9 +109,6 @@ service.editUsertype = async (req, res) => {
         res.send({"success":false, "code":500, "msg":msg.editUserType,"err":err});
     }
 }
-
-
-
 
 /**
  * @description [calculation before delete Device to db and after delete Device]

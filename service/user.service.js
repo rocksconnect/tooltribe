@@ -147,6 +147,10 @@ service.addUser = async (req, res) => {
     if(!req.body.privacyPolicy){
       return res.send({success:false, code:500, msg:"privacyPolicy is missing"})
     }
+    if(!req.body.refralCode){
+      return res.send({success:false, code:500, msg:"refralCode is missing"})
+    }
+    
     
     if(!req.files){
       return res.send({success:false, code:400, msg:"No files were uploaded."})//res.status(400).send('No files were uploaded.');
@@ -172,7 +176,7 @@ service.addUser = async (req, res) => {
         savedCompany = await Company.addCompany(companyToAdd);
         console.log(savedCompany,"savedCompany")
     }
-       
+    var myRefralCode = Math.random().toString(36).substring(7);
     let userToAdd = User({
 
       token:token,
@@ -203,6 +207,8 @@ service.addUser = async (req, res) => {
       pathOfProfileImg:'/images/'+req.files.profileImage.name,
       termsOfServices:req.body.termsOfServices,
       privacyPolicy:req.body.privacyPolicy,
+      refralCode:req.body.refralCode,
+      myRefralCode:myRefralCode,
       status:req.body.status || "Active",
       userType:"",
       createAt: new Date(),
@@ -397,6 +403,8 @@ service.login = async (req, res) =>{
                   pathOfProfileImg:loggedUser.pathOfProfileImg,
                   privacyPolicy:loggedUser.privacyPolicy,
                   termsOfServices:loggedUser.termsOfServices,
+                  refralCode:loggedUser.refralCode,
+                  myRefralCode:loggedUser.myRefralCode,
                   createAt: loggedUser.createAt
 
                 }
@@ -443,7 +451,8 @@ service.forgetPassword= async(req,res)=>
               successMsg:"Check your email and enter varification code"
             }
             var sendMail = await utility.sendMail(mailOption)
-            return res.send({"success":true,"code":const,"msg":"Check your email and enter varification code"});
+
+            return res.send({"success":true,"code":200,"msg":"Check your email and enter varification code"});
             
         }else{
             return res.send({"success":false,"code":500,"msg":"Email does not exist in our system"});
@@ -542,7 +551,9 @@ service.changePassword = async(req,res)=>{
                         }
                         else
                         {
-                            return res.send({"success":true,"code":const,"msg":" password changed successfully"});
+
+                            return res.send({"success":true,"code":200,"msg":" password changed successfully"});
+
                         }
                     })
                 }else{
