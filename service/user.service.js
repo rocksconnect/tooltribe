@@ -147,18 +147,22 @@ service.addUser = async (req, res) => {
     if(!req.body.privacyPolicy){
       return res.send({success:false, code:500, msg:"privacyPolicy is missing"})
     }
-    if(!req.body.refralCode){
+    /*if(!req.body.refralCode){
       return res.send({success:false, code:500, msg:"refralCode is missing"})
+    }*/
+    
+    
+    if(!req.files.idProofImage){
+      return res.send({success:false, code:400, msg:"Please upload Identity proof image."})//res.status(400).send('No files were uploaded.');
     }
-    
-    
-    if(!req.files){
-      return res.send({success:false, code:400, msg:"No files were uploaded."})//res.status(400).send('No files were uploaded.');
+
+    if(!req.files.profileImage){
+      return res.send({success:false, code:400, msg:"Please upload profile picture."})//res.status(400).send('No files were uploaded.');
     }
 
     let idProofImage = req.files.idProofImage;
     let profileImage = req.files.profileImage;
-    console.log(profileImage,"profileImage")
+    //console.log(profileImage,"profileImage")
 
     var idProofImageUploaded = await idProofImage.mv('./public/images/'+req.files.idProofImage.name);
     var profileImagUploaded = await profileImage.mv('./public/images/'+req.files.profileImage.name);
@@ -230,7 +234,7 @@ service.addUser = async (req, res) => {
         logger.info('Adding user...');
         console.log(savedUser);
         
-        res.send({"success":true, "code":200, "msg":successMsg.addUser});
+        res.send({"success":true, "code":200, "msg":successMsg.addUser,"data":savedUser});
     }
     catch(err) {
         logger.error('Error in adding User- ' + err);
