@@ -14,6 +14,7 @@ import category from './routes/category.router.js';
 import idProofType from './routes/idProofType.router.js';
 import userservice from './service/user.service.js';
 import index from './routes/index.router.js';
+import company from './routes/company.router.js';
 import net from 'net';
 import cors from 'cors';
 import jwt from 'jsonwebtoken'
@@ -70,43 +71,44 @@ var tokenExpired = function(req, res, next) {
   
 };
 
-// app.use(function(req, res, next) {
-//   res.header('Access-Control-Allow-Origin', "*");
-//   res.header('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE');
-//   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-//     if(req.url == '/upload' || req.url == '/updateIdProofType' || req.url == '/getTrade' || req.url == '/login' || req.url == '/register' || req.url == '/account_email_validation' || req.url == '/forgetPassword' || req.url == '/forgetPasswordReset' || req.url == '/' || req.url == '/terms' || req.url == '/privacy' || req.url == '/aboutus' || req.url == '/support'){
-//         if(req.headers && req.headers.authorization && req.headers.authorization == 'Key@123'){
-//             next()
-//         }else{
-//             req.user = undefined;
-//             loginRequired(req, res, next);
-//         }
+app.use(function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', "*");
+  res.header('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    console.log(req.url,"req.url")
+    if(req.url == '/getCompany' || req.url == '/updateIdProofType' || req.url == '/getTrade' || req.url == '/login' || req.url == '/register' || req.url == '/account_email_validation' || req.url == '/forgetPassword' || req.url == '/forgetPasswordReset' || req.url == '/' || req.url == '/terms' || req.url == '/privacy' || req.url == '/aboutus' || req.url == '/support'){
+        if(req.headers && req.headers.authorization && req.headers.authorization == 'Key@123'){
+            next()
+        }else{
+            req.user = undefined;
+            loginRequired(req, res, next);
+        }
         
-//     }else{
-//         if(req.headers && req.headers.authorization ){
-//           jwt.verify(req.headers.authorization, "shhhhh", function(err,decode){
-//              console.log(err,decode,"err decode")
-//               if(err){
-//                 req.user = undefined;
-//                 if(err.name == "TokenExpiredError"){
-//                   tokenExpired(req, res, next)
-//                 }else{
-//                   loginRequired(req, res, next);
-//                 }
-//               }else{
-//               console.log(req.user)
-//                 req.user = decode;
-//                 loginRequired(req, res, next);
-//               }
-//           } )
+    }else{
+        if(req.headers && req.headers.authorization ){
+          jwt.verify(req.headers.authorization, "shhhhh", function(err,decode){
+             console.log(err,decode,"err decode")
+              if(err){
+                req.user = undefined;
+                if(err.name == "TokenExpiredError"){
+                  tokenExpired(req, res, next)
+                }else{
+                  loginRequired(req, res, next);
+                }
+              }else{
+              console.log(req.user)
+                req.user = decode;
+                loginRequired(req, res, next);
+              }
+          } )
 
-//         }else{
-//               req.user = undefined;
-//               loginRequired(req, res, next);
-//         }
+        }else{
+              req.user = undefined;
+              loginRequired(req, res, next);
+        }
         
-//     }
-// })
+    }
+})
 
 // default options - use for file uplaod
 app.post('/upload', function(req, res) {
@@ -132,6 +134,7 @@ app.use(user);
 app.use(trade);
 app.use(category);
 app.use(idProofType);
+app.use(company);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
