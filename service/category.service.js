@@ -145,12 +145,13 @@ service.updateCategory = async (req,res)=>{
         }
     }
     // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
-	let sampleFile = req.files.categoryImage;
-	var fileUploaded = await sampleFile.mv('./public/images/'+req.files.categoryImage.name);
 
 	if(req.files && req.files.categoryImage){
 		dataToEdit.fileName=req.files.categoryImage.name;
 		dataToEdit.path='/images/'+req.files.categoryImage.name;
+		let sampleFile = req.files.categoryImage;
+		var fileUploaded = await sampleFile.mv('./public/images/'+req.files.categoryImage.name);
+
 	}
 
     console.log("step 2",dataToEdit)
