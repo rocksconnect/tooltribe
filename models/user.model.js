@@ -38,6 +38,15 @@ const UserSchema = mongoose.Schema({
     privacyPolicy:{type:String},
     refralCode:{type:String},
     myRefralCode:{type:String},
+    deliveryAddress: [{
+        address:{type:String},
+        isDefault:{type:String}, // 1/0
+        latitude:{type:String},
+        longitude:{type:String},
+        city:{type: String },
+        state:{type: String },
+        country:{type: String },
+        zipCode:{type:String}]
     createAt:{type: Date},
     updatedAt:{type: Date}
   }, {collection : 'user'});
