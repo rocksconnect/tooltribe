@@ -46,7 +46,8 @@ const UserSchema = mongoose.Schema({
         city:{type: String },
         state:{type: String },
         country:{type: String },
-        zipCode:{type:String}]
+        zipCode:{type:String}
+    }],
     createAt:{type: Date},
     updatedAt:{type: Date}
   }, {collection : 'user'});

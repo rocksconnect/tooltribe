@@ -20,6 +20,7 @@ import cors from 'cors';
 import jwt from 'jsonwebtoken'
 import fileUpload from 'express-fileupload';
 
+console.log('1213');
 
 const port = config.serverPort;
 logger.stream = {
