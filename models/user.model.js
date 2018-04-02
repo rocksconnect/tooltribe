@@ -108,6 +108,11 @@ UserModel.login = (user) =>{
     return UserModel.findOne({email:user.email},{});
 }
 
+UserModel.userLogin = (where) =>{
+    console.log(where);
+    return UserModel.findOne(where,{});
+}
+
 UserModel.forgetPassword = (user)=>{
     return UserModel.find({email:user.email});
 }

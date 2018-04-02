@@ -344,22 +344,23 @@ service.deleteUser = async (req, res) => {
 service.login = async (req, res) =>{
     var query = {};
     if(req.body.socialType == 'google' && req.body.socialId !== undefined ){
-      query = { googleId: req.body.socialId }
+        query = { googleId: req.body.socialId }
     } else if(req.body.socialType == 'facebook' && req.body.socialId !== undefined ) {
-      query = { facebookId: req.body.socialId }
-    } else if(req.body.email !== undefined  && req.body.password !== undefined ) {
-        console.log("2222222")
-      query = { email: req.body.email }
+        query = { facebookId: req.body.socialId }
     } else {
-         console.log("2222222888",req.body.email,req.body.password)
-      query = null
+        if(!req.body.email){
+            return res.send({success:false, code:500, msg:msg.emailId});
+        }
+        if(!req.body.password){
+            return res.send({success:false, code:500, msg:msg.password})
+        }
+        query = { email: req.body.email }
     }
-    if(!query || !req.body.email){
-        return res.send({success:false, code:500, msg:msg.emailId});
+    
+    if(!query){
+        return res.send({success:false, code:500, msg:"query missing...!"});
     }
-    if(!query || !req.body.password){
-        return res.send({success:false, code:500, msg:msg.password})
-    }
+    
     console.log("1111111111")
     try{
        
@@ -414,7 +415,7 @@ service.login = async (req, res) =>{
                 }
                
 
-                res.send({success:true, code:200, msg:successMsg.loginUser, data:data, token:token });
+                res.send({"success":true, "code":200, "msg":successMsg.loginUser, "data":data, "token":token });
             }
             else
             {
@@ -424,10 +425,107 @@ service.login = async (req, res) =>{
         }
         else
         {
-            res.send({success:false, code:500, msg:"EmailId or password does not match"})
+            res.send({"success":false, "code":500, "msg":"Login credentials incorrect...!"})
         }
     }catch(error){
-      console.log(error,"error")
+        console.log(error,"error")
+        res.send({"success":false, "code":500, "msg":msg.login, "err":error})
+    }
+}
+
+
+
+service.userLogin = async (req, res) =>{
+
+    var query = {};
+
+    console.log(req.body);
+
+    if(!req.body.loginType){
+      return res.send({success:false, code:500, msg:"Login Type is missing"})
+    }
+
+    if(!req.body.id){
+      return res.send({success:false, code:500, msg:"Id is missing"})
+    }
+
+
+    if(!req.body.deviceType){
+      return res.send({success:false, code:500, msg:"deviceType is missing"});
+    }
+    if(!req.body.deviceId){
+      return res.send({success:false, code:500, msg:"deviceId is missing"});
+    }
+    if(!req.body.deviceToken){
+      return res.send({success:false, code:500, msg:"deviceToken is missing"});
+    }
+
+
+    if(req.body.loginType=='other'){
+        
+        if(!req.body.password){
+            return res.send({success:false, code:500, msg:msg.password});
+        }
+        query = { email: req.body.id }
+    
+    }else if(req.body.loginType == 'facebook' && req.body.id !== undefined) {
+        query = { facebookId: req.body.id }
+    } else if(req.body.loginType == 'google' && req.body.id !== undefined) {
+        query = { googleId: req.body.id }
+    }else{
+        query = { email: req.body.id };
+    }
+    //console.log(query);
+    
+    try{
+       
+        const loggedUser = await User.userLogin(query);
+
+        if(loggedUser){   
+
+            var temp    = loggedUser.salt;
+            var hash_db = loggedUser.password;
+            var id      = loggedUser.token;
+            var userId  = loggedUser.userId;
+            var name    = loggedUser.name;
+            var email   = loggedUser.email;
+            var newpass = temp+req.body.password;
+            var hashed_password1 = crypto.createHash('sha512').update(newpass).digest("hex");
+
+
+
+
+            var updatedUser = await User.findOneUpdate({
+                    query:{email:loggedUser.email},
+                    data:{ 
+                        $set:{
+                            deviceType  : req.body.deviceType,
+                            deviceId    : req.body.deviceId,
+                            deviceToken : req.body.deviceToken
+                        }
+                    }
+                });
+                
+            if(req.body.loginType=='other'){
+
+                if(hash_db==hashed_password1){
+                    var token = jwt.sign({name:loggedUser.name,email:loggedUser.email,_id:loggedUser._id,userType:loggedUser.userType}, 'shhhhh');
+                    res.send({success:true, code:200, msg:successMsg.loginUser, data:loggedUser, token:token });
+                }else{
+                   res.send({"success":false,"code":"500","msg":"password does not match"})
+                }
+
+            }else{
+                var token = jwt.sign({name:loggedUser.name,email:loggedUser.email,_id:loggedUser._id,userType:loggedUser.userType}, 'shhhhh');
+                res.send({success:true, code:200, msg:successMsg.loginUser, data:loggedUser, token:token });
+            }
+        
+        }else{
+            res.send({success:false, code:500, msg:"Login Credentials Incorrect...!"})
+        }
+    
+    }catch(error){
+        console.log(error,"error")
         res.send({success:false, code:500, msg:msg.login, err:error})
     }
 }

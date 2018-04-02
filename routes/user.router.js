@@ -36,6 +36,11 @@ router.post('/login', (req, res) => {
     userService.login(req, res);
 });
 
+
+router.post('/userLogin', (req, res) => {
+    userService.userLogin(req, res);
+});
+
 router.post('/forgetPassword',(req,res)=>{
     userService.forgetPassword(req,res);
 })
