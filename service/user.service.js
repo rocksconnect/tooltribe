@@ -450,7 +450,7 @@ service.forgetPassword= async(req,res)=>
             {
               to:req.body.email,
               subject:"reset password",
-              text:"Hello " + req.body.email +".Code to reset your Password is" +temp+".\n\nRegards,\nAdmin,\Thank You.",
+              text:"Hello " + req.body.email +".Code to reset your Password is " +temp+".\n\nRegards,\nAdmin,\Thank You.",
               errMsg:"resetting password fail",
               successMsg:"Check your email and enter varification code"
             }
@@ -506,10 +506,10 @@ service.forgetPasswordReset=async (req,res)=>{
                 
                 if(!updatedUser)
                 {
-                    return res.send({"success":false,"msg":"Password does not changed"});
+                    return res.send({"success":false, "code":500, "msg":"Password does not changed"});
                 }
                 else
-                    return res.send({"success":true,"msg":"Password changed successfully"});
+                    return res.send({"success":true,"code":200, "msg":"Password changed successfully"});
               }
               else{
               res.send({success:false, code:500,"msg":"code does not match"});
