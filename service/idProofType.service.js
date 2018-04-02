@@ -100,7 +100,7 @@ service.getAllList = async (req,res)=>{
 		var AllTrade = await Trade.findTrade(IdProofTypeToFind);
 		const usertype = await userTypeConfig.getAllData();
 		if(AllIdProofType){
-			return res.send({success:true, code:200, msg:"IdProofType found succesfully", allIdProofType:AllIdProofType,allTrade:AllTrade,usertype:usertype});
+			return res.send({success:true, code:200, msg:"IdProofType found succesfully", data : {allIdProofType:AllIdProofType,allTrade:AllTrade,usertype:usertype}});
 		}else{
 			return res.send({success:false, code:500, msg:"Error in finding IdProofType"});
 		}
