@@ -11,6 +11,9 @@ import logger from '../core/logger/app.logger'
 import successMsg from '../core/message/success.msg'
 import msg from '../core/message/error.msg.js'
 import utility from '../core/utility.js' 
+import Trade from '../models/trade.model'
+import userTypeConfig from '../models/usertype.model'
+
 
 
 
@@ -71,6 +74,33 @@ service.getIdProofType = async (req,res)=>{
 		var AllIdProofType = await IdProofType.findIdProofType(IdProofTypeToFind);
 		if(AllIdProofType){
 			return res.send({success:true, code:200, msg:"IdProofType found succesfully", data:AllIdProofType});
+		}else{
+			return res.send({success:false, code:500, msg:"Error in finding IdProofType"});
+		}
+	}catch(error){
+		return res.send({success:false, code:500, msg:"Error in finding IdProofType", err:error});
+	}
+}
+
+/**
+ * @description [calculation before find getAllList to db and after find getAllList ]
+ * @param  {[object]}
+ * @param  {[object]}
+ * @return {[object]}
+ */
+
+service.getAllList = async (req,res)=>{
+	
+	try{
+		var IdProofTypeToFind = {
+			query:{trash:false},
+			projection:{trash:0}
+		}
+		var AllIdProofType = await IdProofType.findIdProofType(IdProofTypeToFind);
+		var AllTrade = await Trade.findTrade(IdProofTypeToFind);
+		const usertype = await userTypeConfig.getAllData();
+		if(AllIdProofType){
+			return res.send({success:true, code:200, msg:"IdProofType found succesfully", allIdProofType:AllIdProofType,allTrade:AllTrade,usertype:usertype});
 		}else{
 			return res.send({success:false, code:500, msg:"Error in finding IdProofType"});
 		}

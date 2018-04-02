@@ -15,5 +15,8 @@ router.post('/updateIdProofType',(req,res)=>{
 router.post('/removeIdProofType',(req,res)=>{
      idProofService.removeIdProofType(req,res);
 })
+router.get('/getAllList', (req, res) => {
+    idProofService.getAllList(req, res);
+});
 
 export default router;
