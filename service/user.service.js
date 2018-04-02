@@ -445,8 +445,8 @@ service.userLogin = async (req, res) =>{
       return res.send({success:false, code:500, msg:"Login Type is missing"})
     }
 
-    if(!req.body.id){
-      return res.send({success:false, code:500, msg:"Id is missing"})
+    if(!req.body.loginId){
+      return res.send({success:false, code:500, msg:"loginId is missing"})
     }
 
 
@@ -466,14 +466,14 @@ service.userLogin = async (req, res) =>{
         if(!req.body.password){
             return res.send({success:false, code:500, msg:msg.password});
         }
-        query = { email: req.body.id }
+        query = { email: req.body.loginId }
     
-    }else if(req.body.loginType == 'facebook' && req.body.id !== undefined) {
-        query = { facebookId: req.body.id }
-    } else if(req.body.loginType == 'google' && req.body.id !== undefined) {
-        query = { googleId: req.body.id }
+    }else if(req.body.loginType == 'facebook' && req.body.loginId !== undefined) {
+        query = { facebookId: req.body.loginId }
+    } else if(req.body.loginType == 'google' && req.body.loginId !== undefined) {
+        query = { googleId: req.body.loginId }
     }else{
-        query = { email: req.body.id };
+        query = { email: req.body.loginId };
     }
     //console.log(query);
     
