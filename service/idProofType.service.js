@@ -15,6 +15,10 @@ import Trade from '../models/trade.model'
 import userTypeConfig from '../models/usertype.model'
 
 
+import brand from '../models/brand.model'
+import Category from '../models/category.model'
+
+
 
 
 
@@ -174,4 +178,44 @@ service.updateIdProofType = async (req,res)=>{
 		return res.send({success:false, code:500, msg:"Error in updating IdProofType", err:error});
 	}
 }
+
+
+
+/**
+ * Create amit
+ * @description [calculation before find getAllList to db and after find getAllList ]
+ * @param  {[object]}
+ * @param  {[object]}
+ * @return {[object]}
+ */
+
+service.getBrandCategory = async (req,res)=>{
+
+
+	try{
+
+		var where = {
+			query:{trash:false},
+			projection:{trash:0}
+		}
+		var brandData    = await brand.getBrandList(where);
+		var categoryData = await Category.findCategory(where);
+		
+		if(brandData || categoryData){
+			if(req.body.type=='category'){
+				return res.send({success:true, code:200, msg:"IdProofType found succesfully", data:{brandData:brandData,categoryData:categoryData}});	
+			}else if(req.body.type=='brand'){
+				return res.send({success:true, code:200, msg:"IdProofType found succesfully", data:{brandData:brandData,categoryData:categoryData}});	
+			}else{
+				return res.send({success:true, code:200, msg:"IdProofType found succesfully", data:{brandData:brandData,categoryData:categoryData}});	
+			}
+			
+		}else{
+			return res.send({success:false, code:500, msg:"Error in finding IdProofType"});
+		}
+	}catch(error){
+		return res.send({success:false, code:500, msg:"Error in finding IdProofType", err:error});
+	}
+}
+
 export default service;

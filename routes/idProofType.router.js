@@ -19,4 +19,8 @@ router.get('/getAllList', (req, res) => {
     idProofService.getAllList(req, res);
 });
 
+router.post('/getBrandCategory',(req, res)=>{
+	idProofService.getBrandCategory(req, res);
+});
+
 export default router;

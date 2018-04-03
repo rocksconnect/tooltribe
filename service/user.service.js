@@ -84,6 +84,7 @@ service.getOne=async(req,res)=>{
 
 }
 
+
 /**
  * @description [calculation before add user to db and after adding users ]
  * @param  {[object]}
@@ -91,60 +92,71 @@ service.getOne=async(req,res)=>{
  * @return {[object]}
  */
 service.addUser = async (req, res) => {
+
     
+    if(!req.body.fullName){
+      return res.send({success:false, code:500, msg:"FullName is missing"});
+    }
     if(!req.body.email){
-      return res.send({success:false, code:500, msg:"Email is missing"})
+      return res.send({success:false, code:500, msg:"Email is missing"});
     }
-    if(!req.body.deviceId){
-      return res.send({success:false, code:500, msg:"deviceId is missing"})
-    }
-    if(!req.body.deviceToken){
-      return res.send({success:false, code:500, msg:"deviceToken is missing"})
-    }
-    if(!req.body.deviceType){
-      return res.send({success:false, code:500, msg:"deviceType is missing"})
-    } 
-    if(!req.body.latitude){
-      return res.send({success:false, code:500, msg:"latitude is missing"})
-    }
-    if(!req.body.longitude){
-      return res.send({success:false, code:500, msg:"longitude is missing"})
-    }
-    if(!req.body.password){
-      return res.send({success:false, code:500, msg:"Password is missing"})
+    if(!req.body.phone){
+      return res.send({success:false, code:500, msg:"Phone is missing"});
     }
     if(!req.body.address){
-      return res.send({success:false, code:500, msg:"Address is missing"})
+      return res.send({success:false, code:500, msg:"Address is missing"});
     }
+    
+    if(!req.body.tradeId){
+      return res.send({success:false, code:500, msg:"tradeId is missing"});
+    }
+    if(!req.body.idProof){
+      return res.send({success:false, code:500, msg:"idProof is missing"});
+    }
+    if(!req.body.socialType){
+      return res.send({success:false, code:500, msg:"SocialType is missing"});
+    }
+
+    if(req.body.socialType=='other'){
+        if(!req.body.password){
+            return res.send({success:false, code:500, msg:"Password is missing"});
+        }
+    }else{
+        if(!req.body.socialId){
+            return res.send({success:false, code:500, msg:"socialId is missing"});
+        }
+    }
+
+    if(!req.body.deviceId){
+      return res.send({success:false, code:500, msg:"deviceId is missing"});
+    }
+    if(!req.body.deviceToken){
+      return res.send({success:false, code:500, msg:"deviceToken is missing"});
+    }
+    if(!req.body.deviceType){
+      return res.send({success:false, code:500, msg:"deviceType is missing"});
+    } 
+    if(!req.body.latitude){
+      return res.send({success:false, code:500, msg:"latitude is missing"});
+    }
+    if(!req.body.longitude){
+      return res.send({success:false, code:500, msg:"longitude is missing"});
+    }
+    if(!req.body.companyId && !req.body.companyName ){
+      return res.send({success:false, code:500, msg:"CompanyId or companyName  is missing"})
+    }
+    
+    
     if(!req.body.city){
       return res.send({success:false, code:500, msg:"City is missing"})
     }
+
+    /*
     if(!req.body.state){
       return res.send({success:false, code:500, msg:"State is missing"})
     }
     if(!req.body.zipCode){
       return res.send({success:false, code:500, msg:"ZipCode is missing"})
-    }
-    if(!req.body.phone){
-      return res.send({success:false, code:500, msg:"Phone is missing"})
-    }
-    if(!req.body.fullName){
-      return res.send({success:false, code:500, msg:"FullName is missing"})
-    }
-    if(!req.body.tradeId){
-      return res.send({success:false, code:500, msg:"tradeId is missing"})
-    }
-    if(!req.body.companyId && !req.body.companyName ){
-      return res.send({success:false, code:500, msg:"CompanyId or companyName  is missing"})
-    }
-    if(!req.body.idProof){
-      return res.send({success:false, code:500, msg:"idProof is missing"})
-    }
-    if(!req.body.idProofNumber){
-      return res.send({success:false, code:500, msg:"idProof Number is missing"})
-    }
-    if(!req.body.socialType){
-      return res.send({success:false, code:500, msg:"SocialType is missing"})
     }
     if(!req.body.termsOfServices){
       return res.send({success:false, code:500, msg:"termsOfServices is missing"})
@@ -152,77 +164,123 @@ service.addUser = async (req, res) => {
     if(!req.body.privacyPolicy){
       return res.send({success:false, code:500, msg:"privacyPolicy is missing"})
     }
-    /*if(!req.body.refralCode){
+    if(!req.body.refralCode){
       return res.send({success:false, code:500, msg:"refralCode is missing"})
-    }*/
-    
-    
-    if(!req.files.idProofImage){
-      return res.send({success:false, code:400, msg:"Please upload Identity proof image."})//res.status(400).send('No files were uploaded.');
     }
-
     if(!req.files.profileImage){
-      return res.send({success:false, code:400, msg:"Please upload profile picture."})//res.status(400).send('No files were uploaded.');
+      return res.send({success:false, code:400, msg:"Please upload profile picture."});
+    }*/
+
+    if(req.files){
+        if(req.files.idProofImage){
+            let idProofImage = req.files.idProofImage;
+            var idProofImageUploaded = await idProofImage.mv('./public/images/'+req.files.idProofImage.name);
+            var idProofImagePath = '/images/'+req.files.idProofImage.name;
+        }else{
+            var profileImagePath = '/images/defalut.png';
+            return res.send({success:false, code:400, msg:"Please upload identity proof picture."});
+        }
+        if(req.files.profileImage){
+            let profileImage = req.files.profileImage;
+            var profileImagUploaded  = await profileImage.mv('./public/images/'+req.files.profileImage.name);
+            var profileImagePath = '/images/'+req.files.profileImage.name;
+        }else{
+            var profileImagePath = '/images/defalut.png';
+        }
+    }else{
+        return res.send({success:false, code:400, msg:"Please upload files."});
     }
 
-    let idProofImage = req.files.idProofImage;
-    let profileImage = req.files.profileImage;
-    //console.log(profileImage,"profileImage")
-
-    var idProofImageUploaded = await idProofImage.mv('./public/images/'+req.files.idProofImage.name);
-    var profileImagUploaded = await profileImage.mv('./public/images/'+req.files.profileImage.name);
-
-    var temp =rand(100,30);
-    var newPassword=temp+req.body.password;
+    
+    var temp = rand(100,30);
+    var newPassword = temp+req.body.password;
     var token= crypto.createHash('sha512').update(req.body.password+rand).digest("hex");
     var hashed_password=crypto.createHash('sha512').update(newPassword).digest("hex");
-
+    
     var savedCompany;
     if(req.body.companyName){
          var companyToAdd = Company({
             companyName:req.body.companyName
         })
         savedCompany = await Company.addCompany(companyToAdd);
-        console.log(savedCompany,"savedCompany")
     }
-    var myRefralCode = Math.random().toString(36).substring(7);
+    
+
+
+    /*
+    --- amit ---
+    var companyId = '';
+    if(req.body.companyName){
+        var savedCompany;
+            
+        savedCompany = await Company.getOneCompany({ companyName: req.body.companyName });
+
+        if(savedCompany){
+            companyId = savedCompany._id;
+        }else{
+            var companyToAdd = Company({
+                companyName:req.body.companyName
+            })
+
+            savedCompany = await Company.addCompany(companyToAdd);
+            companyId = savedCompany._id;
+        }
+    }*/
+    //var myRefralCode = Math.random().toString(36).substring(7);
+
     let userToAdd = User({
 
       token:token,
       salt:temp,
       temp_str:"",
+      fullName:req.body.fullName,
       email: req.body.email,
+      phone:req.body.phone,
+      address:req.body.address,
+      city: (req.body.city) ? req.body.city : '',
+      state: (req.body.state) ? req.body.state : '',
+      zipCode: (req.body.zipCode) ? req.body.zipCode : '',
       password: hashed_password,
+      
       deviceId:req.body.deviceId,
       deviceType:req.body.deviceType,
       deviceToken:req.body.deviceToken,
       longitude:req.body.longitude,
       latitude:req.body.latitude,
-      phone:req.body.phone,
-      address:req.body.address,
-      city:req.body.city,
-      state: req.body.state,
-      googleId: req.body.socialType == 'google' ? req.body.socialId : null, 
-      facebookId: req.body.socialType == 'facebook' ? req.body.socialId : null,
+      
+      googleId: req.body.socialType == 'google' ? req.body.socialId : '', 
+      facebookId: req.body.socialType == 'facebook' ? req.body.socialId : '',
       socialType: req.body.socialType,
-      zipCode: req.body.zipCode,
-      fullName:req.body.fullName,
+      
+      
       tradeId:req.body.tradeId,
       companyId:savedCompany?savedCompany._id:req.body.companyId,
       idProof:req.body.idProof,
       idProofNubmer: req.body.idProofNubmer,
-      signature:req.body.signature,
-      pathOfIdProof:'/images/'+req.files.idProofImage.name,
-      pathOfProfileImg:'/images/'+req.files.profileImage.name,
-      termsOfServices:req.body.termsOfServices,
-      privacyPolicy:req.body.privacyPolicy,
-      refralCode:req.body.refralCode,
-      myRefralCode:myRefralCode,
+      signature: (req.body.signature) ? req.body.signature : '',
+      pathOfIdProof: idProofImagePath,
+      pathOfProfileImg: profileImagePath,
+      termsOfServices:true,
+      privacyPolicy:true,
+      refralCode:'',
+      myRefralCode:'',
       status:req.body.status || "Active",
       userType:"",
+      deliveryAddress: [{
+            address:req.body.address,
+            isDefault:1, // 1/0
+            latitude:req.body.latitude,
+            longitude:req.body.longitude,
+            city: (req.body.city) ? req.body.city : '',
+            state: (req.body.state) ? req.body.state : '',
+            country: (req.body.country) ? req.body.country : '',
+            zipCode: (req.body.zipCode) ? req.body.zipCode : ''
+        }],
       createAt: new Date(),
       updatedAt: new Date()
     });
+
+    
     try {
         
         const savedUser = await User.addUser(userToAdd);
@@ -235,17 +293,19 @@ service.addUser = async (req, res) => {
           successMsg:"successfully send mail"
         }
         const mailToUser = await utility.sendMail(objToMail);
-        console.log("mailToUser",mailToUser)
         logger.info('Adding user...');
-        console.log(savedUser);
-        
-        res.send({"success":true, "code":200, "msg":successMsg.addUser,"data":savedUser});
+
+        var token = jwt.sign({name:savedUser.name,email:savedUser.email,_id:savedUser._id,userType:savedUser.userType}, 'shhhhh');
+        res.send({"success":true, "code":200, "msg":successMsg.addUser,"data":savedUser,"token":token});
     }
     catch(err) {
         logger.error('Error in adding User- ' + err);
         res.send({"success":false, "code":500, "msg":msg.addUser,"err":err});
     }
 }
+
+
+
 /**
  * @description [calculation before add superadmin to db  ]
  * @param  {[object]}
@@ -287,6 +347,7 @@ service.RegisterSuperAdmin = async (detailsToReg) => {
         
     }
 }
+
 service.editUser = async(req,res)=>{
     console.log("hiii",req.user)
     if(!req.user._id){
@@ -533,23 +594,20 @@ service.userLogin = async (req, res) =>{
             var newpass = temp+req.body.password;
             var hashed_password1 = crypto.createHash('sha512').update(newpass).digest("hex");
 
-
-
-
-            var updatedUser = await User.findOneUpdate({
-                    query:{email:loggedUser.email},
-                    data:{ 
-                        $set:{
-                            deviceType  : req.body.deviceType,
-                            deviceId    : req.body.deviceId,
-                            deviceToken : req.body.deviceToken
-                        }
-                    }
-                });
-                
             if(req.body.loginType=='other'){
 
                 if(hash_db==hashed_password1){
+
+                    var updatedUser = await User.findOneUpdate({
+                        query:{email:loggedUser.email},
+                        data:{ 
+                            $set:{
+                                deviceType  : req.body.deviceType,
+                                deviceId    : req.body.deviceId,
+                                deviceToken : req.body.deviceToken
+                            }
+                        }
+                    });
                     var token = jwt.sign({name:loggedUser.name,email:loggedUser.email,_id:loggedUser._id,userType:loggedUser.userType}, 'shhhhh');
                     res.send({success:true, code:200, msg:successMsg.loginUser, data:loggedUser, token:token });
                 }else{
@@ -557,6 +615,16 @@ service.userLogin = async (req, res) =>{
                 }
 
             }else{
+                var updatedUser = await User.findOneUpdate({
+                        query:{email:loggedUser.email},
+                        data:{ 
+                            $set:{
+                                deviceType  : req.body.deviceType,
+                                deviceId    : req.body.deviceId,
+                                deviceToken : req.body.deviceToken
+                            }
+                        }
+                    });
                 var token = jwt.sign({name:loggedUser.name,email:loggedUser.email,_id:loggedUser._id,userType:loggedUser.userType}, 'shhhhh');
                 res.send({success:true, code:200, msg:successMsg.loginUser, data:loggedUser, token:token });
             }

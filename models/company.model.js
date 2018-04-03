@@ -31,4 +31,10 @@ CompanyModel.findCompany = (CompanyToFind) =>{
 CompanyModel.editCompany =(CompanyToEdit) =>{
 	return CompanyModel.update(CompanyToEdit.query,CompanyToEdit.data);
 }
+
+
+CompanyModel.getOneCompany =(where) =>{
+	return CompanyModel.findOne(where,{});
+}
+
 export default CompanyModel;
