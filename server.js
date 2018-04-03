@@ -12,6 +12,9 @@ import user from './routes/user.router.js';
 import trade from './routes/trade.router.js';
 import category from './routes/category.router.js';
 import idProofType from './routes/idProofType.router.js';
+
+import brand from './routes/brand.router.js';
+
 import userservice from './service/user.service.js';
 import index from './routes/index.router.js';
 import company from './routes/company.router.js';
@@ -137,6 +140,7 @@ app.use(user);
 app.use(trade);
 app.use(category);
 app.use(idProofType);
+app.use(brand);
 app.use(company);
 
 // catch 404 and forward to error handler
