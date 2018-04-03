@@ -166,7 +166,7 @@ const ADDRESS = '0.0.0.0';
 server.listen(PORT, ADDRESS);
 console.log(`socket started at: ${ADDRESS}:${PORT}`);
 */
-app.listen(port, () => {
+app.listen(8080, () => {
     logger.info('server started - ', port);
 });
 

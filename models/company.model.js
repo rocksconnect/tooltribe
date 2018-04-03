@@ -11,7 +11,7 @@ AutoIncrement.initialize(mongoose);
 
 const CompanySchema = mongoose.Schema({
   
-    companyName:{type:String},
+    companyName:{type:String,index:{unique:true}},
     status:{type:String},
     trash:{type:String},
     createAt:{type: Date,default:Date.now()},

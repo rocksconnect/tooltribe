@@ -48,6 +48,7 @@ const UserSchema = mongoose.Schema({
         country:{type: String },
         zipCode:{type:String}
     }],
+    adminAssignedRole:{type: String },
     createAt:{type: Date},
     updatedAt:{type: Date}
   }, {collection : 'user'});
@@ -57,33 +58,34 @@ const UserSchema = mongoose.Schema({
 let UserModel = mongoose.model('users',UserSchema);
 
 UserModel.getAll = (dataToFind) => {
-   return UserModel.aggregate([
-    { $match: dataToFind.query},
-    {
-      $lookup:{
-        from:"usertype",
-        localField:"userTypeId", 
-        foreignField:"userTypeId",
-        as:"userType_docs"
-      }
+   // return UserModel.aggregate([
+   //  { $match: dataToFind.query},
+   //  {
+   //    $lookup:{
+   //      from:"usertype",
+   //      localField:"userTypeId", 
+   //      foreignField:"userTypeId",
+   //      as:"userType_docs"
+   //    }
 
-    },
-    { 
-      $unwind:"$userType_docs"
-    },
-    {
-        $project:{
-            clientId:1,
-            userId:1,
-            emailId: 1,
-            name:1,
-            userTypeId:1 ,           
-            userType:"$userType_docs.userType",          
-            status:1
+   //  },
+   //  { 
+   //    $unwind:"$userType_docs"
+   //  },
+   //  {
+   //      $project:{
+   //          clientId:1,
+   //          userId:1,
+   //          emailId: 1,
+   //          name:1,
+   //          userTypeId:1 ,           
+   //          userType:"$userType_docs.userType",          
+   //          status:1
 
-        }
-    }
-   ]);
+   //      }
+   //  }
+   // ]);
+   return UserModel.find(dataToFind.query,dataToFind.projection);
 }
 UserModel.getOne = (userToFind) => {
     console.log(userToFind," = userToFind")

@@ -53,6 +53,9 @@ router.post('/changePassword',(req,res)=>{
 router.post('/updateUser',(req,res)=>{
      userService.update(req,res);
 })
+router.post('/assignRoleToUser',(req,res)=>{
+     userService.assignRoleToUser(req,res);
+})
 
 
 export default router;
