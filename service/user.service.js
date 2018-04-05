@@ -33,7 +33,6 @@ const service = {};
  * @param  {[object]}
  * @return {[object]}
  */
-
 service.getAll = async (req,res) =>{
     //console.log("hiiiiii");
     if(!req.user._id){
@@ -50,8 +49,8 @@ service.getAll = async (req,res) =>{
             projection:{salt:0,password:0,token:0}
 		};
 		const user = await User.getAll(dataToFind);
-        logger.info('sending all user...');
-       //console.log(user);
+      logger.info('sending all user...');
+      //console.log(user);
 		res.send({success:true, code:200, msg:successMsg.allUser, data:user});
 	}catch(err){
 		logger.error('Error in getting user- ' + err);
@@ -106,7 +105,6 @@ service.addUser = async (req, res) => {
     if(!req.body.address){
       return res.send({success:false, code:500, msg:"Address is missing"});
     }
-    
     if(!req.body.tradeId){
       return res.send({success:false, code:500, msg:"tradeId is missing"});
     }
@@ -171,19 +169,24 @@ service.addUser = async (req, res) => {
       return res.send({success:false, code:400, msg:"Please upload profile picture."});
     }*/
 
+    let arr = req.body.fullName.split(" ");
+    let imgRand = '';
+    
     if(req.files){
         if(req.files.idProofImage){
+            imgRand = arr[0]+Date.now()+rand(24,24)+'.png';
             let idProofImage = req.files.idProofImage;
-            var idProofImageUploaded = await idProofImage.mv('./public/images/'+req.files.idProofImage.name);
-            var idProofImagePath = '/images/'+req.files.idProofImage.name;
+            var idProofImageUploaded = await idProofImage.mv('./public/images/'+imgRand);
+            var idProofImagePath = '/images/'+imgRand;
         }else{
             var profileImagePath = '/images/defalut.png';
             return res.send({success:false, code:400, msg:"Please upload identity proof picture."});
         }
         if(req.files.profileImage){
+            imgRand = arr[0]+Date.now()+rand(24,24)+'.png';
             let profileImage = req.files.profileImage;
-            var profileImagUploaded  = await profileImage.mv('./public/images/'+req.files.profileImage.name);
-            var profileImagePath = '/images/'+req.files.profileImage.name;
+            var profileImagUploaded  = await profileImage.mv('./public/images/'+imgRand);
+            var profileImagePath = '/images/'+imgRand;
         }else{
             var profileImagePath = '/images/defalut.png';
         }
@@ -191,7 +194,7 @@ service.addUser = async (req, res) => {
         return res.send({success:false, code:400, msg:"Please upload files."});
     }
 
-    
+
     var temp = rand(100,30);
     var newPassword = temp+req.body.password;
     var token= crypto.createHash('sha512').update(req.body.password+rand).digest("hex");
@@ -228,7 +231,7 @@ service.addUser = async (req, res) => {
     }*/
     //var myRefralCode = Math.random().toString(36).substring(7);
 
-    let userToAdd = User({
+   let userToAdd = User({
 
       token:token,
       salt:temp,
