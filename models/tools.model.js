@@ -45,7 +45,6 @@ const ToolSchema = mongoose.Schema({
         description:{type:String},
         imgName:{type:String},
         imgPath:{type:String}
-        }]
     }],
     toolStatus :{type:String}, // {AVAILABLE: available for booking,BOOKED: Pre Booked for future,RENTED : already on rent} 
     createAt:{type: Date, default: Date.now},
