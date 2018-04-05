@@ -54,14 +54,12 @@ router.post('/changePassword',(req,res)=>{
 
 router.post('/updateUser',(req,res)=>{
      userService.update(req,res);
-<<<<<<< Updated upstream
+
 })
 router.post('/assignRoleToUser',(req,res)=>{
      userService.assignRoleToUser(req,res);
 })
 
-=======
-});
->>>>>>> Stashed changes
+
 
 export default router;

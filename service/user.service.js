@@ -33,24 +33,20 @@ const service = {};
  * @param  {[object]}
  * @return {[object]}
  */
+
 service.getAll = async (req,res) =>{
     //console.log("hiiiiii");
-    if(!req.user._id){
-       return res.send({"success":false,"code":500,"msg":"_id is missing"});
+    if(!req.query._id){
+       return res.send({"success":false,"code":500,"msg":msg.clientId});
     }
-    if(!req.user.userType == 'SuperAdmin'){
-       return res.send({"success":false,"code":500,"msg":"Not valid user"});
-    }
-    
-    //let clientId = utility.removeQuotationMarks(req.query.clientId);
+    let clientId = utility.removeQuotationMarks(req.query.clientId);
 	try{
 		let dataToFind = {
-			query:{userType:{$ne:"SuperAdmin"}},
-            projection:{salt:0,password:0,token:0}
+			query:{_id:req.query._id}
 		};
 		const user = await User.getAll(dataToFind);
-      logger.info('sending all user...');
-      //console.log(user);
+        logger.info('sending all user...');
+       //console.log(user);
 		res.send({success:true, code:200, msg:successMsg.allUser, data:user});
 	}catch(err){
 		logger.error('Error in getting user- ' + err);
@@ -386,43 +382,7 @@ service.editUser = async(req,res)=>{
         res.send({"success":false, "code":500, "msg":msg.editUser,"err":err});
     }
 }
-service.assignRoleToUser = async(req,res)=>{
-    console.log("hiii",req.user)
-    if(!req.body._id){
-        res.send({"success":false,"code":500,"msg":msg._id})   
-    }
-    if(req.body._id == req.user._id){
-        res.send({"success":false,"code":500,"msg":"You cant assign role to self"})   
-    }
-    if(!req.body.userType ){
-        res.send({"success":false,"code":500,"msg":"userType is missing"})   
-    }
-    var dataToEdit = {
-        adminAssignedRole:req.body.userType
-    };
-   
-    
-    console.log("step 2",dataToEdit)
-    if(!dataToEdit){
-        return res.send({success:false,code:500, msg:"Data is missing"})
-    }
-    let userToEdit={
-        query:{"_id":req.body._id},
-        data:{"$set":dataToEdit}
-    };
 
-    try{
-        const editUser= await User.editUser(userToEdit);
-        logger.info("update user");
-        console.log("update user");
-        res.send({"success":true,"code":200,"msg":successMsg.editUser,"data":editUser});
-
-    }
-    catch(err){
-        logger.error('Error in updaing user- ' + err);
-        res.send({"success":false, "code":500, "msg":msg.editUser,"err":err});
-    }
-}
 service.deleteUser = async (req, res) => {
     let userToDelete = req.body.userId;
     if(!req.body.userId){
