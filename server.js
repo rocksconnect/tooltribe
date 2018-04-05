@@ -173,7 +173,7 @@ server.listen(PORT, ADDRESS);
 console.log(`socket started at: ${ADDRESS}:${PORT}`);
 */
 
-app.listen(9000, () => {
+app.listen(port, () => {
     logger.info('server started - ', port);
 });
 
