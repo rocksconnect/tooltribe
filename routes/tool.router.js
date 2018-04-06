@@ -7,6 +7,10 @@ router.post('/addTool',(req,res)=>{
     toolService.addTool(req,res);
 });
 
+router.get('/getToolList',(req,res)=>{
+    toolService.getToolList(req,res);
+});
+
 router.post('/addAccessoriesImage',(req,res)=>{
 	toolService.addAccessoriesImage(req,res);
 });

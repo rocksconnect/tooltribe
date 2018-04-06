@@ -18,7 +18,7 @@ const ToolSchema = mongoose.Schema({
     rentAmount:{type:Number},
     sellingPrice:{type:Number},
     depositAmount:{type:Number},    
-    shipment:{type:String}, // SELL/RENT/BOTH
+    shipment:{type:String,required: true}, // SELL/RENT/BOTH
     deliveryAvailable:{type:String}, // YES/NO
     pickupAvailable:{type:String}, // YES/NO
     deliveryAmount:{type:Number}, // Calculating from distance b/w pickup and deliver address
@@ -30,7 +30,7 @@ const ToolSchema = mongoose.Schema({
         address:{type:String},
         latitude:{type:String},
         longitude:{type:String},
-        city:{type: String },
+        city:{type: String},
         state:{type: String },
         country:{type: String },
         zipCode:{type:String}
@@ -46,7 +46,7 @@ const ToolSchema = mongoose.Schema({
         imgName:{type:String},
         imgPath:{type:String}
     }],
-    toolStatus :{type:String}, // {AVAILABLE: available for booking,BOOKED: Pre Booked for future,RENTED : already on rent} 
+    toolStatus :{type:String, default: 'AVAILABLE'}, // {AVAILABLE: available for booking,BOOKED: Pre Booked for future,RENTED : already on rent} 
     createAt:{type: Date, default: Date.now},
     updatedAt:{type: Date, default: Date.now}
   }, {collection : 'tools'});
@@ -54,6 +54,20 @@ const ToolSchema = mongoose.Schema({
   ToolSchema.plugin(AutoIncrement.plugin,{model:'tools',field:'toolId',startAt:1,incrementBy:1});
 
 let ToolModel = mongoose.model('tools',ToolSchema);
+
+
+
+ToolModel.addTools = (toolsToAdd) => {
+    return toolsToAdd.save();
+}
+
+ToolModel.addAccessoriesImage = (objToUpdate) => {
+    return ToolModel.update(objToUpdate.query,objToUpdate.data);
+}
+
+ToolModel.getToolList = ()=>{
+    return ToolModel.find();
+}
 
 
 

@@ -4,11 +4,11 @@ AutoIncrement.initialize(mongoose);
 
 const UserSchema = mongoose.Schema({
   
-    deviceId:{type:String,required: true},
-    deviceToken:{type:String,required: true},
-    latitude:{type:String,required: true},
-    longitude:{type:String,required: true},
-    deviceType:{type:String,required: true},
+    deviceId:{type:String},
+    deviceToken:{type:String},
+    latitude:{type:String},
+    longitude:{type:String},
+    deviceType:{type:String},
     token:{type:String},
     salt:{type:String},
     temp_str:{type:String},
@@ -16,8 +16,8 @@ const UserSchema = mongoose.Schema({
     email: {type: String , index:{unique:true} },
     password: {type: String },
     fullname:{type: String ,required: true},
-    address:{type: String ,required: true},
-    city:{type: String ,required: true},
+    address:{type: String },
+    city:{type: String },
     state:{type: String },
     status:{type: String },
     zipCode:{type:String},
