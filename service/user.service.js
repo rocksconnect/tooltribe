@@ -36,18 +36,13 @@ const service = {};
 
 service.getAll = async (req,res) =>{
     //console.log("hiiiiii");
-    if(!req.user._id){
-       return res.send({"success":false,"code":500,"msg":"_id is missing"});
+    if(!req.query._id){
+       return res.send({"success":false,"code":500,"msg":msg.clientId});
     }
-    if(!req.user.userType == 'SuperAdmin'){
-       return res.send({"success":false,"code":500,"msg":"Not valid user"});
-    }
-    
-    //let clientId = utility.removeQuotationMarks(req.query.clientId);
+    let clientId = utility.removeQuotationMarks(req.query.clientId);
 	try{
 		let dataToFind = {
-			query:{userType:{$ne:"SuperAdmin"}},
-            projection:{salt:0,password:0,token:0}
+			query:{_id:req.query._id}
 		};
 		const user = await User.getAll(dataToFind);
         logger.info('sending all user...');
@@ -106,7 +101,6 @@ service.addUser = async (req, res) => {
     if(!req.body.address){
       return res.send({success:false, code:500, msg:"Address is missing"});
     }
-    
     if(!req.body.tradeId){
       return res.send({success:false, code:500, msg:"tradeId is missing"});
     }
@@ -171,19 +165,24 @@ service.addUser = async (req, res) => {
       return res.send({success:false, code:400, msg:"Please upload profile picture."});
     }*/
 
+    let arr = req.body.fullName.split(" ");
+    let imgRand = '';
+    
     if(req.files){
         if(req.files.idProofImage){
+            imgRand = arr[0]+Date.now()+rand(24,24)+'.png';
             let idProofImage = req.files.idProofImage;
-            var idProofImageUploaded = await idProofImage.mv('./public/images/'+req.files.idProofImage.name);
-            var idProofImagePath = '/images/'+req.files.idProofImage.name;
+            var idProofImageUploaded = await idProofImage.mv('./public/images/'+imgRand);
+            var idProofImagePath = '/images/'+imgRand;
         }else{
             var profileImagePath = '/images/defalut.png';
             return res.send({success:false, code:400, msg:"Please upload identity proof picture."});
         }
         if(req.files.profileImage){
+            imgRand = arr[0]+Date.now()+rand(24,24)+'.png';
             let profileImage = req.files.profileImage;
-            var profileImagUploaded  = await profileImage.mv('./public/images/'+req.files.profileImage.name);
-            var profileImagePath = '/images/'+req.files.profileImage.name;
+            var profileImagUploaded  = await profileImage.mv('./public/images/'+imgRand);
+            var profileImagePath = '/images/'+imgRand;
         }else{
             var profileImagePath = '/images/defalut.png';
         }
@@ -191,7 +190,7 @@ service.addUser = async (req, res) => {
         return res.send({success:false, code:400, msg:"Please upload files."});
     }
 
-    
+
     var temp = rand(100,30);
     var newPassword = temp+req.body.password;
     var token= crypto.createHash('sha512').update(req.body.password+rand).digest("hex");
@@ -228,7 +227,7 @@ service.addUser = async (req, res) => {
     }*/
     //var myRefralCode = Math.random().toString(36).substring(7);
 
-    let userToAdd = User({
+   let userToAdd = User({
 
       token:token,
       salt:temp,
@@ -383,43 +382,7 @@ service.editUser = async(req,res)=>{
         res.send({"success":false, "code":500, "msg":msg.editUser,"err":err});
     }
 }
-service.assignRoleToUser = async(req,res)=>{
-    console.log("hiii",req.user)
-    if(!req.body._id){
-        res.send({"success":false,"code":500,"msg":msg._id})   
-    }
-    if(req.body._id == req.user._id){
-        res.send({"success":false,"code":500,"msg":"You cant assign role to self"})   
-    }
-    if(!req.body.userType ){
-        res.send({"success":false,"code":500,"msg":"userType is missing"})   
-    }
-    var dataToEdit = {
-        adminAssignedRole:req.body.userType
-    };
-   
-    
-    console.log("step 2",dataToEdit)
-    if(!dataToEdit){
-        return res.send({success:false,code:500, msg:"Data is missing"})
-    }
-    let userToEdit={
-        query:{"_id":req.body._id},
-        data:{"$set":dataToEdit}
-    };
 
-    try{
-        const editUser= await User.editUser(userToEdit);
-        logger.info("update user");
-        console.log("update user");
-        res.send({"success":true,"code":200,"msg":successMsg.editUser,"data":editUser});
-
-    }
-    catch(err){
-        logger.error('Error in updaing user- ' + err);
-        res.send({"success":false, "code":500, "msg":msg.editUser,"err":err});
-    }
-}
 service.deleteUser = async (req, res) => {
     let userToDelete = req.body.userId;
     if(!req.body.userId){

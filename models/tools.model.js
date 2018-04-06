@@ -3,11 +3,14 @@ import AutoIncrement from "mongoose-auto-increment";
 AutoIncrement.initialize(mongoose);
 
 const ToolSchema = mongoose.Schema({   
-    userId: {type: Number },
-    toolName:{type: String },
-    brandId:{type: String }, // brand from Admin
-    categoryId:{type: String }, // Categories from Admin
-    modelNo:{type: String },
+    toolId: {type: Number },
+    userId: {type: String },
+    toolName:{type: String,required: true },
+    brandId:{type: String ,required: true}, // brand from Admin
+    categoryId:{type: String,required: true }, // Categories from Admin
+    modelNo:{type: String,required: true },
+    toolSize:{type: String, default:'Small' }, //Small/Medium/Big
+    toolPrice:{type: Number }, 
     year:{type: String },
     specifications:{type: String },
     description:{type: String },
@@ -22,7 +25,7 @@ const ToolSchema = mongoose.Schema({
     toolProtection:{type:String}, // If they select yes then protection will be 10% of tool price
     toolProtectionPrice:{type:Number},
     hideTool : {type:String}, // if it is YES/NO then tool will not display to front
-    activeAfter : {type:Date}, // after this date tool will display to front, from lastdate + time
+    activeAfter : {type:Date, default: Date.now}, // after this date tool will display to front, from lastdate + time
     toolLocation: {   // pickup address
         address:{type:String},
         latitude:{type:String},
@@ -33,8 +36,8 @@ const ToolSchema = mongoose.Schema({
         zipCode:{type:String}
     },
     toolAvailability:{
-        from:{type:Date},
-        to:{type:Date}
+        from:{type:Date, default: Date.now},
+        to:{type:Date, default: Date.now}
     },
     toolImages: [{title:{type:String},imgName:{type:String},path:{type:String}, isDefault: {type:String}}],
     accessories: [{
@@ -42,16 +45,15 @@ const ToolSchema = mongoose.Schema({
         description:{type:String},
         imgName:{type:String},
         imgPath:{type:String}
-        }]
     }],
     toolStatus :{type:String}, // {AVAILABLE: available for booking,BOOKED: Pre Booked for future,RENTED : already on rent} 
-    createAt:{type: Date},
-    updatedAt:{type: Date}
+    createAt:{type: Date, default: Date.now},
+    updatedAt:{type: Date, default: Date.now}
   }, {collection : 'tools'});
 
-  ToolSchema.plugin(AutoIncrement.plugin,{model:'user',field:'userId',startAt:1,incrementBy:1});
+  ToolSchema.plugin(AutoIncrement.plugin,{model:'tools',field:'toolId',startAt:1,incrementBy:1});
 
-let ToolModel = mongoose.model('users',ToolSchema);
+let ToolModel = mongoose.model('tools',ToolSchema);
 
 
 

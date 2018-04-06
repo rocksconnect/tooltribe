@@ -4,20 +4,20 @@ AutoIncrement.initialize(mongoose);
 
 const UserSchema = mongoose.Schema({
   
-    deviceId:{type:String},
-    deviceToken:{type:String},
-    latitude:{type:String},
-    longitude:{type:String},
-    deviceType:{type:String},
+    deviceId:{type:String,required: true},
+    deviceToken:{type:String,required: true},
+    latitude:{type:String,required: true},
+    longitude:{type:String,required: true},
+    deviceType:{type:String,required: true},
     token:{type:String},
     salt:{type:String},
     temp_str:{type:String},
     userId: {type: Number },
     email: {type: String , index:{unique:true} },
     password: {type: String },
-    fullname:{type: String },
-    address:{type: String },
-    city:{type: String },
+    fullname:{type: String ,required: true},
+    address:{type: String ,required: true},
+    city:{type: String ,required: true},
     state:{type: String },
     status:{type: String },
     zipCode:{type:String},
@@ -49,8 +49,8 @@ const UserSchema = mongoose.Schema({
         zipCode:{type:String}
     }],
     adminAssignedRole:{type: String },
-    createAt:{type: Date},
-    updatedAt:{type: Date}
+    createAt:{type: Date, default: Date.now},
+    updatedAt:{type: Date, default: Date.now}
   }, {collection : 'user'});
 
   UserSchema.plugin(AutoIncrement.plugin,{model:'user',field:'userId',startAt:1,incrementBy:1});

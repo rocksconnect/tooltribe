@@ -19,8 +19,8 @@ const UserTypeSchema = mongoose.Schema({
     userTypeId:{type:Number},
     userType: {type: String },
     status:{type: String },
-    createAt:{type: Date},
-    updatedAt:{type: Date}
+    createAt:{type: Date, default: Date.now},
+    updatedAt:{type: Date, default: Date.now}
 }, {collection : 'usertype'});
 
 UserTypeSchema.plugin(AutoIncrement.plugin,{model:'usertype',field:'userTypeId',startAt:1,incrementBy:1});

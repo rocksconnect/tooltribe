@@ -14,6 +14,7 @@ import category from './routes/category.router.js';
 import idProofType from './routes/idProofType.router.js';
 
 import brand from './routes/brand.router.js';
+import tool from './routes/tool.router.js';
 
 import userservice from './service/user.service.js';
 import index from './routes/index.router.js';
@@ -141,6 +142,7 @@ app.use(trade);
 app.use(category);
 app.use(idProofType);
 app.use(brand);
+app.use(tool);
 app.use(company);
 
 // catch 404 and forward to error handler
@@ -170,7 +172,8 @@ const ADDRESS = '0.0.0.0';
 server.listen(PORT, ADDRESS);
 console.log(`socket started at: ${ADDRESS}:${PORT}`);
 */
-app.listen(8080, () => {
+
+app.listen(port, () => {
     logger.info('server started - ', port);
 });
 
