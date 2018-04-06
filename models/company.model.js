@@ -26,7 +26,7 @@ CompanyModel.addCompany = (CompanyToAdd) => {
     return CompanyToAdd.save();
 }
 CompanyModel.findCompany = (CompanyToFind) =>{
-	return CompanyModel.find(CompanyToFind.query,CompanyToFind.projection);
+	return CompanyModel.find(CompanyToFind.query);
 }
 CompanyModel.editCompany =(CompanyToEdit) =>{
 	return CompanyModel.update(CompanyToEdit.query,CompanyToEdit.data);
