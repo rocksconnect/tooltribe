@@ -71,11 +71,13 @@ service.getCompany = async (req,res)=>{
 		return res.send({success:false, code:500, msg:"Text is missing"})
 	}
 	try{
+		
 		var CompanyToFind = {
-			query:{companyName: { $regex: req.body.text }},
+
+			query:{companyName:{ $regex: new RegExp('^'+req.body.text), $options:'i'  }},
 			projection:{trash:0}
 		}
-		
+		console.log(CompanyToFind.query,"queryqueryquery")
 		var AllCompany = await Company.findCompany(CompanyToFind);
 		if(AllCompany){
 			return res.send({success:true, code:200, msg:"Company found succesfully", data:AllCompany});
@@ -83,6 +85,7 @@ service.getCompany = async (req,res)=>{
 			return res.send({success:false, code:500, msg:"Error in finding Company"});
 		}
 	}catch(error){
+		console.log(error,"error")
 		return res.send({success:false, code:500, msg:"Error in finding Company", err:error});
 	}
 }
