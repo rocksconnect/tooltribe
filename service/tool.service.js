@@ -176,9 +176,9 @@ service.addAccessoriesImage = async (req, res) => {
         if(jsonData.length>0){
             for (var x in jsonData) {
                 let imgRand = 'defaulttool.png';
-                if(fileData['categoryImage'+x]){   
+                if(fileData['image'+x]){   
                     imgRand = Date.now()+rand(24,24)+'.png';
-                    let idProofImage = fileData['categoryImage'+x];
+                    let idProofImage = fileData['image'+x];
                     var idProofImageUploaded = await idProofImage.mv(common.toolPath+imgRand);
                 }
                 
@@ -221,21 +221,51 @@ service.addAccessoriesImage = async (req, res) => {
 |--------------------------------------
 */
 service.addToolImage = async (req, res) => {
+    if(!req.body._id){
+        return res.send({success:false, code:500, msg:"_id is missing"})
+    }
+    
+    let jsonData = JSON.parse(req.body.data)
+
     if(req.files){
+        var insertArray = [];
+        var fileData = req.files;
         
-        if(req.files.toolImage){
+        if(jsonData.length>0){
+            for (var x in jsonData) {
+                let imgRand = 'defaulttool.png';
+                if(fileData['image'+x]){   
+                    imgRand = Date.now()+rand(24,24)+'.png';
+                    let idProofImage = fileData['image'+x];
+                    var idProofImageUploaded = await idProofImage.mv(common.toolPath+imgRand);
+                }
+                
+                var insertdata = {
+                    "title" : jsonData[x].title,
+                    "isDefault" : jsonData[x].isDefault,
+                    "imgName" : imgRand,
+                    "imgPath" : '/images/tool/'+imgRand
+                };
 
-        	var imgRand = Date.now()+rand(24,24)+'.png';
-            let toolImage = req.files.toolImage;
-            var toolImageUploaded = await toolImage.mv(common.toolPath+imgRand);
-            
+                insertArray.push(insertdata);
 
-        	return res.send({success:false, code:200, msg:'toolImageUploaded'});
-
+                try{
+                    let updateData = {
+                        query:{_id:req.body._id},
+                        data:{$set:{
+                                toolImages: insertArray,
+                            }
+                        }
+                    }
+                    let resultData = await Tools.addAccessoriesImage(updateData);
+                    res.send({"success":true, "code":200, "msg":"tool accessories added successfully!","data":resultData});
+                }catch(err){
+                    res.send({"success":false, "code":500, "msg":err.message,"err":err});
+                }
+            }
         }else{
-        	return res.send({success:false, code:400, msg:"Please upload files."});
-        }
-   
+            return res.send({success:false, code:400, msg:"tool informations not available!"});
+        }   
     }else{
         return res.send({success:false, code:400, msg:"Please upload files."});
     }

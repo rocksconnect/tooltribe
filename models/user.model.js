@@ -15,7 +15,7 @@ const UserSchema = mongoose.Schema({
     userId: {type: Number },
     email: {type: String , index:{unique:true} },
     password: {type: String },
-    fullname:{type: String ,required: true},
+    fullName:{type: String ,required: true},
     address:{type: String },
     city:{type: String },
     state:{type: String },

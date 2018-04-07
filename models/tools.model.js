@@ -39,7 +39,7 @@ const ToolSchema = mongoose.Schema({
         from:{type:Date, default: Date.now},
         to:{type:Date, default: Date.now}
     },
-    toolImages: [{title:{type:String},imgName:{type:String},path:{type:String}, isDefault: {type:String}}],
+    toolImages: [{title:{type:String},imgName:{type:String},imgPath:{type:String}, isDefault: {type:String}}],
     accessories: [{
         name:{type:String},
         description:{type:String},
