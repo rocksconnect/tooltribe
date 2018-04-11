@@ -13,14 +13,16 @@ const ViewdToolSchema = mongoose.Schema({
 
 let ViewdToolModel = mongoose.model('viewdTool',ViewdToolSchema);
 
+ViewdToolModel.getViewdTool = (dataToFind) => {
+   
+    return ViewdToolModel.find(dataToFind.query).sort({updatedAt:-1});
+}
 ViewdToolModel.addViewdTools = (viewdToolsToAdd) => {
     return viewdToolsToAdd.save();
 }
 ViewdToolModel.updateViewdTools = (viewdToolsToUpdate) => {
-    return ViewdToolModel.update(toolsToUpdate.query,toolsToUpdate.data);
+
+    return ViewdToolModel.update(viewdToolsToUpdate.query,viewdToolsToUpdate.data);
 }
-ViewdToolModel.a1 = (userId) => {
-    //console.log("viewdToolsTofind = ",viewdToolsTofind,viewdToolsTofind.query)
-    return ViewdToolModel.find({"viewedBy":userId});
-}
+
 export default ViewdToolModel;

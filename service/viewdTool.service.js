@@ -40,7 +40,7 @@ service.addViewedTool = async (req,res) =>{
             viewedBy:req.body.userId,
             toolId:req.body.toolId
         })
-        var saveViewdTools = ViewdTools.addViewdTools(dataToAdd);
+        var saveViewdTools = await ViewdTools.addViewdTools(dataToAdd);
         return res.send({success:true, code:200, msg:"Successfully added"})
     }catch(error){
         return res.send({success:true, code:500, msg:"Error in add viewed tool"})
@@ -60,10 +60,10 @@ service.getViewedTool = async (req,res) =>{
         var dataToFind = {
             query:{viewedBy:req.query.userId}
         }
-        var ViewdToolsData =ViewdTools.a1(dataToFind);
+        var ViewdToolsData =await ViewdTools.getViewdTool(dataToFind);
         return res.send({success:true, code:200, msg:"Successfully viewd tool found",data:ViewdToolsData})
     }catch(error){
-        console.log(error,"error===========")
+        
         return res.send({success:true, code:500, msg:"Error in getting v9iewd tool"})
     }
 
@@ -73,18 +73,23 @@ service.getViewedTool = async (req,res) =>{
 | @services : Update Viewd  tool
 |--------------------------------------
 */
-service.updateViewedToolData = async (req,res) =>{
+service.updateViewedTool = async (req,res) =>{
     if(!req.body.userId){
         return res.send({success:false, code:500, msg:"userId is missing."});
     }
+    if(!req.body.toolId){
+        return res.send({success:false, code:500, msg:"toolId is missing."});
+    }
     try{
         var dataToUpdate = {
-            query:{toolId:req.body.toolId,userId:req.body.userId},
+            query:{toolId:req.body.toolId,viewedBy:req.body.userId},
             data:{$set:{updatedAt:new Date()}}
         }
-        var recentTools = ViewdTools.updateViewdTools(dataToUpdate);
+        var recentTools = await ViewdTools.updateViewdTools(dataToUpdate);
+      
         return res.send({success:true, code:200, msg:"Successfully updated"})
     }catch(error){
+       
         return res.send({success:true, code:500, msg:"Error in updatedation viewd tool"})
     }
 

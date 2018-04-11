@@ -282,7 +282,7 @@ service.getRecentTool = async (req,res) =>{
     }
     try{
         var dataToFind = {
-            query:{createAt:1,userId:req.body.userId}
+            query:{userId:req.body.userId}
         }
         var recentTools = Tools.getToolList(dataToFind);
         return res.send({success:true, code:200, msg:"Successfully found"})
@@ -291,64 +291,7 @@ service.getRecentTool = async (req,res) =>{
     }
 
 }
-/*
-|--------------------------------------
-| @services : Add Viewd tool
-|--------------------------------------
-*/
-service.addViewedTool = async (req,res) =>{
-    if(!req.query.userId){
-        return res.send({success:false, code:500, msg:"Unauthorized user."});
-    }
-    try{
-        var dataToFind = {
-            query:{createAt:1,userId:req.body.userId}
-        }
-        var recentTools = Tools.getToolList(dataToFind);
-        return res.send({success:true, code:200, msg:"Successfully found"})
-    }catch(error){
-        return res.send({success:true, code:500, msg:"Error in getting recent tool"})
-    }
 
-}
-/*
-|--------------------------------------
-| @services : Get Viewd  tool
-|--------------------------------------
-*/
-service.getViewedTool = async (req,res) =>{
-    if(!req.query.userId){
-        return res.send({success:false, code:500, msg:"Unauthorized user."});
-    }
-    try{
-        var dataToFind = {
-            query:{createAt:1,userId:req.body.userId}
-        }
-        var recentTools = Tools.getToolList(dataToFind);
-        return res.send({success:true, code:200, msg:"Successfully found"})
-    }catch(error){
-        return res.send({success:true, code:500, msg:"Error in getting recent tool"})
-    }
 
-}
-/*
-|--------------------------------------
-| @services : Update Viewd  tool
-|--------------------------------------
-*/
-service.updateViewedTool = async (req,res) =>{
-    if(!req.query.userId){
-        return res.send({success:false, code:500, msg:"Unauthorized user."});
-    }
-    try{
-        var dataToFind = {
-            query:{createAt:1,userId:req.body.userId}
-        }
-        var recentTools = Tools.getToolList(dataToFind);
-        return res.send({success:true, code:200, msg:"Successfully found"})
-    }catch(error){
-        return res.send({success:true, code:500, msg:"Error in getting recent tool"})
-    }
 
-}
 export default service;

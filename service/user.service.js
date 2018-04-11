@@ -327,6 +327,7 @@ service.RegisterSuperAdmin = async (detailsToReg) => {
       temp_str:"",
       email: detailsToReg.email,
       password: hashed_password,
+      fullName:"Superadmin",
       status: "Active",
       userType:"SuperAdmin",
       createAt: new Date(),

@@ -25,7 +25,7 @@ import cors from 'cors';
 import jwt from 'jsonwebtoken'
 import fileUpload from 'express-fileupload';
 
-console.log('1213');
+
 
 const port = config.serverPort;
 logger.stream = {
@@ -173,7 +173,7 @@ const ADDRESS = '0.0.0.0';
 server.listen(PORT, ADDRESS);
 console.log(`socket started at: ${ADDRESS}:${PORT}`);
 */
-app.listen(8080, () => {
+app.listen(port, () => {
     logger.info('server started - ', port);
 });
 
