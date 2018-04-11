@@ -7,6 +7,7 @@
  */
 
 import Category from '../models/category.model'
+import Tools from '../models/tools.model'
 import logger from '../core/logger/app.logger'
 import successMsg from '../core/message/success.msg'
 import msg from '../core/message/error.msg.js'
@@ -87,9 +88,15 @@ service.getCategory = async (req,res)=>{
 			query:{trash:false},
 			projection:{trash:0}
 		}
-		var AllCategory = await Category.findCategory(categoryToFind);
-		if(AllCategory){
-			return res.send({success:true, code:200, msg:"Category found succesfully", data:AllCategory});
+		var data = await Category.findCategory(categoryToFind);
+
+		var count = await Tools.getCategoryToolCount({categoryId:1});
+		let addOn = data.map(function(result){
+			result['toolCount'] = count
+            return result;
+        });
+		if(addOn){
+			return res.send({success:true, code:200, msg:"Category found succesfully", data:addOn});
 		}else{
 			return res.send({success:false, code:500, msg:"Error in finding Category"});
 		}

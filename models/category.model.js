@@ -30,9 +30,24 @@ let CategoryModel = mongoose.model('category',CategorySchema);
 CategoryModel.addCategory = (categoryToAdd) => {
     return categoryToAdd.save();
 }
+
 CategoryModel.findCategory = (categoryToFind) =>{
-	return CategoryModel.find(categoryToFind.query,categoryToFind.projection);
+	return CategoryModel.find(categoryToFind.query,categoryToFind.projection).lean();
+    /*return CategoryModel.aggregate(
+        [
+            {
+            $lookup:
+                {
+                    from:"tools",
+                    localField:"category.categoryId",
+                    foreignField:"tools.categoryId",
+                    as:"data_docs"
+                }
+            }
+        ]
+    )*/
 }
+
 CategoryModel.editCategory =(categoryToEdit) =>{
 	return CategoryModel.update(categoryToEdit.query,categoryToEdit.data);
 }

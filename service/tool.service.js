@@ -44,11 +44,60 @@ service.getToolList = async (req,res)=>{
 }
 
 
+/*
+* @ Function : getCategoryToolList
+*/
+service.getCategoryToolList = async (req,res)=>{
+    if(!req.body.categoryId){
+        return res.send({success:false, code:500, msg:"categoryId is missing"})
+    }
+
+    if(!req.body.page){
+        return res.send({success:false, code:500, msg:"page is missing"})
+    }
+
+    try{
+        var param = {
+                categoryId:req.body.categoryId,
+                page:req.body.page
+            };
+
+        var data  = await Tools.getCategoryToolList(param);
+        
+        let addOn = data.map(function(result){
+            result['ratings']    = Math.floor(Math.random() * 5);
+            result['rentedUser'] = Math.floor(Math.random() * 150);
+            return result;
+        });
+        //var count = await Tools.getCategoryToolCount({categoryId:req.body.categoryId});
+
+        if(addOn){
+            return res.send({success:true, code:200, msg:"succes", data:data});
+        }else{
+            return res.send({success:false, code:500, msg:"Error in finding getToolList"});
+        }
+    }catch(error){
+        return res.send({success:false, code:500, msg:"Error in finding getToolList", err:error});
+    }
+}
+
+
 /**
  * @description [addTool Service]
  * @param  {[object]}
  */
 service.addTool = async (req,res)=>{
+
+    if(!req.body.address){
+        return res.send({success:false, code:500, msg:"address is missing"})
+    }
+    if(!req.body.latitude){
+        return res.send({success:false, code:500, msg:"latitude is missing"})
+    }
+    if(!req.body.longitude){
+        return res.send({success:false, code:500, msg:"longitude is missing"})
+    }
+    
 
     /*--- shipmentStatus validation ---*/
     if(!req.body.shipmentStatus){
@@ -272,6 +321,7 @@ service.addToolImage = async (req, res) => {
 }
 
 /*
+<<<<<<< Updated upstream
 |--------------------------------------
 | @services : Get Recently added tool
 |--------------------------------------
@@ -290,8 +340,56 @@ service.getRecentTool = async (req,res) =>{
         return res.send({success:true, code:500, msg:"Error in getting recent tool"})
     }
 
+/*
+|-------------------------------------
+| @ hideTool
+|-------------------------------------
+*/
+service.hideTool = async (req, res) => {
+    if(!req.body._id){
+        return res.send({success:false, code:500, msg:"_id is missing"})
+    }
+    if(!req.body.userId){
+        return res.send({success:false, code:500, msg:"userId is missing"})
+    }
+    if(!req.body.status){
+        return res.send({success:false, code:500, msg:"status is missing"});
+    }
+
+    try{
+
+
+        var where = {
+            query:{_id:req.body._id,userId:req.body.userId}
+        }
+        var toolData = await Tools.getUserTool(where);
+
+        if(toolData.length){
+            
+            var data = {
+                query:{_id:req.body._id},
+                data:{$set:{
+                        hideTool: req.body.status.toUpperCase()
+                    }
+                }
+            }
+            var data = await Tools.hideTool(data);
+            if(data){
+                return res.send({success:true, code:200, msg:"succes", data:data});
+            }else{
+                return res.send({success:false, code:500, msg:"Error in updating tool"});
+            }
+
+        }else{
+            return res.send({success:false, code:500, msg:"This is not your tool."});
+        }
+
+
+        
+    }catch(error){
+        return res.send({success:false, code:500, msg:"Error", err:error});
+    }
+
 }
-
-
 
 export default service;

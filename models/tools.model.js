@@ -72,4 +72,30 @@ ToolModel.getToolList = (dataToFind)=>{
     }
     return ToolModel.find(query).sort({createAt:-1});
 }
+
+
+
+ToolModel.getCategoryToolList = (param)=>{
+    console.log(param.page);
+    let page = Math.max(0, param.page);
+    return  ToolModel.find({categoryId:param.categoryId}).skip(page).limit(3).lean(); 
+
+}
+
+
+ToolModel.getCategoryToolCount = (where)=>{
+    return ToolModel.count(where);
+}
+
+
+ToolModel.hideTool = (data)=>{
+    return ToolModel.update(data.query,data.data);
+    
+}
+
+ToolModel.getUserTool = (where) => {
+    return ToolModel.find(where.query);
+}
+
+
 export default ToolModel;

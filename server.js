@@ -64,7 +64,6 @@ app.use(cors())
 
 var loginRequired = function(req, res, next) {
   if (req.user) {
-    console.log("222 jj")
     next();
   } else {
     return res.status(401).json({ success:false, code:401, msg: 'Unauthorized user!' });
@@ -72,9 +71,7 @@ var loginRequired = function(req, res, next) {
 };
 
 var tokenExpired = function(req, res, next) {
-  
-  return res.status(200).json({ success:false, code:419, msg: 'Token expires, Please login!!' });
-  
+    return res.status(200).json({ success:false, code:419, msg: 'Token expires, Please login!!' });
 };
 
 app.use(function(req, res, next) {
@@ -83,7 +80,30 @@ app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
 
 
-    if(req.url == '/getAllList' || req.url == '/allIdProof' || req.url == '/getCompany' || req.url == '/updateIdProofType' || req.url == '/getTrade' || req.url == '/login' || req.url == '/userLogin' || req.url == '/register' || req.url == '/account_email_validation' || req.url == '/forgetPassword' || req.url == '/forgetPasswordReset' || req.url == '/' || req.url == '/terms' || req.url == '/privacy' || req.url == '/aboutus' || req.url == '/support'){
+  var arr_demo = [
+                '/getAllList',
+                '/allIdProof',
+                '/getCompany',
+                '/updateIdProofType', 
+                '/getTrade',
+                '/login', 
+                '/userLogin',
+                '/register', 
+                '/account_email_validation',
+                '/forgetPassword',
+                '/forgetPasswordReset',
+                '/',
+                '/terms', 
+                '/privacy',
+                '/aboutus',
+                '/support',
+                '/getCategory'
+            ];
+
+  //req.url == '/getAllList' || req.url == '/allIdProof' || req.url == '/getCompany' || req.url == '/updateIdProofType' || req.url == '/getTrade' || req.url == '/login' || req.url == '/userLogin' || req.url == '/register' || req.url == '/account_email_validation' || req.url == '/forgetPassword' || req.url == '/forgetPasswordReset' || req.url == '/' || req.url == '/terms' || req.url == '/privacy' || req.url == '/aboutus' || req.url == '/support' || req.url == '/getCategory'
+
+    if(arr_demo.indexOf(req.url)>=0){
+
 
         if(req.headers && req.headers.authorization && req.headers.authorization == 'Key@123'){
             next()
@@ -93,21 +113,23 @@ app.use(function(req, res, next) {
         }
         
     }else{
+        
         if(req.headers && req.headers.authorization ){
-          jwt.verify(req.headers.authorization, "shhhhh", function(err,decode){
-             console.log(err,decode,"err decode111111111111111111")
-              if(err){
-                req.user = undefined;
-                if(err.name == "TokenExpiredError"){
-                  tokenExpired(req, res, next)
+
+            jwt.verify(req.headers.authorization, "shhhhh", function(err,decode){
+                console.log(err,decode,"err decode")
+                if(err){
+                    req.user = undefined;
+                    if(err.name == "TokenExpiredError"){
+                        tokenExpired(req, res, next)
+                    }else{
+                        loginRequired(req, res, next);
+                    }
+
                 }else{
-                  loginRequired(req, res, next);
+                    req.user = decode;
+                    loginRequired(req, res, next);
                 }
-              }else{
-              console.log(req.user)
-                req.user = decode;
-                loginRequired(req, res, next);
-              }
           } )
 
         }else{

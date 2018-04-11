@@ -20,6 +20,7 @@ router.post('/addToolImage',(req,res)=>{
 	toolService.addToolImage(req,res);
 });
 
+<<<<<<< Updated upstream
 router.get('/getRecentTool',(req,res)=>{
 	toolService.getRecentTool(req,res);
 })
@@ -33,6 +34,16 @@ router.get('/getViewedTool',(req,res)=>{
 router.post('/updateViewedTool',(req,res)=>{
     viewdToolService.updateViewedTool(req,res);
 });
+
+router.post('/hideTool',(req,res)=>{
+	toolService.hideTool(req,res);
+});
+
+router.post('/getCategoryToolList',(req,res)=>{
+    toolService.getCategoryToolList(req,res);
+});
+
+
 /*router.get('/getBrandList',(req,res)=>{
 	brandService.getBrandList(req,res);
 });
