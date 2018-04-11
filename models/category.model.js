@@ -32,20 +32,37 @@ CategoryModel.addCategory = (categoryToAdd) => {
 }
 
 CategoryModel.findCategory = (categoryToFind) =>{
-	return CategoryModel.find(categoryToFind.query,categoryToFind.projection).lean();
-    /*return CategoryModel.aggregate(
+    console.log(7676767)
+	//return CategoryModel.find(categoryToFind.query,categoryToFind.projection).lean();
+    return CategoryModel.aggregate(
         [
+            {$match:categoryToFind.query},
             {
             $lookup:
                 {
                     from:"tools",
-                    localField:"category.categoryId",
-                    foreignField:"tools.categoryId",
-                    as:"data_docs"
+                    localField:"categoryId",
+                    foreignField:"categoryId",
+                    as:"tool_docs"
+                }
+            },
+            {
+                $project:{
+                    category:1,
+                    categoryId:1,
+                    status:1,
+                    trash:1,
+                    desc:1,
+                    fileName:1,
+                  
+                    path: 1,
+                    createAt:1,
+                    updatedAt:1,
+                    toolCount:{$size:"$tool_docs"}
                 }
             }
         ]
-    )*/
+    )
 }
 
 CategoryModel.editCategory =(categoryToEdit) =>{

@@ -85,22 +85,23 @@ service.getCategory = async (req,res)=>{
 	
 	try{
 		var categoryToFind = {
-			query:{trash:false},
+			query:{trash:"false"},
 			projection:{trash:0}
 		}
 		var data = await Category.findCategory(categoryToFind);
 
-		var count = await Tools.getCategoryToolCount({categoryId:1});
-		let addOn = data.map(function(result){
-			result['toolCount'] = count
-            return result;
-        });
-		if(addOn){
-			return res.send({success:true, code:200, msg:"Category found succesfully", data:addOn});
-		}else{
-			return res.send({success:false, code:500, msg:"Error in finding Category"});
-		}
+		// var count = await Tools.getCategoryToolCount({categoryId:1});
+		// let addOn = data.map(function(result){
+		// 	result['toolCount'] = count
+  //           return result;
+  //       });
+		// if(addOn){
+			return res.send({success:true, code:200, msg:"Category found succesfully", data:data});
+		// }else{
+		// 	return res.send({success:false, code:500, msg:"Error in finding Category"});
+		// }
 	}catch(error){
+		console.log(error,"+++++++++++++++++")
 		return res.send({success:false, code:500, msg:"Error in finding Category", err:error});
 	}
 }
