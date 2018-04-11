@@ -321,7 +321,6 @@ service.addToolImage = async (req, res) => {
 }
 
 /*
-<<<<<<< Updated upstream
 |--------------------------------------
 | @services : Get Recently added tool
 |--------------------------------------
@@ -342,7 +341,7 @@ service.getRecentTool = async (req,res) =>{
 
 /*
 |-------------------------------------
-| @ hideTool
+| @services : hideTool
 |-------------------------------------
 */
 service.hideTool = async (req, res) => {
