@@ -1,5 +1,6 @@
 import express from "express";
 import toolService from "../service/tool.service";
+import viewdToolService from "../service/viewdTool.service";
 
 const router = express.Router()
 
@@ -19,6 +20,19 @@ router.post('/addToolImage',(req,res)=>{
 	toolService.addToolImage(req,res);
 });
 
+router.get('/getRecentTool',(req,res)=>{
+	toolService.getRecentTool(req,res);
+})
+router.post('/addViewedTool',(req,res)=>{
+    viewdToolService.addViewedTool(req,res);
+});
+router.get('/getViewedTool',(req,res)=>{
+	
+    viewdToolService.getViewedTool(req,res);
+});
+router.post('/updateViewedTool',(req,res)=>{
+    viewdToolService.updateViewedTool(req,res);
+});
 /*router.get('/getBrandList',(req,res)=>{
 	brandService.getBrandList(req,res);
 });

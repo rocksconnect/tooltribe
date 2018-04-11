@@ -12,9 +12,10 @@ import user from './routes/user.router.js';
 import trade from './routes/trade.router.js';
 import category from './routes/category.router.js';
 import idProofType from './routes/idProofType.router.js';
+import tool from './routes/tool.router.js';
+
 
 import brand from './routes/brand.router.js';
-import tool from './routes/tool.router.js';
 
 import userservice from './service/user.service.js';
 import index from './routes/index.router.js';
@@ -82,7 +83,7 @@ app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
 
 
-    if(req.url == '/getAllList' || req.url == '/allIdProof' || req.url == '/getCompany' || req.url == '/updateIdProofType' || req.url == '/getTrade' || req.url == '/login' || req.url == '/userLogin' || req.url == '/register' || req.url == '/account_email_validation' || req.url == '/forgetPassword' || req.url == '/forgetPasswordReset' || req.url == '/' || req.url == '/terms' || req.url == '/privacy' || req.url == '/aboutus' || req.url == '/support' || req.url == '/getCategory'){
+    if(req.url == '/getAllList' || req.url == '/allIdProof' || req.url == '/getCompany' || req.url == '/updateIdProofType' || req.url == '/getTrade' || req.url == '/login' || req.url == '/userLogin' || req.url == '/register' || req.url == '/account_email_validation' || req.url == '/forgetPassword' || req.url == '/forgetPasswordReset' || req.url == '/' || req.url == '/terms' || req.url == '/privacy' || req.url == '/aboutus' || req.url == '/support'){
 
         if(req.headers && req.headers.authorization && req.headers.authorization == 'Key@123'){
             next()
@@ -94,7 +95,7 @@ app.use(function(req, res, next) {
     }else{
         if(req.headers && req.headers.authorization ){
           jwt.verify(req.headers.authorization, "shhhhh", function(err,decode){
-             console.log(err,decode,"err decode")
+             console.log(err,decode,"err decode111111111111111111")
               if(err){
                 req.user = undefined;
                 if(err.name == "TokenExpiredError"){
@@ -142,8 +143,8 @@ app.use(trade);
 app.use(category);
 app.use(idProofType);
 app.use(brand);
-app.use(tool);
 app.use(company);
+app.use(tool);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -172,8 +173,7 @@ const ADDRESS = '0.0.0.0';
 server.listen(PORT, ADDRESS);
 console.log(`socket started at: ${ADDRESS}:${PORT}`);
 */
-
-app.listen(port, () => {
+app.listen(8080, () => {
     logger.info('server started - ', port);
 });
 

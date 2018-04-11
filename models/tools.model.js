@@ -65,10 +65,11 @@ ToolModel.addAccessoriesImage = (objToUpdate) => {
     return ToolModel.update(objToUpdate.query,objToUpdate.data);
 }
 
-ToolModel.getToolList = ()=>{
-    return ToolModel.find();
+ToolModel.getToolList = (dataToFind)=>{
+    var query = {};
+    if(dataToFind){
+        query = dataToFind.query;
+    }
+    return ToolModel.find(query);
 }
-
-
-
 export default ToolModel;
