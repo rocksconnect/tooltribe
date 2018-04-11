@@ -338,6 +338,7 @@ service.getRecentTool = async (req,res) =>{
     }catch(error){
         return res.send({success:true, code:500, msg:"Error in getting recent tool"})
     }
+}
 
 /*
 |-------------------------------------
