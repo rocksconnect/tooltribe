@@ -72,7 +72,7 @@ service.getCategoryToolList = async (req,res)=>{
         //var count = await Tools.getCategoryToolCount({categoryId:req.body.categoryId});
 
         if(addOn){
-            return res.send({success:true, code:200, msg:"succes", data:data});
+            return res.send({success:true, code:200, msg:"succes", data:req.get('host')});
         }else{
             return res.send({success:false, code:500, msg:"Error in finding getToolList"});
         }

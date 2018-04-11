@@ -77,8 +77,8 @@ ToolModel.getToolList = (dataToFind)=>{
 
 ToolModel.getCategoryToolList = (param)=>{
     console.log(param.page);
-    let page = Math.max(0, param.page);
-    return  ToolModel.find({categoryId:param.categoryId}).skip(page).limit(3).lean(); 
+    let page = 10 * Math.max(0, param.page);
+    return  ToolModel.find({categoryId:param.categoryId}).skip(page).limit(3).lean().sort({createAt:-1});; 
 
 }
 
