@@ -15,7 +15,7 @@ router.post('/addCategory', (req, res) => {
     CategoryService.addCategory(req, res);
 });
 
-router.get('/getCategory', (req, res) => {
+router.post('/getCategory', (req, res) => {
     CategoryService.getCategory(req, res);
 });
 

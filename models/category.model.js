@@ -5,6 +5,7 @@
  * @lastModifed 26-March-2018
  * @lastModifedBy Shakshi
  */
+ import common from '../core/message/common.msg.js'
 import mongoose from 'mongoose';
 import AutoIncrement from "mongoose-auto-increment";
 AutoIncrement.initialize(mongoose);
@@ -32,8 +33,9 @@ CategoryModel.addCategory = (categoryToAdd) => {
 }
 
 CategoryModel.findCategory = (categoryToFind) =>{
-    console.log(7676767)
-	//return CategoryModel.find(categoryToFind.query,categoryToFind.projection).lean();
+    //return CategoryModel.find(categoryToFind.query,categoryToFind.projection).lean();
+
+    let page = common.pageLimit * Math.max(0, categoryToFind.page);
     return CategoryModel.aggregate(
         [
             {$match:categoryToFind.query},
@@ -53,8 +55,7 @@ CategoryModel.findCategory = (categoryToFind) =>{
                     status:1,
                     trash:1,
                     desc:1,
-                    fileName:1,
-                  
+                    fileName:1,                  
                     path: 1,
                     createAt:1,
                     updatedAt:1,
@@ -62,7 +63,7 @@ CategoryModel.findCategory = (categoryToFind) =>{
                 }
             }
         ]
-    )
+    ).skip(page).limit(common.pageLimit)
 }
 
 CategoryModel.editCategory =(categoryToEdit) =>{

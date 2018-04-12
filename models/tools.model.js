@@ -1,3 +1,4 @@
+import common from '../core/message/common.msg.js'
 import mongoose from 'mongoose';
 import AutoIncrement from "mongoose-auto-increment";
 AutoIncrement.initialize(mongoose);
@@ -77,8 +78,8 @@ ToolModel.getToolList = (dataToFind)=>{
 
 ToolModel.getCategoryToolList = (param)=>{
     console.log(param.page);
-    let page = 10 * Math.max(0, param.page);
-    return  ToolModel.find({categoryId:param.categoryId}).skip(page).limit(3).lean().sort({createAt:-1});; 
+    let page = common.pageLimit * Math.max(0, param.page);
+    return  ToolModel.find({categoryId:param.categoryId}).skip(page).limit(common.pageLimit).lean().sort({createAt:-1}); 
 
 }
 
