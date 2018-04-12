@@ -66,8 +66,8 @@ CategoryModel.findCategory = (categoryToFind) =>{
     ).skip(page).limit(common.pageLimit)
 }
 
-CategoryModel.getCategoryList =(where) =>{
-    return CategoryModel.find(where);
+CategoryModel.getCategoryList =() =>{
+    return CategoryModel.find();
 }
 
 CategoryModel.editCategory =(categoryToEdit) =>{
