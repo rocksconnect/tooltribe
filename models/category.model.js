@@ -5,7 +5,7 @@
  * @lastModifed 26-March-2018
  * @lastModifedBy Shakshi
  */
- import common from '../core/message/common.msg.js'
+import common from '../core/message/common.msg.js'
 import mongoose from 'mongoose';
 import AutoIncrement from "mongoose-auto-increment";
 AutoIncrement.initialize(mongoose);
@@ -64,6 +64,10 @@ CategoryModel.findCategory = (categoryToFind) =>{
             }
         ]
     ).skip(page).limit(common.pageLimit)
+}
+
+CategoryModel.getCategoryList =(where) =>{
+    return CategoryModel.find(where);
 }
 
 CategoryModel.editCategory =(categoryToEdit) =>{

@@ -199,7 +199,7 @@ service.getBrandCategory = async (req,res)=>{
 			projection:{trash:0}
 		}
 		var brandData    = await brand.getBrandList(where);
-		var categoryData = await Category.findCategory(where);
+		var categoryData = await Category.getCategoryList(where);
 		
 		if(brandData || categoryData){
 			if(req.body.type=='category'){
