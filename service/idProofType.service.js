@@ -203,11 +203,11 @@ service.getBrandCategory = async (req,res)=>{
 		
 		if(brandData || categoryData){
 			if(req.body.type=='category'){
-				return res.send({success:true, code:200, msg:"IdProofType found succesfully", data:{categoryData:categoryData}});	
+				return res.send({success:true, code:200, msg:"succes", data:{categoryData:categoryData}});	
 			}else if(req.body.type=='brand'){
-				return res.send({success:true, code:200, msg:"IdProofType found succesfully", data:{brandData:brandData}});	
+				return res.send({success:true, code:200, msg:"succes", data:{brandData:brandData}});	
 			}else{
-				return res.send({success:true, code:200, msg:"IdProofType found succesfully", data:{brandData:brandData,categoryData:categoryData}});	
+				return res.send({success:true, code:200, msg:"succes", data:{brandData:brandData,categoryData:categoryData}});	
 			}
 			
 		}else{
