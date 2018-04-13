@@ -27,7 +27,7 @@ router.get('/getRecentTool',(req,res)=>{
 	toolService.getRecentTool(req,res);
 })
 
-router.post('/getRecentViewTool',(req,res)=>{
+router.post('/getViewedTool',(req,res)=>{
     toolService.getRecentViewTool(req,res);
 });
 
