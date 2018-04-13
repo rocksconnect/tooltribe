@@ -47,7 +47,9 @@ router.post('/getCategoryToolList',(req,res)=>{
 router.get('/getDetailsOfTool',(req,res)=>{
 	toolService.getDetailsOfTool(req,res)
 })
-
+router.post('/addShareTool',(req,res)=>{
+	toolService.addShareTool(req,res)
+})
 /*router.get('/getBrandList',(req,res)=>{
 	brandService.getBrandList(req,res);
 });

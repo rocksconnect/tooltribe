@@ -7,6 +7,7 @@
  */
 
 import Tools from '../models/tools.model'
+import ShareTool from '../models/shareTool.model'
 import logger from '../core/logger/app.logger'
 import successMsg from '../core/message/success.msg'
 import msg from '../core/message/error.msg.js'
@@ -421,4 +422,32 @@ service.hideTool = async (req, res) => {
 
 }
 
+/*
+|-------------------------------------
+| @services : ShareTool
+|-------------------------------------
+*/
+service.addShareTool = async (req,res)=>{
+    if(!req.body.userId){
+        return res.send({success:false, code:500, msg:"userId is missing."});
+    }
+    if(!req.body.toolId){
+        return res.send({success:false, code:500, msg:"toolId is missing"});
+    }
+    if(!req.body.shareType){
+        return res.send({success:false, code:500, msg:"shareType is missing"});
+    }
+    try{
+        var dataToAdd = ShareTool({
+            userId:req.body.userId,
+            toolId:req.body.toolId,
+            shareType:req.body.shareType
+        })
+        var saveShareTool = ShareTool.addShareTools(dataToAdd);
+        return res.send({success:true, code:200, msg:"Successfully Add shared tool"})
+    }catch(error){
+        console.log(error,"error")
+        return res.send({success:true, code:500, msg:"Error in adding of shared tool"})
+    }
+}
 export default service;
