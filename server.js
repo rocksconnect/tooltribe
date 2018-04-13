@@ -188,15 +188,15 @@ app.use(function(err, req, res, next) {
 
 
 
-const PORT = 3030;
+const PORT = 83;
 const ADDRESS = '0.0.0.0';
 
 /*let server = net.createServer(deviceTrackerHistoryService.onClientConnected);
 server.listen(PORT, ADDRESS);
 console.log(`socket started at: ${ADDRESS}:${PORT}`);
 */
-app.listen(port, () => {
-    logger.info('server started - ', port);
+app.listen(83, () => {
+    logger.info('server started - ', 83);
 });
 
 module.exports = app;
