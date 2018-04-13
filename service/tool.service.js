@@ -79,10 +79,8 @@ service.getCategoryToolList = async (req,res)=>{
     }
 
     try{
-
-        
         var param = {
-                _id:ObjectID(req.query.toolId),
+                categoryId:ObjectID(req.body.categoryId),
                 page:req.body.page
             };
 
