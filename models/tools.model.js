@@ -7,8 +7,8 @@ const ToolSchema = mongoose.Schema({
     toolId: {type: Number },
     userId: {type: String },
     toolName:{type: String,required: true },
-    brandId:{type: String ,required: true}, // brand from Admin
-    categoryId:{type: String,required: true }, // Categories from Admin
+    brandId:{type: mongoose.Schema.ObjectId ,required: true}, // brand from Admin
+    categoryId:{type: mongoose.Schema.ObjectId,required: true }, // Categories from Admin
     modelNo:{type: String,required: true },
     toolSize:{type: String, default:'Small' }, //Small/Medium/Big
     toolPrice:{type: Number }, 
@@ -60,6 +60,76 @@ let ToolModel = mongoose.model('tools',ToolSchema);
 
 ToolModel.addTools = (toolsToAdd) => {
     return toolsToAdd.save();
+}
+
+
+ToolModel.getDeatilsToolById = (toolToFind) => {
+    console.log("toolToFind == ",toolToFind)
+    return ToolModel.aggregate([
+        {
+            $match:toolToFind.query
+        },
+        {
+            $lookup:{
+                from:"brand",
+                localField:"brandId",
+                foreignField:"_id",
+                as:"brandDocs"
+            }
+        },
+        {
+            $unwind:"$brandDocs"
+        },
+        {
+            $lookup:{
+                from:"category",
+                localField:"categoryId",
+                foreignField:"_id",
+                as:"categoryDocs"
+            }
+
+        },
+        {
+            $unwind:"$categoryDocs"
+        },
+        {
+            $project:{
+                toolId: 1,
+                userId: 1,
+                toolName:1,
+                brandId:1,
+                categoryId:1,
+                modelNo:1,
+                toolSize:1,
+                toolPrice:1, 
+                year:1,
+                specifications:1,
+                description:1,
+                buyingOption:1, 
+                rentAmount:1,
+                sellingPrice:1,
+                depositAmount:1,    
+                shipment:1, 
+                deliveryAvailable:1, 
+                pickupAvailable:1,
+                deliveryAmount:1, 
+                toolProtection:1, 
+                toolProtectionPrice:1,
+                hideTool : 1,
+                activeAfter : 1,
+                toolLocation: 1,
+                toolAvailability:1,
+                toolImages:1,
+                accessories: 1,
+                toolStatus :1,
+                rating:"3",
+                brandName:"$brandDocs.brandName",
+                brandDescription:"$brandDocs.brandDescription",
+                category:"$categoryDocs.category"
+            }
+        }
+
+    ]);
 }
 
 ToolModel.addAccessoriesImage = (objToUpdate) => {

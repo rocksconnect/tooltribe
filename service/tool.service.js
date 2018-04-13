@@ -14,6 +14,7 @@ import common from '../core/message/common.msg.js'
 import utility from '../core/utility.js' 
 
 import rand from 'csprng'
+import ObjectID from "bson-objectid";
 
 
 /**
@@ -43,6 +44,26 @@ service.getToolList = async (req,res)=>{
     }
 }
 
+/**
+ * @getDetailsOfTool
+*/
+service.getDetailsOfTool = async (req,res)=>{
+    if(!req.query.toolId){
+        return res.send({success:false, code:500, msg:"tool _id is missing"});
+    }
+    try{
+        
+        var dataToFind={
+            query:{_id:ObjectID(req.query.toolId)}
+        }
+        var data = await Tools.getDeatilsToolById(dataToFind);
+        return res.send({success:true, code:200, msg:"successfully found", data:data});
+       
+    }catch(error){
+        console.log(error)
+        return res.send({success:false, code:500, msg:"Error in finding getDetailsOfTool", err:error});
+    }
+}
 
 /*
 * @ Function : getCategoryToolList

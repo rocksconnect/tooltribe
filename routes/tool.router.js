@@ -44,7 +44,9 @@ router.post('/hideTool',(req,res)=>{
 router.post('/getCategoryToolList',(req,res)=>{
     toolService.getCategoryToolList(req,res);
 });
-
+router.get('/getDetailsOfTool',(req,res)=>{
+	toolService.getDetailsOfTool(req,res)
+})
 
 /*router.get('/getBrandList',(req,res)=>{
 	brandService.getBrandList(req,res);
