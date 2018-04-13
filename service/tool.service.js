@@ -363,7 +363,7 @@ service.getRecentTool = async (req,res) =>{
             query:{userId:req.body.userId}
         }
         var recentTools = Tools.getToolList(dataToFind);
-        return res.send({success:true, code:200, msg:"Successfully found"})
+        return res.send({success:true, code:200, msg:"Successfully found", data:recentTools})
     }catch(error){
         return res.send({success:true, code:500, msg:"Error in getting recent tool"})
     }
