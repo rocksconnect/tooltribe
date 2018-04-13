@@ -23,7 +23,7 @@ router.post('/addToolImage',(req,res)=>{
 });
 
 
-router.post('/getRecentTool',(req,res)=>{
+router.get('/getRecentTool',(req,res)=>{
 	toolService.getRecentTool(req,res);
 })
 
