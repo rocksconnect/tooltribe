@@ -5,7 +5,7 @@ AutoIncrement.initialize(mongoose);
 
 const ToolSchema = mongoose.Schema({   
     toolId: {type: Number },
-    userId: {type: String },
+    userId: {type: mongoose.Schema.ObjectId ,required: true},
     toolName:{type: String,required: true },
     brandId:{type: mongoose.Schema.ObjectId ,required: true}, // brand from Admin
     categoryId:{type: mongoose.Schema.ObjectId,required: true }, // Categories from Admin
@@ -141,7 +141,7 @@ ToolModel.getToolList = (dataToFind)=>{
     if(dataToFind){
         query = dataToFind.query;
     }
-    return ToolModel.find(query).sort({createAt:-1});
+    return ToolModel.find(query).lean().sort({createAt:-1});
 }
 
 

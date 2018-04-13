@@ -360,10 +360,15 @@ service.getRecentTool = async (req,res) =>{
     }
     try{
         var dataToFind = {
-            query:{userId:req.body.userId}
+            query:{userId:ObjectID(req.query.userId)}
         }
-        var recentTools = Tools.getToolList(dataToFind);
-        return res.send({success:true, code:200, msg:"Successfully found", data:recentTools})
+        var data = await Tools.getToolList(dataToFind);
+        let addOn = data.map(function(result){
+            result['ratings']    = Math.floor(Math.random() * 5);
+            result['rentedUser'] = Math.floor(Math.random() * 150);
+            return result;
+        });
+        return res.send({success:true, code:200, msg:"Successfully found",data:addOn})
     }catch(error){
         return res.send({success:true, code:500, msg:"Error in getting recent tool"})
     }
