@@ -141,10 +141,12 @@ ToolModel.getToolList = (dataToFind)=>{
     if(dataToFind){
         query = dataToFind.query;
     }
-    return ToolModel.find(query).lean().sort({createAt:-1});
+    return ToolModel.find(query).sort({createAt:-1});
 }
 
-
+ToolModel.getRecentViewToolData = ()=>{
+    return ToolModel.find().sort({updatedAt:-1});
+}
 
 ToolModel.getCategoryToolList = (param)=>{
     console.log(param.page);

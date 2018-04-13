@@ -4,6 +4,8 @@ import viewdToolService from "../service/viewdTool.service";
 
 const router = express.Router()
 
+
+
 router.post('/addTool',(req,res)=>{
     toolService.addTool(req,res);
 });
@@ -21,17 +23,19 @@ router.post('/addToolImage',(req,res)=>{
 });
 
 
-router.get('/getRecentTool',(req,res)=>{
+router.post('/getRecentTool',(req,res)=>{
 	toolService.getRecentTool(req,res);
 })
+
+router.post('/getRecentViewTool',(req,res)=>{
+    toolService.getRecentViewTool(req,res);
+});
 
 router.post('/addViewedTool',(req,res)=>{
     viewdToolService.addViewedTool(req,res);
 });
 
-router.get('/getViewedTool',(req,res)=>{
-    viewdToolService.getViewedTool(req,res);
-});
+
 
 router.post('/updateViewedTool',(req,res)=>{
     viewdToolService.updateViewedTool(req,res);

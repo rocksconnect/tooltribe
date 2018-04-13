@@ -49,16 +49,16 @@ service.addViewedTool = async (req,res) =>{
 }
 /*
 |--------------------------------------
-| @services : Get Viewd  tool
+| @services : Get getRecentViewTool
 |--------------------------------------
 */
-service.getViewedTool = async (req,res) =>{
-    if(!req.query.userId){
+service.getRecentViewTool = async (req,res) =>{
+    if(!req.body.userId){
         return res.send({success:false, code:500, msg:"userId is missing."});
     }
     try{
         var dataToFind = {
-            query:{viewedBy:req.query.userId}
+            query:{viewedBy:req.body.userId}
         }
         var ViewdToolsData =await ViewdTools.getViewdTool(dataToFind);
         return res.send({success:true, code:200, msg:"Successfully viewd tool found",data:ViewdToolsData})
