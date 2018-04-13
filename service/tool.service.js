@@ -236,6 +236,10 @@ service.addAccessoriesImage = async (req, res) => {
     if(!req.body._id){
         return res.send({success:false, code:500, msg:"_id is missing"})
     }
+
+    if(!req.body.data){
+        return res.send({success:false, code:500, msg:"data is missing"})
+    }
     
     let jsonData = JSON.parse(req.body.data)
 
@@ -293,6 +297,9 @@ service.addAccessoriesImage = async (req, res) => {
 service.addToolImage = async (req, res) => {
     if(!req.body._id){
         return res.send({success:false, code:500, msg:"_id is missing"})
+    }
+    if(!req.body.data){
+        return res.send({success:false, code:500, msg:"data is missing"})
     }
     
     let jsonData = JSON.parse(req.body.data)
@@ -377,8 +384,11 @@ service.hideTool = async (req, res) => {
         return res.send({success:false, code:500, msg:"status is missing"});
     }
 
-    try{
+    if(req.body.status=='yes' && req.body.status=='no'){
+        return res.send({success:false, code:500, msg:"please enter a valid status value"});
+    }
 
+    try{
 
         var where = {
             query:{_id:req.body._id,userId:req.body.userId}
@@ -404,8 +414,6 @@ service.hideTool = async (req, res) => {
         }else{
             return res.send({success:false, code:500, msg:"This is not your tool."});
         }
-
-
         
     }catch(error){
         return res.send({success:false, code:500, msg:"Error", err:error});
