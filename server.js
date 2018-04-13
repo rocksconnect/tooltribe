@@ -195,8 +195,8 @@ const ADDRESS = '0.0.0.0';
 server.listen(PORT, ADDRESS);
 console.log(`socket started at: ${ADDRESS}:${PORT}`);
 */
-app.listen(83, () => {
-    logger.info('server started - ', 83);
+app.listen(port, () => {
+    logger.info('server started - ', port);
 });
 
 module.exports = app;
