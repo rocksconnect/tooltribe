@@ -356,7 +356,7 @@ service.addToolImage = async (req, res) => {
 */
 service.getRecentTool = async (req,res) =>{
     if(!req.query.userId){
-        return res.send({success:false, code:500, msg:"Unauthorized user."});
+        return res.send({success:false, code:500, msg:"userId is missing."});
     }
     try{
         var dataToFind = {
