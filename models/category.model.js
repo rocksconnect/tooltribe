@@ -43,7 +43,7 @@ CategoryModel.findCategory = (categoryToFind) =>{
             $lookup:
                 {
                     from:"tools",
-                    localField:"categoryId",
+                    localField:"_id",
                     foreignField:"categoryId",
                     as:"tool_docs"
                 }

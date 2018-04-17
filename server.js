@@ -97,7 +97,8 @@ app.use(function(req, res, next) {
                 '/privacy',
                 '/aboutus',
                 '/support',
-                '/getCategory'
+                '/getCategory',
+                '/getRecentTool'
             ];
 
   //req.url == '/getAllList' || req.url == '/allIdProof' || req.url == '/getCompany' || req.url == '/updateIdProofType' || req.url == '/getTrade' || req.url == '/login' || req.url == '/userLogin' || req.url == '/register' || req.url == '/account_email_validation' || req.url == '/forgetPassword' || req.url == '/forgetPasswordReset' || req.url == '/' || req.url == '/terms' || req.url == '/privacy' || req.url == '/aboutus' || req.url == '/support' || req.url == '/getCategory'
@@ -188,7 +189,7 @@ app.use(function(err, req, res, next) {
 
 
 
-const PORT = 3030;
+const PORT = 83;
 const ADDRESS = '0.0.0.0';
 
 /*let server = net.createServer(deviceTrackerHistoryService.onClientConnected);

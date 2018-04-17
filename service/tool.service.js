@@ -392,19 +392,63 @@ service.addToolImage = async (req, res) => {
 |--------------------------------------
 */
 service.getRecentTool = async (req,res) =>{
-    if(!req.query.userId){
-        return res.send({success:false, code:500, msg:"Unauthorized user."});
-    }
+    /*if(!req.query.userId){
+        return res.send({success:false, code:500, msg:"userId is missing."});
+    }*/
     try{
-        var dataToFind = {
-            query:{userId:req.body.userId}
-        }
-        var recentTools = Tools.getToolList(dataToFind);
-        return res.send({success:true, code:200, msg:"Successfully found"})
+        /*var dataToFind = {
+            query:{userId:ObjectID(req.query.userId)}
+        }*/
+        //var data = await Tools.getToolList(dataToFind);
+        var data = await Tools.getToolList();
+        let addOn = data.map(function(result){
+            result['ratings']    = Math.floor(Math.random() * 5);
+            result['rentedUser'] = Math.floor(Math.random() * 150);
+            return result;
+        });
+        return res.send({success:true, code:200, msg:"Successfully found",data:addOn})
     }catch(error){
         return res.send({success:true, code:500, msg:"Error in getting recent tool"})
     }
 }
+
+
+/*
+|--------------------------------------
+| @services : Get getRecentViewTool
+|--------------------------------------
+*/
+service.getRecentViewTool = async (req,res) =>{
+
+    if(!req.body.userId){
+        return res.send({success:false, code:500, msg:"userId is missing."});
+    }
+    
+    try{
+        /*var dataToFind = {
+            query:{userId:ObjectID(req.body.userId)}
+        }*/
+        //var data = await Tools.getToolList(dataToFind);
+        var data = await Tools.getRecentViewToolData();
+        
+        let addOn = data.map(function(result){
+            result['ratings']    = Math.floor(Math.random() * 5);
+            result['rentedUser'] = Math.floor(Math.random() * 150);
+            return result;
+        });
+        return res.send({success:true, code:200, msg:"Successfully found",data:addOn})
+    }catch(error){
+        return res.send({success:true, code:500, msg:"Error in getting recent tool"})
+    }
+
+}
+
+
+
+
+
+
+
 
 /*
 |-------------------------------------

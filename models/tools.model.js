@@ -5,7 +5,7 @@ AutoIncrement.initialize(mongoose);
 
 const ToolSchema = mongoose.Schema({   
     toolId: {type: Number },
-    userId: {type: String },
+    userId: {type: mongoose.Schema.ObjectId ,required: true},
     toolName:{type: String,required: true },
     brandId:{type: mongoose.Schema.ObjectId ,required: true}, // brand from Admin
     categoryId:{type: mongoose.Schema.ObjectId,required: true }, // Categories from Admin
@@ -95,6 +95,22 @@ ToolModel.getDeatilsToolById = (toolToFind) => {
         {
             $unwind:"$categoryDocs"
         },
+
+        {
+            $lookup:{
+                from:"user",
+                localField:"userId",
+                foreignField:"_id",
+                as:"userDocs"
+            }
+        },
+        {
+            $unwind:"$userDocs"
+        },
+
+
+
+
         {
             $project:{
                 toolId: 1,
@@ -128,7 +144,13 @@ ToolModel.getDeatilsToolById = (toolToFind) => {
                 rating:"3",
                 brandName:"$brandDocs.brandName",
                 brandDescription:"$brandDocs.brandDescription",
-                category:"$categoryDocs.category"
+                category:"$categoryDocs.category",
+                userId:"$userDocs._id",
+                userName:"$userDocs.fullName",
+                userEmail:"$userDocs.email",
+                userProfileImg:"$userDocs.pathOfProfileImg",
+                rentals:"5",
+                userRating:"4.5"
             }
         }
 
@@ -144,10 +166,12 @@ ToolModel.getToolList = (dataToFind)=>{
     if(dataToFind){
         query = dataToFind.query;
     }
-    return ToolModel.find(query).sort({createAt:-1});
+    return ToolModel.find(query).lean().sort({createAt:-1});
 }
 
-
+ToolModel.getRecentViewToolData = ()=>{
+    return ToolModel.find().lean().sort({updatedAt:-1});
+}
 
 ToolModel.getCategoryToolList = (param)=>{
     console.log("query == ",JSON.stringify(param.query))

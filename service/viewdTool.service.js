@@ -15,6 +15,8 @@ import utility from '../core/utility.js'
 
 import rand from 'csprng'
 
+import ObjectID from "bson-objectid";
+
 
 /**
  * [service is a object ]
@@ -35,39 +37,33 @@ service.addViewedTool = async (req,res) =>{
     if(!req.body.toolId){
         return res.send({success:false, code:500, msg:"toolId is missing."});
     }
+
     try{
-        var dataToAdd = ViewdTools({
-            viewedBy:req.body.userId,
-            toolId:req.body.toolId
-        })
-        var saveViewdTools = await ViewdTools.addViewdTools(dataToAdd);
-        return res.send({success:true, code:200, msg:"Successfully added"})
+        var data = await ViewdTools.getOneViewdTool({viewedBy:ObjectID(req.body.userId),toolId:ObjectID(req.body.toolId)});
+
+        if(data){
+            var dataToUpdate = {
+                query:{toolId:req.body.toolId,viewedBy:req.body.userId},
+                data:{$set:{updatedAt:new Date()}}
+            }
+            await ViewdTools.updateViewdTools(dataToUpdate);
+        }else{
+            var dataToAdd = ViewdTools({
+                viewedBy:req.body.userId,
+                toolId:req.body.toolId
+            })
+            await ViewdTools.addViewdTools(dataToAdd);
+        }
+        
+        return res.send({success:true, code:200, msg:"Successfully added"});
     }catch(error){
         return res.send({success:true, code:500, msg:"Error in add viewed tool"})
     }
 
 }
-/*
-|--------------------------------------
-| @services : Get Viewd  tool
-|--------------------------------------
-*/
-service.getViewedTool = async (req,res) =>{
-    if(!req.query.userId){
-        return res.send({success:false, code:500, msg:"userId is missing."});
-    }
-    try{
-        var dataToFind = {
-            query:{viewedBy:req.query.userId}
-        }
-        var ViewdToolsData =await ViewdTools.getViewdTool(dataToFind);
-        return res.send({success:true, code:200, msg:"Successfully viewd tool found",data:ViewdToolsData})
-    }catch(error){
-        
-        return res.send({success:true, code:500, msg:"Error in getting v9iewd tool"})
-    }
 
-}
+
+
 /*
 |--------------------------------------
 | @services : Update Viewd  tool
@@ -94,4 +90,34 @@ service.updateViewedTool = async (req,res) =>{
     }
 
 }
+
+
+
+
+
+
+
+/*
+|--------------------------------------
+| @services : Get getRecentViewTool
+|--------------------------------------
+*/
+service.getRecentViewTool = async (req,res) =>{
+    if(!req.body.userId){
+        return res.send({success:false, code:500, msg:"userId is missing."});
+    }
+    try{
+        var dataToFind = {
+            query:{viewedBy:ObjectID(req.body.userId)}
+        }
+        var ViewdToolsData =await ViewdTools.getViewdTool(dataToFind);
+        return res.send({success:true, code:200, msg:"Successfully viewd tool found",data:ViewdToolsData})
+    }catch(error){
+        
+        return res.send({success:true, code:500, msg:"Error in getting v9iewd tool"})
+    }
+
+}
+
+
 export default service;
