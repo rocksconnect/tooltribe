@@ -39,35 +39,23 @@ service.addViewedTool = async (req,res) =>{
     }
 
     try{
-        /*var dataToAdd = ViewdTools({
-            viewedBy:req.body.userId,
-            toolId:req.body.toolId
-        })
-        var saveViewdTools = await ViewdTools.addViewdTools(dataToAdd);*/
-
         var data = await ViewdTools.getOneViewdTool({viewedBy:ObjectID(req.body.userId),toolId:ObjectID(req.body.toolId)});
 
-        var status = false;
-        
         if(data){
             var dataToUpdate = {
                 query:{toolId:req.body.toolId,viewedBy:req.body.userId},
                 data:{$set:{updatedAt:new Date()}}
             }
             await ViewdTools.updateViewdTools(dataToUpdate);
-            status = 'update';
-        
         }else{
             var dataToAdd = ViewdTools({
                 viewedBy:req.body.userId,
                 toolId:req.body.toolId
             })
             await ViewdTools.addViewdTools(dataToAdd);
-            status = 'insert';
         }
         
-
-        return res.send({success:true, code:200, msg:"Successfully added", data:status});
+        return res.send({success:true, code:200, msg:"Successfully added"});
     }catch(error){
         return res.send({success:true, code:500, msg:"Error in add viewed tool"})
     }
