@@ -92,6 +92,22 @@ ToolModel.getDeatilsToolById = (toolToFind) => {
         {
             $unwind:"$categoryDocs"
         },
+
+        {
+            $lookup:{
+                from:"user",
+                localField:"userId",
+                foreignField:"_id",
+                as:"userDocs"
+            }
+        },
+        {
+            $unwind:"$userDocs"
+        },
+
+
+
+
         {
             $project:{
                 toolId: 1,
@@ -125,7 +141,13 @@ ToolModel.getDeatilsToolById = (toolToFind) => {
                 rating:"3",
                 brandName:"$brandDocs.brandName",
                 brandDescription:"$brandDocs.brandDescription",
-                category:"$categoryDocs.category"
+                category:"$categoryDocs.category",
+                userId:"$userDocs._id",
+                userName:"$userDocs.fullName",
+                userEmail:"$userDocs.email",
+                userProfileImg:"$userDocs.pathOfProfileImg",
+                rentals:"5",
+                userRating:"4.5"
             }
         }
 
