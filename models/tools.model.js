@@ -36,6 +36,9 @@ const ToolSchema = mongoose.Schema({
         country:{type: String },
         zipCode:{type:String}
     },
+    ratings:{type:String},
+    rentedUser:{type:String},
+    distance:{type:String},
     toolAvailability:{
         from:{type:Date, default: Date.now},
         to:{type:Date, default: Date.now}
@@ -147,9 +150,10 @@ ToolModel.getToolList = (dataToFind)=>{
 
 
 ToolModel.getCategoryToolList = (param)=>{
+    console.log("query == ",JSON.stringify(param.query))
     console.log(param.page);
     let page = common.pageLimit * Math.max(0, param.page);
-    return  ToolModel.find({categoryId:param.categoryId,hideTool:"NO"}).skip(page).limit(common.pageLimit).lean().sort({createAt:-1}); 
+    return  ToolModel.find(param.query).skip(page).limit(common.pageLimit).lean().sort({createAt:-1}); 
 
 }
 

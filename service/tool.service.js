@@ -77,28 +77,65 @@ service.getCategoryToolList = async (req,res)=>{
     if(!req.body.page){
         return res.send({success:false, code:500, msg:"page is missing"})
     }
-
+    var condition = [];
+    if(req.body.brandId){
+        condition.push({brandId:ObjectID(req.body.brandId)})
+    }
+    if(req.body.categoryId){
+        condition.push({categoryId:ObjectID(req.body.categoryId)})
+    }
+    if(req.body.shipment){
+        condition.push({shipment:req.body.shipment})
+    }
+    if(req.body.sellingPriceTo && req.body.sellingPriceFrom ){
+        let temp = {"sellingPrice" : { 
+            "$gte" : req.body.sellingPriceTo,
+            "$lte" : req.body.sellingPriceFrom
+        }}
+        
+        condition.push(temp)
+    }
+    condition.push({hideTool:"NO"})
+    // if(req.body.reviews){
+    //     condition.push({reviews:req.body.categoryId})
+    // }
+    var param = {
+        query:{
+            $and:condition
+        },
+        page:req.body.page
+    };
     try{
-        var param = {
-                categoryId:req.body.categoryId,
-                page:req.body.page
-            };
 
         var data  = await Tools.getCategoryToolList(param);
-        
-        let addOn = data.map(function(result){
-            result['ratings']    = Math.floor(Math.random() * 5);
-            result['rentedUser'] = Math.floor(Math.random() * 150);
-            return result;
+        var originalData = [];
+        data.forEach(function(result,index){
+            console.log("index  = ",index)
+            data[index].ratings    = Math.floor(Math.random() * 5);
+            data[index].rentedUser = Math.floor(Math.random() * 150);
+            //data[index].distance = distance(29.309532,78.233889,result.toolLocation.latitude,result.toolLocation.longitude);
+
+            if(req.body.distanceTo && req.body.distanceFrom){
+                if(data[index].distance>=req.body.distanceTo && data[index].distance<=req.body.distanceFrom){
+                    
+                     originalData.push(data[index]);
+                }
+            }else{
+                
+                 originalData.push(data[index]);
+            }
+          
         });
         //var count = await Tools.getCategoryToolCount({categoryId:req.body.categoryId});
 
-        if(addOn){
-            return res.send({success:true, code:200, msg:"succes", data:addOn});
-        }else{
-            return res.send({success:false, code:500, msg:"Error in finding getToolList"});
-        }
+        // if(addOn){
+        console.log("Stop")
+            return res.send({success:true, code:200, msg:"succes", data:originalData});
+        // }else{
+        //     return res.send({success:false, code:500, msg:"Error in finding getToolList"});
+        // }
     }catch(error){
+        console.log(error)
         return res.send({success:false, code:500, msg:"Error in finding getToolList", err:error});
     }
 }
@@ -449,5 +486,15 @@ service.addShareTool = async (req,res)=>{
         console.log(error,"error")
         return res.send({success:true, code:500, msg:"Error in adding of shared tool"})
     }
+}
+function distance(lat1, lon1, lat2, lon2) {
+
+  var p = 0.017453292519943295;    // Math.PI / 180
+  var c = Math.cos;
+  var a = 0.5 - c((lat2 - lat1) * p)/2 + 
+          c(lat1 * p) * c(lat2 * p) * 
+          (1 - c((lon2 - lon1) * p))/2;
+
+  return 12742 * Math.asin(Math.sqrt(a)); // 2 * R; R = 6371 km
 }
 export default service;

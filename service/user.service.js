@@ -443,7 +443,7 @@ service.login = async (req, res) =>{
             var hashed_password1=crypto.createHash('sha512').update(newpass).digest("hex");
             if(hash_db==hashed_password1)
             {
-                var token = jwt.sign({name:loggedUser.name,email:loggedUser.email,_id:loggedUser._id,userType:loggedUser.userType}, 'shhhhh');
+                var token = jwt.sign({name:loggedUser.name,email:loggedUser.email,_id:loggedUser._id,userType:loggedUser.userType,longitude:loggedUser.longitude,latitude:loggedUser.latitude}, 'shhhhh');
 
                 var data ={
                   _id:loggedUser._id,
