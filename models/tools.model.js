@@ -107,10 +107,6 @@ ToolModel.getDeatilsToolById = (toolToFind) => {
         {
             $unwind:"$userDocs"
         },
-
-
-
-
         {
             $project:{
                 toolId: 1,
