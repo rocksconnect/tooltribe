@@ -192,5 +192,9 @@ ToolModel.getUserTool = (where) => {
     return ToolModel.find(where.query);
 }
 
+ToolModel.getSearchTool = (where) => {
+    return ToolModel.find(where.query,{toolName:1});
+}
+
 
 export default ToolModel;

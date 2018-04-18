@@ -77,7 +77,6 @@ service.getCompany = async (req,res)=>{
 			query:{companyName:{ $regex: new RegExp('^'+req.body.text), $options:'i'  }},
 			projection:{trash:0}
 		}
-		console.log(CompanyToFind.query,"queryqueryquery")
 		var AllCompany = await Company.findCompany(CompanyToFind);
 		if(AllCompany){
 			return res.send({success:true, code:200, msg:"Company found succesfully", data:AllCompany});

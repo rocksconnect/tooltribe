@@ -9,6 +9,9 @@ router.post('/getHomeScreenData',(req,res)=>{
     toolService.getHomeScreenData(req,res);
 });
 
+router.post('/homeScreenSearch',(req,res)=>{
+    toolService.homeScreenSearch(req,res);
+});
 
 router.post('/addTool',(req,res)=>{
     toolService.addTool(req,res);
@@ -32,7 +35,7 @@ router.get('/getRecentTool',(req,res)=>{
 })
 
 router.post('/getViewedTool',(req,res)=>{
-    viewdToolService.getRecentViewTool(req,res);
+    toolService.getRecentViewTool(req,res);
 });
 
 router.post('/addViewedTool',(req,res)=>{

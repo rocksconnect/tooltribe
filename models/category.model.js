@@ -108,4 +108,9 @@ CategoryModel.getCategoryList =() =>{
 CategoryModel.editCategory =(categoryToEdit) =>{
 	return CategoryModel.update(categoryToEdit.query,categoryToEdit.data);
 }
+
+
+CategoryModel.getSearchCategory =(whereData) =>{
+    return CategoryModel.find(whereData.query,{category:1});
+}
 export default CategoryModel;

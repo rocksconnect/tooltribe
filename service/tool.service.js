@@ -28,12 +28,10 @@ const service = {};
 
 /**
 |------------------------------------------
-| @Functio : getToolList
+| @Function : getHomeScreenData
 |------------------------------------------
 */
-
 service.getHomeScreenData = async (req,res)=>{
-
     try{
         /*--- get category data---*/
         var categoryToFind = {
@@ -80,6 +78,69 @@ service.getHomeScreenData = async (req,res)=>{
         }else{
             return res.send({success:false, code:500, msg:"Error in finding getToolList"});
         }
+    }catch(error){
+        return res.send({success:false, code:500, msg:"Error in finding getToolList", err:error});
+    }
+}
+
+
+/**
+|------------------------------------------
+| @Function : homeScreenSearch
+|------------------------------------------
+*/
+service.homeScreenSearch = async (req,res)=>{
+    if(!req.body.search){
+        return res.send({success:false, code:500, msg:"search is missing"});
+    }
+
+    try{
+
+        var insertArray = [];
+
+        var whereCategoryData = {
+            query:{category:{ $regex: new RegExp('^'+req.body.search), $options:'i'  }},
+            projection:{trash:false}
+        }
+        var data = await Category.getSearchCategory(whereCategoryData);
+
+        var whereToolData = {
+            query:{toolName:{ $regex: new RegExp('^'+req.body.search), $options:'i'  }},
+            projection:{hideTool:"NO"}
+        }
+
+        var toolData = await Tools.getSearchTool(whereToolData);
+
+        if(data){
+            for (var x in data) {
+                var insertdata = {
+                    "name" : data[x].category,
+                    "type" : 'category',
+                    "_id"  : data[x]._id,
+                    
+                };
+                insertArray.push(insertdata);
+            }
+        }
+
+        if(toolData){
+            for (var x in toolData) {
+                var insertdata = {
+                    "name" : toolData[x].toolName,
+                    "type" : 'tool',
+                    "_id"  : toolData[x]._id,
+                    
+                };
+                insertArray.push(insertdata);
+            }
+        }
+
+        if(data){
+            return res.send({success:true, code:200, msg:"Success", data:insertArray});
+        }else{
+            return res.send({success:false, code:500, msg:"Error in finding getToolList"});
+        }
+
     }catch(error){
         return res.send({success:false, code:500, msg:"Error in finding getToolList", err:error});
     }
@@ -502,11 +563,6 @@ service.getRecentViewTool = async (req,res) =>{
     }
 
 }
-
-
-
-
-
 
 
 
