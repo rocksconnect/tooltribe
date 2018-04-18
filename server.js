@@ -102,7 +102,6 @@ app.use(function(req, res, next) {
                 '/getCategoryToolList',
                 '/getDetailsOfTool'
             ];
-
   //req.url == '/getAllList' || req.url == '/allIdProof' || req.url == '/getCompany' || req.url == '/updateIdProofType' || req.url == '/getTrade' || req.url == '/login' || req.url == '/userLogin' || req.url == '/register' || req.url == '/account_email_validation' || req.url == '/forgetPassword' || req.url == '/forgetPasswordReset' || req.url == '/' || req.url == '/terms' || req.url == '/privacy' || req.url == '/aboutus' || req.url == '/support' || req.url == '/getCategory'
 
     if(arr_demo.indexOf(req.url)>=0){

@@ -48,7 +48,7 @@ router.post('/hideTool',(req,res)=>{
 router.post('/getCategoryToolList',(req,res)=>{
     toolService.getCategoryToolList(req,res);
 });
-router.get('/getDetailsOfTool',(req,res)=>{
+router.post('/getDetailsOfTool',(req,res)=>{
 	toolService.getDetailsOfTool(req,res)
 })
 router.post('/addShareTool',(req,res)=>{

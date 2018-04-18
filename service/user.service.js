@@ -65,18 +65,16 @@ service.getOne=async(req,res)=>{
         userId:req.query.userId}
     console.log(req.query.userId);
  
- try{
-    
-     const getOneUser=await User.getOne(userToFind);
-     logger.info('get one user-' +getOneUser);
-     res.send({"success":true,"code":200,"msg":successMsg.getOneUser,"data":getOneUser});
- }
- catch(err){
-     logger.error('Failed to get user- ' + err);
-     res.send({"success":false, "code":500, "msg":msg.getUser,"err":err});
+    try{
+        
+         const getOneUser=await User.getOne(userToFind);
+         logger.info('get one user-' +getOneUser);
+         res.send({"success":true,"code":200,"msg":successMsg.getOneUser,"data":getOneUser});
+    }catch(err){
+         logger.error('Failed to get user- ' + err);
+         res.send({"success":false, "code":500, "msg":msg.getUser,"err":err});
 
- }
-
+    }
 }
 
 
@@ -691,6 +689,13 @@ service.forgetPasswordReset=async (req,res)=>{
         res.send({success:false, code:500, "msg":"Email is not valid"});
     }
 }
+
+
+/*
+|-------------------------------------------
+| @Function : changePassword
+|-------------------------------------------
+*/
 service.changePassword = async(req,res)=>{
     if(!req.user.email){
         return res.send({success:false, code:500, msg:"Email is missing"})
@@ -746,4 +751,17 @@ service.changePassword = async(req,res)=>{
 
     }
 }
+
+
+/*
+|-------------------------------------------
+| @Function : addDeliveryAddress
+|-------------------------------------------
+*/
+service.addDeliveryAddress = async(req,res)=>{
+
+    return res.send({success:false, code:500, msg:"Email is missing"})
+    
+}
+
 export default service;

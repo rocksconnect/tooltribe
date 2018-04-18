@@ -49,13 +49,13 @@ service.getToolList = async (req,res)=>{
  * @getDetailsOfTool
 */
 service.getDetailsOfTool = async (req,res)=>{
-    if(!req.query.toolId){
+    if(!req.body.toolId){
         return res.send({success:false, code:500, msg:"tool _id is missing"});
     }
     try{
         
         var dataToFind={
-            query:{_id:ObjectID(req.query.toolId)}
+            query:{_id:ObjectID(req.body.toolId)}
         }
         var data = await Tools.getDeatilsToolById(dataToFind);
         return res.send({success:true, code:200, msg:"successfully found", data:data});
