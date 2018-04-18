@@ -19,7 +19,9 @@ const CartSchema = mongoose.Schema({
     handlingCharges:{type:Number},
     deliveryCharges:{type:Number},
     depositAmount:{type:Number},
+    totalAmount:{type:Number},
     travelTimeCalculate:{type:Number},
+
     deliveryAddressId:{type:String},
     pickupAddressId:{type:String},
 
