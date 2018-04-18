@@ -60,6 +60,11 @@ router.post('/addDeliveryAddress',(req,res)=>{
      userService.addDeliveryAddress(req,res);
 })
 
+router.post('/deletedDeliveryAddress',(req,res)=>{
+     userService.deletedDeliveryAddress(req,res);
+})
+
+
 router.post('/assignRoleToUser',(req,res)=>{
      userService.assignRoleToUser(req,res);
 })

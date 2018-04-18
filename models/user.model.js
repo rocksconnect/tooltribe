@@ -138,4 +138,14 @@ UserModel.changePassword=(user)=>{
 UserModel.findOneUpdate = (userObj)=>{
     return UserModel.findOneAndUpdate(userObj.query,userObj.data, {new: true})
 }
+
+UserModel.addDeliveryAddress = (userObj)=>{
+    return UserModel.findOneAndUpdate(userObj.query,userObj.data, {new: true});
+}
+
+UserModel.deletedDeliveryAddress = (userObj)=>{
+    return UserModel.update(userObj.query,userObj.data, {new: true});
+}
+
+
 export default UserModel;

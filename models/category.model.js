@@ -66,6 +66,41 @@ CategoryModel.findCategory = (categoryToFind) =>{
     ).skip(page).limit(common.pageLimit)
 }
 
+
+CategoryModel.findHomeCategory = (categoryToFind) =>{
+    //return CategoryModel.find(categoryToFind.query,categoryToFind.projection).lean();
+
+    
+    return CategoryModel.aggregate(
+        [
+            {$match:categoryToFind.query},
+            {
+            $lookup:
+                {
+                    from:"tools",
+                    localField:"_id",
+                    foreignField:"categoryId",
+                    as:"tool_docs"
+                }
+            },
+            {
+                $project:{
+                    category:1,
+                    categoryId:1,
+                    status:1,
+                    trash:1,
+                    desc:1,
+                    fileName:1,                  
+                    path: 1,
+                    createAt:1,
+                    updatedAt:1,
+                    toolCount:{$size:"$tool_docs"}
+                }
+            }
+        ]
+    ).limit(common.pageLimit)
+}
+
 CategoryModel.getCategoryList =() =>{
     return CategoryModel.find();
 }

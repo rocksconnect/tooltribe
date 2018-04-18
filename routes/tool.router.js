@@ -5,6 +5,10 @@ import viewdToolService from "../service/viewdTool.service";
 const router = express.Router()
 
 
+router.post('/getHomeScreenData',(req,res)=>{
+    toolService.getHomeScreenData(req,res);
+});
+
 
 router.post('/addTool',(req,res)=>{
     toolService.addTool(req,res);

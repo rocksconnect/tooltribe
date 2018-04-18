@@ -5,7 +5,8 @@
  * @lastModifed 26-March-2018
  * @lastModifedBy Shakshi
  */
-
+import Category from '../models/category.model'
+import ViewdTools from '../models/viewdTool.model'
 import Tools from '../models/tools.model'
 import ShareTool from '../models/shareTool.model'
 import logger from '../core/logger/app.logger'
@@ -24,6 +25,65 @@ import ObjectID from "bson-objectid";
  */
 
 const service = {};
+
+/**
+|------------------------------------------
+| @Functio : getToolList
+|------------------------------------------
+*/
+
+service.getHomeScreenData = async (req,res)=>{
+
+    try{
+        /*--- get category data---*/
+        var categoryToFind = {
+            query:{trash:"false"},
+            projection:{trash:0},
+            page:req.body.page
+        }
+        var categoryData = await Category.findHomeCategory(categoryToFind);
+
+        /*--- get recent viewed tool data---*/
+        var viewdToolData = [];
+        if(req.body.userId){
+            var dataToFind = {
+                query:{viewedBy:ObjectID(req.body.userId)}
+            }
+            viewdToolData = await ViewdTools.getViewdTool(dataToFind);
+        }
+       
+        /*--- get recent tool data---*/
+        var recentToolData = await Tools.getToolList();
+        let recentToolData = recentToolData.map(function(result){
+            result['ratings']    = Math.floor(Math.random() * 5);
+            result['rentedUser'] = Math.floor(Math.random() * 150);
+            return result;
+        });
+
+
+        if(!req.body.type){
+            var data = {
+                recentToolData:recentToolData,
+                viewdToolData:viewdToolData,
+                categoryData:categoryData
+            };
+        }else{
+            var data = {
+                recentToolData:(req.body.type=='recentTool')?recentToolData:[],
+                viewdToolData:(req.body.type=='viewdTool')?recentToolData:[],
+                categoryData:(req.body.type=='category')?recentToolData:[]
+            };
+        }
+        
+        if(data){
+            return res.send({success:true, code:200, msg:"Success", data:data});
+        }else{
+            return res.send({success:false, code:500, msg:"Error in finding getToolList"});
+        }
+    }catch(error){
+        return res.send({success:false, code:500, msg:"Error in finding getToolList", err:error});
+    }
+}
 
 
 
@@ -531,6 +591,7 @@ service.addShareTool = async (req,res)=>{
         return res.send({success:true, code:500, msg:"Error in adding of shared tool"})
     }
 }
+
 function distance(lat1, lon1, lat2, lon2) {
 
   var p = 0.017453292519943295;    // Math.PI / 180
