@@ -29,8 +29,8 @@ const ToolSchema = mongoose.Schema({
     activeAfter : {type:Date, default: Date.now}, // after this date tool will display to front, from lastdate + time
     toolLocation: {   // pickup address
         address:{type:String},
-        latitude:{type:String},
-        longitude:{type:String},
+        latitude:{type:Number},
+        longitude:{type:Number},
         city:{type: String},
         state:{type: String },
         country:{type: String },
