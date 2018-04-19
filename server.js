@@ -20,6 +20,7 @@ import brand from './routes/brand.router.js';
 import userservice from './service/user.service.js';
 import index from './routes/index.router.js';
 import company from './routes/company.router.js';
+import cart from './routes/cart.router.js';
 import net from 'net';
 import cors from 'cors';
 import jwt from 'jsonwebtoken'
@@ -168,6 +169,7 @@ app.use(idProofType);
 app.use(brand);
 app.use(company);
 app.use(tool);
+app.use(cart);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

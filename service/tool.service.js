@@ -87,6 +87,12 @@ service.getCategoryToolList = async (req,res)=>{
     if(req.body.shipment){
         condition.push({shipment:req.body.shipment})
     }
+    if(req.body.searchKeyword){
+        condition.push({toolName:{ $regex: new RegExp('^'+req.body.searchKeyword), $options:'i'  } })
+    }
+    if(req.body.accessories){
+        condition.push({accessories:{$ne: null}})
+    }
     if(req.body.sellingPriceTo && req.body.sellingPriceFrom ){
         let temp = {"sellingPrice" : { 
             "$gte" : req.body.sellingPriceTo,

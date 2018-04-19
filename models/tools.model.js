@@ -51,6 +51,7 @@ const ToolSchema = mongoose.Schema({
         imgPath:{type:String}
     }],
     toolStatus :{type:String, default: 'AVAILABLE'}, // {AVAILABLE: available for booking,BOOKED: Pre Booked for future,RENTED : already on rent} 
+    
     createAt:{type: Date, default: Date.now},
     updatedAt:{type: Date, default: Date.now}
   }, {collection : 'tools'});

@@ -4,7 +4,7 @@ AutoIncrement.initialize(mongoose);
 
 const CartSchema = mongoose.Schema({   
     cartId: {type: Number },
-    toolId: {type: String },
+    toolId: {type: mongoose.Schema.ObjectId ,required: true },
     orderNo:{type:String},
     toolName:{type:String},
     transactionType:{type:String},
@@ -32,6 +32,9 @@ const CartSchema = mongoose.Schema({
         zipCode:{type:String}
     },
     shipmentType:{type:String},
+    toolImageSrc:{type:String},
+    phoneNo:{type:Number},
+    trash:{type:String},
     createAt:{type: Date, default: Date.now},
     updatedAt:{type: Date, default: Date.now}
   }, {collection : 'cart'});
@@ -40,6 +43,11 @@ const CartSchema = mongoose.Schema({
 
 let CartModel = mongoose.model('cart',CartSchema);
 
-
+CartModel.addCart = (cartToAdd) => {
+    return cartToAdd.save();
+}
+CartModel.getCartList = (cartToFind) => {
+    return CartModel.find(cartToFind.query);
+}
 
 export default CartModel;
