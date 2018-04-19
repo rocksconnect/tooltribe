@@ -65,18 +65,16 @@ service.getOne=async(req,res)=>{
         userId:req.query.userId}
     console.log(req.query.userId);
  
- try{
-    
-     const getOneUser=await User.getOne(userToFind);
-     logger.info('get one user-' +getOneUser);
-     res.send({"success":true,"code":200,"msg":successMsg.getOneUser,"data":getOneUser});
- }
- catch(err){
-     logger.error('Failed to get user- ' + err);
-     res.send({"success":false, "code":500, "msg":msg.getUser,"err":err});
+    try{
+        
+         const getOneUser=await User.getOne(userToFind);
+         logger.info('get one user-' +getOneUser);
+         res.send({"success":true,"code":200,"msg":successMsg.getOneUser,"data":getOneUser});
+    }catch(err){
+         logger.error('Failed to get user- ' + err);
+         res.send({"success":false, "code":500, "msg":msg.getUser,"err":err});
 
- }
-
+    }
 }
 
 
@@ -691,6 +689,13 @@ service.forgetPasswordReset=async (req,res)=>{
         res.send({success:false, code:500, "msg":"Email is not valid"});
     }
 }
+
+
+/*
+|-------------------------------------------
+| @Function : changePassword
+|-------------------------------------------
+*/
 service.changePassword = async(req,res)=>{
     if(!req.user.email){
         return res.send({success:false, code:500, msg:"Email is missing"})
@@ -746,4 +751,114 @@ service.changePassword = async(req,res)=>{
 
     }
 }
+
+
+/*
+|-------------------------------------------
+| @Function : addDeliveryAddress
+|-------------------------------------------
+*/
+service.addDeliveryAddress = async(req,res)=>{
+
+    if(!req.body.userId){
+        return res.send({success:false, code:500, msg:"userId _id is missing"});
+    }
+
+    if(!req.body.address){
+        return res.send({success:false, code:500, msg:"address is missing"});
+    }
+
+    if(!req.body.city){
+        return res.send({success:false, code:500, msg:"city is missing"});
+    }
+
+    if(!req.body.state){
+        return res.send({success:false, code:500, msg:"state is missing"});
+    }
+
+    if(!req.body.country){
+        return res.send({success:false, code:500, msg:"country is missing"});
+    }
+
+    if(!req.body.latitude){
+        return res.send({success:false, code:500, msg:"latitude is missing"});
+    }
+
+    if(!req.body.longitude){
+        return res.send({success:false, code:500, msg:"longitude is missing"});
+    }
+
+    try{
+
+        var updateArr = {
+            address:req.body.address,
+            isDefault:'',
+            latitude:req.body.latitude,
+            longitude:req.body.longitude,
+            city:req.body.city,
+            state:req.body.state,
+            country:req.body.country,
+            zipCode:(req.body.zipCode)?req.body.zipCode:''
+        };
+
+        var userToEdit = {
+                query:{_id:req.body.userId},
+                data:{ $addToSet:{"deliveryAddress":updateArr}}
+            }
+        
+        var data = await User.addDeliveryAddress(userToEdit);
+
+        if(data){
+            return res.send({success:true, code:200, msg:"succes", data:data});
+        }else{
+            return res.send({success:false, code:500, msg:"Error"});
+        }
+
+    }catch(error){
+        return res.send({success:false, code:500, msg:"Error in updating", err:error});
+    }
+}
+
+/*
+|-------------------------------------------
+| @Function : deletedDeliveryAddress
+|-------------------------------------------
+*/
+service.deletedDeliveryAddress = async(req,res)=>{
+
+    if(!req.body.userId){
+        return res.send({success:false, code:500, msg:"userId _id is missing"});
+    }
+    if(!req.body.addressId){
+        return res.send({success:false, code:500, msg:"addressId _id is missing"});
+    }
+
+    try{
+
+        var userToEdit = {
+                query:{_id:req.body.userId},
+                data:{ $pull:{"deliveryAddress":{'_id':req.body.addressId}}}
+            }
+
+        var data = await User.deletedDeliveryAddress(userToEdit);
+
+        if(data){
+            return res.send({success:true, code:200, msg:"succes", data:data});
+        }else{
+            return res.send({success:false, code:500, msg:"Error"});
+        }
+
+    }catch(error){
+        return res.send({success:false, code:500, msg:"Error", err:error});
+    }
+
+    var tradeToEdit = {
+            query:{_id:req.body.userId},
+            data:{ $addToSet:{"deliveryAddress":updateArr}}
+        }
+    var UpdateddTrade = await User.addDeliveryAddress(tradeToEdit);
+
+    return res.send({success:false, code:500, msg:UpdateddTrade})
+}
+
 export default service;

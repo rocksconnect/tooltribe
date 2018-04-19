@@ -5,6 +5,13 @@ import viewdToolService from "../service/viewdTool.service";
 const router = express.Router()
 
 
+router.post('/getHomeScreenData',(req,res)=>{
+    toolService.getHomeScreenData(req,res);
+});
+
+router.post('/homeScreenSearch',(req,res)=>{
+    toolService.homeScreenSearch(req,res);
+});
 
 router.post('/addTool',(req,res)=>{
     toolService.addTool(req,res);
@@ -28,7 +35,7 @@ router.get('/getRecentTool',(req,res)=>{
 })
 
 router.post('/getViewedTool',(req,res)=>{
-    viewdToolService.getRecentViewTool(req,res);
+    toolService.getRecentViewTool(req,res);
 });
 
 router.post('/addViewedTool',(req,res)=>{
@@ -48,7 +55,7 @@ router.post('/hideTool',(req,res)=>{
 router.post('/getCategoryToolList',(req,res)=>{
     toolService.getCategoryToolList(req,res);
 });
-router.get('/getDetailsOfTool',(req,res)=>{
+router.post('/getDetailsOfTool',(req,res)=>{
 	toolService.getDetailsOfTool(req,res)
 })
 router.post('/addShareTool',(req,res)=>{

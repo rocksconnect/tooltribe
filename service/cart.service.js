@@ -73,6 +73,12 @@ service.addCart = async (req,res)=>{
 	if(!req.body.toolImageSrc){
 		return res.send({success:false, code:500, msg:"toolImageSrc is missing"});
 	}
+	if(!req.body.deviceId){
+		return res.send({success:false, code:500, msg:"deviceId is missing"});
+	}
+	if(!req.body.userId){
+		return res.send({success:false, code:500, msg:"userId is missing"});
+	}
 	
 	try{
 		var insertData = Cart({
@@ -89,6 +95,8 @@ service.addCart = async (req,res)=>{
 			pickupAddress:req.body.pickupAddress,
 			shipmentType:req.body.shipmentType,
 			toolImageSrc:req.body.toolImageSrc,
+			deviceId:req.body.deviceId,
+			userId:req.body.userId,
 			trash:false
 		});
 		

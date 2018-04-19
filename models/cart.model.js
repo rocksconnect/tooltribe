@@ -4,15 +4,28 @@ AutoIncrement.initialize(mongoose);
 
 const CartSchema = mongoose.Schema({   
     cartId: {type: Number },
-    toolId: {type: mongoose.Schema.ObjectId ,required: true },
-    orderNo:{type:String},
+    toolId: {type: mongoose.Schema.ObjectId ,required: true},
+    userId: {type: mongoose.Schema.ObjectId ,required: true},
+    deviceId: {type: String},
     toolName:{type:String},
-    transactionType:{type:String},
+    toolImageSrc:{type:String},
+    poNumber:{type:String}, // this will be upldated after place order into cart to track 
+    transactionType:{type:String}, // {BUY/RENT}    
+    shipmentType:{type:String}, // {PICKUP/DELIVERY}    
     toolRental:{type:Number},
     toolPrice:{type:Number},
     rentalDays:{type:Number},
+    
+    referalCode:{type:String}, 
+    handlingCharges:{type:Number},
+    deliveryCharges:{type:Number},
+    depositAmount:{type:Number},
+    totalAmount:{type:Number},
+    travelTimeCalculate:{type:Number},
+
     deliveryAddressId:{type:String},
     pickupAddressId:{type:String},
+
     deliveryAddress:{
         address:{type:String},
         latitude:{type:String},
@@ -31,10 +44,12 @@ const CartSchema = mongoose.Schema({
         country:{type: String },
         zipCode:{type:String}
     },
+
     shipmentType:{type:String},
     toolImageSrc:{type:String},
     phoneNo:{type:Number},
     trash:{type:String},
+
     createAt:{type: Date, default: Date.now},
     updatedAt:{type: Date, default: Date.now}
   }, {collection : 'cart'});
