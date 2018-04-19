@@ -8,7 +8,8 @@ const CartSchema = mongoose.Schema({
     userId: {type: mongoose.Schema.ObjectId ,required: true},
     deviceId: {type: String},
     toolName:{type:String},
-    poNumber:{type:String},
+    toolImageSrc:{type:String},
+    poNumber:{type:String}, // this will be upldated after place order into cart to track 
     transactionType:{type:String}, // {BUY/RENT}    
     shipmentType:{type:String}, // {PICKUP/DELIVERY}    
     toolRental:{type:Number},
