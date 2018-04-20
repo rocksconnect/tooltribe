@@ -54,20 +54,24 @@ router.post('/changePassword',(req,res)=>{
 
 router.post('/updateUser',(req,res)=>{
      userService.update(req,res);
-})
+});
 
 router.post('/addDeliveryAddress',(req,res)=>{
      userService.addDeliveryAddress(req,res);
-})
+});
 
 router.post('/deletedDeliveryAddress',(req,res)=>{
      userService.deletedDeliveryAddress(req,res);
-})
+});
+
+router.post('/getUserProfile',(req,res)=>{
+    userService.getUserProfile(req,res)
+});
 
 
 router.post('/assignRoleToUser',(req,res)=>{
      userService.assignRoleToUser(req,res);
-})
+});
 
 
 export default router;

@@ -147,5 +147,9 @@ UserModel.deletedDeliveryAddress = (userObj)=>{
     return UserModel.update(userObj.query,userObj.data, {new: true});
 }
 
+UserModel.getUserProfile = (where) => {
+  return UserModel.findOne(where,{fullName:1,email:1,phone:1,address:1,city:1,state:1,zipCode:1,deviceId:1,deviceType:1,deviceToken:1,longitude:1,latitude:1,pathOfProfileImg:1,deliveryAddress:1}).lean();
+}
+
 
 export default UserModel;

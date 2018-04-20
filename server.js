@@ -14,8 +14,8 @@ import category from './routes/category.router.js';
 import idProofType from './routes/idProofType.router.js';
 import tool from './routes/tool.router.js';
 
-
 import brand from './routes/brand.router.js';
+
 
 import userservice from './service/user.service.js';
 import index from './routes/index.router.js';
@@ -173,6 +173,9 @@ app.use(brand);
 app.use(company);
 app.use(tool);
 app.use(cart);
+
+
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
