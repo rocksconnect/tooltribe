@@ -57,6 +57,7 @@ let CartModel = mongoose.model('cart',CartSchema);
 CartModel.addCart = (cartToAdd) => {
     return cartToAdd.save();
 }
+
 CartModel.getCartList = (cartToFind) => {
     return CartModel.find(cartToFind.query);
 }

@@ -17,6 +17,8 @@ import jwt from 'jsonwebtoken'
 import nm from 'nodemailer'
 import rand from 'csprng'
 
+import ObjectID from "bson-objectid";
+
 
 
 
@@ -134,9 +136,9 @@ service.addUser = async (req, res) => {
     if(!req.body.longitude){
       return res.send({success:false, code:500, msg:"longitude is missing"});
     }
-    if(!req.body.companyId && !req.body.companyName ){
+    /*if(!req.body.companyId && !req.body.companyName ){
       return res.send({success:false, code:500, msg:"CompanyId or companyName  is missing"})
-    }
+    }*/
     
     
     if(!req.body.city){
@@ -233,6 +235,9 @@ service.addUser = async (req, res) => {
       fullName:req.body.fullName,
       email: req.body.email,
       phone:req.body.phone,
+
+      about:(req.body.about)?req.body.about:'',
+
       address:req.body.address,
       city: (req.body.city) ? req.body.city : '',
       state: (req.body.state) ? req.body.state : '',
@@ -865,7 +870,7 @@ service.getUserProfile = async (req,res)=>{
     }
 
     try{
-        var userData = await User.getUserProfile({_id:req.body.userId});
+        var userData = await User.getUserProfile({_id:ObjectID(req.body.userId)});
 
         if(userData){
             userData['ratings']    = Math.floor(Math.random() * 5);
