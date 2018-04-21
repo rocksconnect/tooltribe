@@ -34,7 +34,7 @@ router.get('/getRecentTool',(req,res)=>{
 });
 
 router.post('/getViewedTool',(req,res)=>{
-    toolService.getRecentViewTool(req,res);
+    viewdToolService.getRecentViewTool(req,res);
 });
 
 router.post('/addViewedTool',(req,res)=>{

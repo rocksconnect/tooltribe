@@ -1,3 +1,4 @@
+
 import mongoose from 'mongoose';
 import AutoIncrement from "mongoose-auto-increment";
 AutoIncrement.initialize(mongoose);
@@ -12,20 +13,18 @@ const CartSchema = mongoose.Schema({
     poNumber:{type:String}, // this will be upldated after place order into cart to track 
     transactionType:{type:String}, // {BUY/RENT}    
     shipmentType:{type:String}, // {PICKUP/DELIVERY}    
+   
     toolRental:{type:Number},
     toolPrice:{type:Number},
     rentalDays:{type:Number},
-    
-    referalCode:{type:String}, 
     handlingCharges:{type:Number},
     deliveryCharges:{type:Number},
     depositAmount:{type:Number},
+    
     totalAmount:{type:Number},
     travelTimeCalculate:{type:Number},
-
     deliveryAddressId:{type:String},
-    pickupAddressId:{type:String},
-
+    
     deliveryAddress:{
         address:{type:String},
         latitude:{type:String},
@@ -45,9 +44,6 @@ const CartSchema = mongoose.Schema({
         zipCode:{type:String}
     },
 
-    shipmentType:{type:String},
-    toolImageSrc:{type:String},
-    phoneNo:{type:Number},
     trash:{type:String},
 
     createAt:{type: Date, default: Date.now},
@@ -63,6 +59,14 @@ CartModel.addCart = (cartToAdd) => {
 }
 CartModel.getCartList = (cartToFind) => {
     return CartModel.find(cartToFind.query);
+}
+
+CartModel.getOneCart = (where) => {
+    return CartModel.find(where).sort({updatedAt:-1});
+}
+
+CartModel.removeToCart = (where) => {
+    return CartModel.remove(where);
 }
 
 export default CartModel;
