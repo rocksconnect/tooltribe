@@ -48,20 +48,27 @@ service.getHomeScreenData = async (req,res)=>{
                 query:{viewedBy:ObjectID(req.body.userId)}
             }
             viewdToolData = await ViewdTools.getViewdTool(dataToFind);
-            let viewdToolData = viewdToolData.map(function(result){
+
+            if(viewdToolData){
+                viewdToolData.map(function(result){
+                    result['ratings']    = Math.floor(Math.random() * 5);
+                    result['rentedUser'] = Math.floor(Math.random() * 150);
+                    return result;
+                });
+            }
+            
+        }
+       
+        /*--- get recent tool data---*/
+        var recentToolData = await Tools.getToolList();
+        if(recentToolData){
+            recentToolData.map(function(result){
                 result['ratings']    = Math.floor(Math.random() * 5);
                 result['rentedUser'] = Math.floor(Math.random() * 150);
                 return result;
             });
         }
-       
-        /*--- get recent tool data---*/
-        var recentToolData = await Tools.getToolList();
-        let recentToolData = recentToolData.map(function(result){
-            result['ratings']    = Math.floor(Math.random() * 5);
-            result['rentedUser'] = Math.floor(Math.random() * 150);
-            return result;
-        });
+        
 
 
         if(!req.body.type){
