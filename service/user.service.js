@@ -887,6 +887,8 @@ service.getUserProfile = async (req,res)=>{
                 'name':'amit yadav'
             }
             ];
+        }else{
+          userData = {};
         }
         return res.send({success:true, code:200, msg:"success.", data:userData});
     }catch(error){
