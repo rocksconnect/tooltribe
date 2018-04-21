@@ -873,6 +873,9 @@ service.getUserProfile = async (req,res)=>{
         var userData = await User.getUserProfile({_id:ObjectID(req.body.userId)});
 
         if(userData){
+
+            
+
             userData['ratings']    = Math.floor(Math.random() * 5);
             userData['rentedUser'] = Math.floor(Math.random() * 150);
             userData['reviews']    = [
