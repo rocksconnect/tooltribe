@@ -106,6 +106,8 @@ service.getRecentViewTool = async (req,res) =>{
     if(!req.body.userId){
         return res.send({success:false, code:500, msg:"userId is missing."});
     }
+
+    //done
     try{
         var dataToFind = {
             query:{viewedBy:ObjectID(req.body.userId)}

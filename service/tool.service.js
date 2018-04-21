@@ -48,6 +48,11 @@ service.getHomeScreenData = async (req,res)=>{
                 query:{viewedBy:ObjectID(req.body.userId)}
             }
             viewdToolData = await ViewdTools.getViewdTool(dataToFind);
+            let viewdToolData = viewdToolData.map(function(result){
+                result['ratings']    = Math.floor(Math.random() * 5);
+                result['rentedUser'] = Math.floor(Math.random() * 150);
+                return result;
+            });
         }
        
         /*--- get recent tool data---*/
@@ -68,8 +73,8 @@ service.getHomeScreenData = async (req,res)=>{
         }else{
             var data = {
                 recentToolData:(req.body.type=='recentTool')?recentToolData:[],
-                viewdToolData:(req.body.type=='viewdTool')?recentToolData:[],
-                categoryData:(req.body.type=='category')?recentToolData:[]
+                viewdToolData:(req.body.type=='viewdTool')?viewdToolData:[],
+                categoryData:(req.body.type=='category')?categoryData:[]
             };
         }
         
