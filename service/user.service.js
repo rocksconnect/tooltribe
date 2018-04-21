@@ -573,7 +573,7 @@ service.userLogin = async (req, res) =>{
                     var token = jwt.sign({name:loggedUser.name,email:loggedUser.email,_id:loggedUser._id,userType:loggedUser.userType}, 'shhhhh');
                     res.send({success:true, code:200, msg:successMsg.loginUser, data:loggedUser, token:token });
                 }else{
-                   res.send({"success":false,"code":"500","msg":"password does not match"})
+                   res.send({"success":false,"code":500,"msg":"password does not match"})
                 }
 
             }else{
