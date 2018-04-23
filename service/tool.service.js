@@ -37,9 +37,9 @@ service.getHomeScreenData = async (req,res)=>{
         var categoryToFind = {
             query:{trash:"false"},
             projection:{trash:0},
-            page:req.body.page
+            page:0
         }
-        var categoryData = await Category.findHomeCategory(categoryToFind);
+        var categoryData = await Category.findCategory(categoryToFind);
 
         /*--- get recent viewed tool data---*/
         var viewdToolData = [];
@@ -48,15 +48,27 @@ service.getHomeScreenData = async (req,res)=>{
                 query:{viewedBy:ObjectID(req.body.userId)}
             }
             viewdToolData = await ViewdTools.getViewdTool(dataToFind);
+
+            if(viewdToolData){
+                viewdToolData.map(function(result){
+                    result['ratings']    = Math.floor(Math.random() * 5);
+                    result['rentedUser'] = Math.floor(Math.random() * 150);
+                    return result;
+                });
+            }
+            
         }
        
         /*--- get recent tool data---*/
         var recentToolData = await Tools.getToolList();
-        let recentToolData = recentToolData.map(function(result){
-            result['ratings']    = Math.floor(Math.random() * 5);
-            result['rentedUser'] = Math.floor(Math.random() * 150);
-            return result;
-        });
+        if(recentToolData){
+            recentToolData.map(function(result){
+                result['ratings']    = Math.floor(Math.random() * 5);
+                result['rentedUser'] = Math.floor(Math.random() * 150);
+                return result;
+            });
+        }
+        
 
 
         if(!req.body.type){
@@ -68,8 +80,8 @@ service.getHomeScreenData = async (req,res)=>{
         }else{
             var data = {
                 recentToolData:(req.body.type=='recentTool')?recentToolData:[],
-                viewdToolData:(req.body.type=='viewdTool')?recentToolData:[],
-                categoryData:(req.body.type=='category')?recentToolData:[]
+                viewdToolData:(req.body.type=='viewdTool')?viewdToolData:[],
+                categoryData:(req.body.type=='category')?categoryData:[]
             };
         }
         
@@ -94,7 +106,31 @@ service.homeScreenSearch = async (req,res)=>{
         return res.send({success:false, code:500, msg:"search is missing"});
     }
 
+    if(req.body.location){
+        if(!req.body.latitude){
+            return res.send({success:false, code:500, msg:"latitude is missing"});
+        }
+        if(!req.body.longitude){
+            return res.send({success:false, code:500, msg:"longitude is missing"});
+        }
+    }
+
     try{
+
+        if(req.body.location){
+            var lat1  = (req.body.latitude)?req.body.latitude:22.753285;
+            var long1 = (req.body.longitude)?req.body.longitude:75.893696;
+
+            var data = await Tools.getToolList();
+
+            for (var x in data) {
+               data[x]['distance'] = distance(lat1, long1, data[x]['toolLocation']['latitude'], data[x]['toolLocation']['longitude']);
+            }
+
+            //var a = distance(22.753285, 75.893696, 22.962267, 76.050795);
+            return res.send({success:true, code:200, msg:"Success", data:data});
+        }
+        
 
         var insertArray = [];
 
@@ -570,8 +606,6 @@ service.getRecentViewTool = async (req,res) =>{
 
 }
 
-
-
 /*
 |-------------------------------------
 | @services : hideTool
@@ -647,20 +681,26 @@ service.addShareTool = async (req,res)=>{
             shareType:req.body.shareType
         })
         var saveShareTool = ShareTool.addShareTools(dataToAdd);
-        return res.send({success:true, code:200, msg:"Successfully Add shared tool"})
+        return res.send({success:true, code:200, msg:"Successfully Add shared tool"});
     }catch(error){
         console.log(error,"error")
-        return res.send({success:true, code:500, msg:"Error in adding of shared tool"})
+        return res.send({success:true, code:500, msg:"Error in adding of shared tool"});
     }
 }
 
+
+/*
+|-------------------------------------
+| @services : distance
+|-------------------------------------
+*/
 function distance(lat1, lon1, lat2, lon2) {
 
-  var p = 0.017453292519943295;    // Math.PI / 180
-  var c = Math.cos;
-  var a = 0.5 - c((lat2 - lat1) * p)/2 + 
-          c(lat1 * p) * c(lat2 * p) * 
-          (1 - c((lon2 - lon1) * p))/2;
+    var p = 0.017453292519943295;    // Math.PI / 180
+    var c = Math.cos;
+    var a = 0.5 - c((lat2 - lat1) * p)/2 + 
+            c(lat1 * p) * c(lat2 * p) * 
+            (1 - c((lon2 - lon1) * p))/2;
 
   return 12742 * Math.asin(Math.sqrt(a)); // 2 * R; R = 6371 km
 }

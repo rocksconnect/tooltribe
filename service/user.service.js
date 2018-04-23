@@ -17,6 +17,8 @@ import jwt from 'jsonwebtoken'
 import nm from 'nodemailer'
 import rand from 'csprng'
 
+import ObjectID from "bson-objectid";
+
 
 
 
@@ -134,9 +136,9 @@ service.addUser = async (req, res) => {
     if(!req.body.longitude){
       return res.send({success:false, code:500, msg:"longitude is missing"});
     }
-    if(!req.body.companyId && !req.body.companyName ){
+    /*if(!req.body.companyId && !req.body.companyName ){
       return res.send({success:false, code:500, msg:"CompanyId or companyName  is missing"})
-    }
+    }*/
     
     
     if(!req.body.city){
@@ -233,6 +235,9 @@ service.addUser = async (req, res) => {
       fullName:req.body.fullName,
       email: req.body.email,
       phone:req.body.phone,
+
+      about:(req.body.about)?req.body.about:'',
+
       address:req.body.address,
       city: (req.body.city) ? req.body.city : '',
       state: (req.body.state) ? req.body.state : '',
@@ -573,7 +578,7 @@ service.userLogin = async (req, res) =>{
                     var token = jwt.sign({name:loggedUser.name,email:loggedUser.email,_id:loggedUser._id,userType:loggedUser.userType}, 'shhhhh');
                     res.send({success:true, code:200, msg:successMsg.loginUser, data:loggedUser, token:token });
                 }else{
-                   res.send({"success":false,"code":"500","msg":"password does not match"})
+                   res.send({"success":false,"code":500,"msg":"password does not match"})
                 }
 
             }else{
@@ -792,7 +797,7 @@ service.addDeliveryAddress = async(req,res)=>{
 
         var updateArr = {
             address:req.body.address,
-            isDefault:'',
+            isDefault:'true',
             latitude:req.body.latitude,
             longitude:req.body.longitude,
             city:req.body.city,
@@ -835,12 +840,12 @@ service.deletedDeliveryAddress = async(req,res)=>{
 
     try{
 
-        var userToEdit = {
+        let userToEdit = {
                 query:{_id:req.body.userId},
                 data:{ $pull:{"deliveryAddress":{'_id':req.body.addressId}}}
             }
 
-        var data = await User.deletedDeliveryAddress(userToEdit);
+        let data = await User.deletedDeliveryAddress(userToEdit);
 
         if(data){
             return res.send({success:true, code:200, msg:"succes", data:data});
@@ -851,14 +856,52 @@ service.deletedDeliveryAddress = async(req,res)=>{
     }catch(error){
         return res.send({success:false, code:500, msg:"Error", err:error});
     }
-
-    var tradeToEdit = {
-            query:{_id:req.body.userId},
-            data:{ $addToSet:{"deliveryAddress":updateArr}}
-        }
-    var UpdateddTrade = await User.addDeliveryAddress(tradeToEdit);
-
     return res.send({success:false, code:500, msg:UpdateddTrade})
+}
+
+/*
+|-------------------------------------
+| @service : getUserProfile
+|-------------------------------------
+*/
+service.getUserProfile = async (req,res)=>{
+    if(!req.body.userId){
+        return res.send({success:false, code:500, msg:"userId is missing."});
+    }
+
+    try{
+        var userData = await User.getUserProfile({_id:ObjectID(req.body.userId)});
+
+        if(userData){
+
+            
+
+            userData['ratings']    = Math.floor(Math.random() * 5);
+            userData['rentedUser'] = Math.floor(Math.random() * 150);
+            userData['reviews']    = [
+            {
+                'ratings':Math.floor(Math.random() * 5),
+                'reviews':'The map() method creates a new array with the results of calling a function for every array element. The map() method calls the provided function once for each element in an array, in order. Note: map() does not execute the function for array elements without values. Note: map() does not change the original array.',
+                'name':'amit yadav'
+            },
+            {
+                'ratings':Math.floor(Math.random() * 5),
+                'reviews':'The map() method creates a new array with the results of calling a function for every array element. The map() method calls the provided function once for each element in an array, in order. Note: map() does not execute the function for array elements without values. Note: map() does not change the original array.',
+                'name':'amit yadav'
+            },
+            {
+                'ratings':Math.floor(Math.random() * 5),
+                'reviews':'The map() method creates a new array with the results of calling a function for every array element. The map() method calls the provided function once for each element in an array, in order. Note: map() does not execute the function for array elements without values. Note: map() does not change the original array.',
+                'name':'amit yadav'
+            }
+            ];
+        }else{
+          userData = {};
+        }
+        return res.send({success:true, code:200, msg:"success.", data:userData});
+    }catch(error){
+        return res.send({success:true, code:500, msg:"error"});
+    }
 }
 
 export default service;

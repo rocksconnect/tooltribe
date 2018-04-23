@@ -11,16 +11,16 @@ import CartService from "../service/cart.service";
 
 const router = express.Router()
 
-router.post('/addCart', (req, res) => {
-    CartService.addCart(req, res);
+router.post('/addToCart', (req, res) => {
+    CartService.addToCart(req, res);
 });
 
-router.get('/getCart', (req, res) => {
-    CartService.getCart(req, res);
+router.post('/getCartList', (req, res) => {
+    CartService.getCartList(req, res);
 });
 
-router.post('/removeCart', (req, res) => {
-    CartService.removeCart(req, res);
+router.post('/removeToCart', (req, res) => {
+    CartService.removeToCart(req, res);
 });
 
 router.post('/updateCart', (req, res) => {

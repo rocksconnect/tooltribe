@@ -14,8 +14,8 @@ import category from './routes/category.router.js';
 import idProofType from './routes/idProofType.router.js';
 import tool from './routes/tool.router.js';
 
-
 import brand from './routes/brand.router.js';
+
 
 import userservice from './service/user.service.js';
 import index from './routes/index.router.js';
@@ -103,7 +103,9 @@ app.use(function(req, res, next) {
                 '/getCategoryToolList',
                 '/getDetailsOfTool',
                 '/getHomeScreenData',
-                '/homeScreenSearch'
+                '/homeScreenSearch',
+                '/getBrandCategory',
+                '/getUserProfile'
             ];
   //req.url == '/getAllList' || req.url == '/allIdProof' || req.url == '/getCompany' || req.url == '/updateIdProofType' || req.url == '/getTrade' || req.url == '/login' || req.url == '/userLogin' || req.url == '/register' || req.url == '/account_email_validation' || req.url == '/forgetPassword' || req.url == '/forgetPasswordReset' || req.url == '/' || req.url == '/terms' || req.url == '/privacy' || req.url == '/aboutus' || req.url == '/support' || req.url == '/getCategory'
 
@@ -173,6 +175,9 @@ app.use(brand);
 app.use(company);
 app.use(tool);
 app.use(cart);
+
+
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

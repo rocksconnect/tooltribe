@@ -110,8 +110,16 @@ service.getRecentViewTool = async (req,res) =>{
         var dataToFind = {
             query:{viewedBy:ObjectID(req.body.userId)}
         }
-        var ViewdToolsData =await ViewdTools.getViewdTool(dataToFind);
-        return res.send({success:true, code:200, msg:"Successfully viewd tool found",data:ViewdToolsData})
+        var viewdToolData =await ViewdTools.getViewdTool(dataToFind);
+        if(viewdToolData){
+            viewdToolData.map(function(result){
+                result['ratings']    = Math.floor(Math.random() * 5);
+                result['rentedUser'] = Math.floor(Math.random() * 150);
+                return result;
+            });
+        }
+
+        return res.send({success:true, code:200, msg:"Successfully viewd tool found",data:viewdToolData})
     }catch(error){
         
         return res.send({success:true, code:500, msg:"Error in getting v9iewd tool"})

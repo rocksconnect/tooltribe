@@ -22,9 +22,10 @@ const UserSchema = mongoose.Schema({
     status:{type: String },
     zipCode:{type:String},
     phone:{type:String},
-    trade:{type:String},
-    companyId:{type:String},
-    idProof:{type:String},
+    about:{type:String},
+    trade:{type: mongoose.Schema.ObjectId},
+    companyId:{type: mongoose.Schema.ObjectId},
+    idProof:{type: mongoose.Schema.ObjectId},
     idProofNubmer:{type:String},
     signature:{type:String},
     imgPath:{type:String},
@@ -144,7 +145,32 @@ UserModel.addDeliveryAddress = (userObj)=>{
 }
 
 UserModel.deletedDeliveryAddress = (userObj)=>{
-    return UserModel.update(userObj.query,userObj.data, {new: true});
+  return UserModel.update(userObj.query,userObj.data, {new: true});
+}
+
+UserModel.getUserProfile = (where) => {
+  return UserModel.findOne(where,{fullName:1,email:1,phone:1,address:1,city:1,state:1,zipCode:1,deviceId:1,deviceType:1,deviceToken:1,longitude:1,latitude:1,pathOfProfileImg:1,deliveryAddress:1}).lean();
+
+  return UserModel.aggregate([
+        {
+            $match:where
+        },
+        {
+            $lookup:{
+                from:"trade",
+                localField:"trade",
+                foreignField:"_id",
+                as:"tradeDocs"
+            }
+        },
+        {
+            $unwind : "$tradeDocs"
+        },
+        {
+            $project:{fullName:1,email:1,phone:1,address:1,city:1,state:1,zipCode:1,deviceId:1,deviceType:1,deviceToken:1,longitude:1,latitude:1,pathOfProfileImg:1,deliveryAddress:1,tradeName:"$tradeDocs.trade"}
+        }
+    ]);
+  
 }
 
 
