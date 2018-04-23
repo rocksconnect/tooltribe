@@ -133,73 +133,34 @@ service.getCart = async (req,res)=>{
 }
 
 
-/**
- * @editCart
-*/
-service.editCart = async (req,res)=>{
-
-	if(!req.body.CartId){
-		return res.send({success:false, code:500, msg:"CartId is missing"});
-	}
-	if(!req.body.CartName){
-		return res.send({success:false, code:500, msg:"CartName is missing"});
-	}
-	if(!req.body.CartDescription){
-		return res.send({success:false, code:500, msg:"CartDescription is missing"});
-	}
-
-	
-	try{
-		var data = {
-			query:{CartId:req.body.CartId},
-			data:{$set:{
-        			CartName: req.body.CartName,
-        			CartDescription: req.body.CartDescription
-        		}
-        	}
-		}
-		var data = await Cart.editCart(data);
-		if(data){
-			return res.send({success:true, code:200, msg:"Isucces", data:data});
-		}else{
-			return res.send({success:false, code:500, msg:"Error in updating Cart"});
-		}
-	}catch(error){
-		return res.send({success:false, code:500, msg:"Error in finding getCartList", err:error});
-	}
-}
-
-
 
 /**
- * @editCart
+ * @deletedCart
 */
-service.deletedCart = async (req,res)=>{
+service.removeCart = async (req,res)=>{
 
-	if(!req.body.CartId){
+	if(!req.body.cartId){
 		return res.send({success:false, code:500, msg:"CartId is missing"});
-	}
-	if(!req.body.status){
-		return res.send({success:false, code:500, msg:"status is missing"});
 	}
 	
 
 	try{
 		var data = {
-			query:{CartId:req.body.CartId},
+			query:{_id:ObjectID(req.body.cartId)},
 			data:{$set:{
-        			status: req.body.status
+        			trash: true
         		}
         	}
 		}
-		var data = await Cart.editCart(data);
+		var data = await Cart.removeCart(data);
 		if(data){
-			return res.send({success:true, code:200, msg:"Isucces", data:data});
+			return res.send({success:true, code:200, msg:"removed Cart succesfully", data:data});
 		}else{
-			return res.send({success:false, code:500, msg:"Error in updating Cart"});
+			return res.send({success:false, code:500, msg:"Error in removing Cart"});
 		}
 	}catch(error){
-		return res.send({success:false, code:500, msg:"Error in finding getCartList", err:error});
+		console.log("error == ",error)
+		return res.send({success:false, code:500, msg:"Error in removing Cart", err:error});
 	}
 }
 

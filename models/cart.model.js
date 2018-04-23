@@ -64,5 +64,8 @@ CartModel.addCart = (cartToAdd) => {
 CartModel.getCartList = (cartToFind) => {
     return CartModel.find(cartToFind.query);
 }
+CartModel.removeCart = (cartToRemove) => {
+    return CartModel.remove(cartToRemove.query);
+}
 
 export default CartModel;
