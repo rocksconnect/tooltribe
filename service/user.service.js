@@ -5,7 +5,7 @@
  * @lastModifed 5-Feb-2018
  * @lastModifedBy Shakshi
  */
-
+import Rating from '../models/rating.model'
 import User from '../models/user.model'
 import Company from '../models/company.model'
 import logger from '../core/logger/app.logger'
@@ -874,31 +874,20 @@ service.getUserProfile = async (req,res)=>{
 
         if(userData){
 
-            
+            var data = userData[0];
 
-            userData['ratings']    = Math.floor(Math.random() * 5);
-            userData['rentedUser'] = Math.floor(Math.random() * 150);
-            userData['reviews']    = [
-            {
-                'ratings':Math.floor(Math.random() * 5),
-                'reviews':'The map() method creates a new array with the results of calling a function for every array element. The map() method calls the provided function once for each element in an array, in order. Note: map() does not execute the function for array elements without values. Note: map() does not change the original array.',
-                'name':'amit yadav'
-            },
-            {
-                'ratings':Math.floor(Math.random() * 5),
-                'reviews':'The map() method creates a new array with the results of calling a function for every array element. The map() method calls the provided function once for each element in an array, in order. Note: map() does not execute the function for array elements without values. Note: map() does not change the original array.',
-                'name':'amit yadav'
-            },
-            {
-                'ratings':Math.floor(Math.random() * 5),
-                'reviews':'The map() method creates a new array with the results of calling a function for every array element. The map() method calls the provided function once for each element in an array, in order. Note: map() does not execute the function for array elements without values. Note: map() does not change the original array.',
-                'name':'amit yadav'
-            }
-            ];
+            var companyData = await Company.getOneCompany({_id:ObjectID(data.companyId)});
+            var rating = await Rating.getAvgRating({receiverId:ObjectID(data._id)});
+            
+            data['companyName'] = (companyData.company)?companyData.company:'';
+            data['ratings']     = (rating[0])?parseFloat(rating[0].rating).toFixed(2):0;
+            data['review']      = await Rating.getRatingInUser({receiverId:ObjectID(data._id)});
+            data['rentals']     = Math.floor(Math.random() * 150);
+            
         }else{
-          userData = {};
+          data = {};
         }
-        return res.send({success:true, code:200, msg:"success.", data:userData});
+        return res.send({success:true, code:200, msg:"success.", data:data});
     }catch(error){
         return res.send({success:true, code:500, msg:"error"});
     }

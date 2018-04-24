@@ -11,9 +11,9 @@ import CompanyService from "../service/company.service";
 
 const router = express.Router()
 
-// router.post('/addCompany', (req, res) => {
-//     CompanyService.addCompany(req, res);
-// });
+router.post('/addCompany', (req, res) => {
+    CompanyService.addCompany(req, res);
+});
 
 router.post('/getCompany', (req, res) => {
     CompanyService.getCompany(req, res);
