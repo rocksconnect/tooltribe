@@ -123,7 +123,7 @@ UserModel.login = (user) =>{
 
 UserModel.userLogin = (where) =>{
     console.log(where);
-    return UserModel.findOne(where,{});
+    return UserModel.findOne(where,{}).lean();
 }
 
 UserModel.forgetPassword = (user)=>{

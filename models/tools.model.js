@@ -67,6 +67,12 @@ ToolModel.addTools = (toolsToAdd) => {
 }
 
 
+ToolModel.getUserToolCount = (where) => {
+    return ToolModel.find(where);
+}
+
+
+
 ToolModel.getDeatilsToolById = (toolToFind) => {
     console.log("toolToFind == ",toolToFind)
     return ToolModel.aggregate([

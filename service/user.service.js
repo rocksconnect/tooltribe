@@ -5,6 +5,7 @@
  * @lastModifed 5-Feb-2018
  * @lastModifedBy Shakshi
  */
+import Tools from '../models/tools.model'
 import Rating from '../models/rating.model'
 import User from '../models/user.model'
 import Company from '../models/company.model'
@@ -550,7 +551,11 @@ service.userLogin = async (req, res) =>{
        
         const loggedUser = await User.userLogin(query);
 
-        if(loggedUser){   
+        if(loggedUser){ 
+
+          let userToolCount = await Tools.getUserToolCount({userId:ObjectID(loggedUser._id)});
+
+          loggedUser.userToolCount = (userToolCount)?userToolCount.length:0;  
 
             var temp    = loggedUser.salt;
             var hash_db = loggedUser.password;
