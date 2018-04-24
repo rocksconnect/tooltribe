@@ -882,6 +882,9 @@ service.getUserProfile = async (req,res)=>{
                 data['companyName'] = '';
             }
 
+
+            return res.send({success:true, code:200, msg:"success.", data:data});
+
             var whereData = {
               ratingQuery:{receiverId:ObjectID(data._id)}
             }
