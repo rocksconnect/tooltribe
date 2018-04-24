@@ -108,12 +108,12 @@ service.addUser = async (req, res) => {
       return res.send({success:false, code:500, msg:"idProof is missing"});
     }
     if(!req.body.socialType){
-      return res.send({success:false, code:500, msg:"SocialType is missing"});
+      return res.send({success:false, code:500, msg:"socialType is missing"});
     }
 
     if(req.body.socialType=='other'){
         if(!req.body.password){
-            return res.send({success:false, code:500, msg:"Password is missing"});
+            return res.send({success:false, code:500, msg:"password is missing"});
         }
     }else{
         if(!req.body.socialId){
@@ -255,7 +255,7 @@ service.addUser = async (req, res) => {
       socialType: req.body.socialType,
       
       
-      tradeId:req.body.tradeId,
+      trade:req.body.tradeId,
       companyId:savedCompany?savedCompany._id:req.body.companyId,
       idProof:req.body.idProof,
       idProofNubmer: req.body.idProofNubmer,
@@ -871,8 +871,6 @@ service.getUserProfile = async (req,res)=>{
 
     try{
         var userData = await User.getUserProfile({_id:ObjectID(req.body.userId)});
-
-        return res.send({success:true, code:200, msg:"success.", data:userData});
 
         if(userData){
 
