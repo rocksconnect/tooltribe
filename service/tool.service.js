@@ -5,6 +5,7 @@
  * @lastModifed 26-March-2018
  * @lastModifedBy Shakshi
  */
+import brand from '../models/brand.model'
 import Category from '../models/category.model'
 import ViewdTools from '../models/viewdTool.model'
 import Tools from '../models/tools.model'
@@ -134,19 +135,13 @@ service.homeScreenSearch = async (req,res)=>{
 
         var insertArray = [];
 
+        
+        /*--- search category data ---*/
         var whereCategoryData = {
             query:{category:{ $regex: new RegExp('^'+req.body.search), $options:'i'  }},
             projection:{trash:false}
         }
         var data = await Category.getSearchCategory(whereCategoryData);
-
-        var whereToolData = {
-            query:{toolName:{ $regex: new RegExp('^'+req.body.search), $options:'i'  }},
-            projection:{hideTool:"NO"}
-        }
-
-        var toolData = await Tools.getSearchTool(whereToolData);
-
         if(data){
             for (var x in data) {
                 var insertdata = {
@@ -159,6 +154,14 @@ service.homeScreenSearch = async (req,res)=>{
             }
         }
 
+        
+        /*--- search tool data ---*/
+        var whereToolData = {
+            query:{toolName:{ $regex: new RegExp('^'+req.body.search), $options:'i'  }},
+            projection:{hideTool:"NO"}
+        }
+
+        var toolData = await Tools.getSearchTool(whereToolData);
         if(toolData){
             for (var x in toolData) {
                 var insertdata = {
@@ -171,10 +174,30 @@ service.homeScreenSearch = async (req,res)=>{
             }
         }
 
+
+
+        /*--- search brand data ---*/
+        var whereBrandData = {
+            query:{brandName:{ $regex: new RegExp('^'+req.body.search), $options:'i'  }},
+            projection:{status:"true"}
+        }
+        var brandData = await brand.getSearchBrand(whereBrandData);
+        if(brandData){
+            for (var x in brandData) {
+                var insertdata = {
+                    "name" : brandData[x].brandName,
+                    "type" : 'brand',
+                    "_id"  : brandData[x]._id,
+                    
+                };
+                insertArray.push(insertdata);
+            }
+        }
+        
         if(data){
             return res.send({success:true, code:200, msg:"Success", data:insertArray});
         }else{
-            return res.send({success:false, code:500, msg:"Error in finding getToolList"});
+            return res.send({success:false, code:500, msg:"Error"});
         }
 
     }catch(error){
