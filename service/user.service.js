@@ -872,6 +872,8 @@ service.getUserProfile = async (req,res)=>{
     try{
         var userData = await User.getUserProfile({_id:ObjectID(req.body.userId)});
 
+        return res.send({success:true, code:200, msg:"success.", data:userData});
+
         if(userData){
 
             var data = userData[0];
@@ -883,7 +885,7 @@ service.getUserProfile = async (req,res)=>{
             }
 
 
-            return res.send({success:true, code:200, msg:"success.", data:data});
+
 
             var whereData = {
               ratingQuery:{receiverId:ObjectID(data._id)}
