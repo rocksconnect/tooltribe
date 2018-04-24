@@ -876,10 +876,10 @@ service.getUserProfile = async (req,res)=>{
 
             var data = userData[0];
 
-            var companyData = await Company.getOneCompany({_id:ObjectID(data.companyId)});
+           // var companyData = await Company.getOneCompany({_id:ObjectID(data.companyId)});
             var rating = await Rating.getAvgRating({receiverId:ObjectID(data._id)});
             
-            data['companyName'] = (companyData.company)?companyData.company:'';
+            //data['companyName'] = (companyData.company)?companyData.company:'';
             data['ratings']     = (rating[0])?parseFloat(rating[0].rating).toFixed(2):0;
             data['review']      = await Rating.getRatingInUser({receiverId:ObjectID(data._id)});
             data['rentals']     = Math.floor(Math.random() * 150);
