@@ -882,9 +882,6 @@ service.getUserProfile = async (req,res)=>{
                 data['companyName'] = '';
             }
 
-            data['review']      = await Rating.getRatingInUser({receiverId:ObjectID(data._id)});
-            data['rentals']     = Math.floor(Math.random() * 150);
-            
             var whereData = {
               ratingQuery:{receiverId:ObjectID(data._id)}
             }
