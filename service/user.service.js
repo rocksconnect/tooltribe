@@ -875,7 +875,6 @@ service.getUserProfile = async (req,res)=>{
         if(userData){
 
             var data = userData[0];
-
             if(data.companyId){
                 var companyData = await Company.getOneCompany({_id:ObjectID(data.companyId)});
                 data['companyName'] = (companyData.company)?companyData.company:'';
@@ -883,18 +882,27 @@ service.getUserProfile = async (req,res)=>{
                 data['companyName'] = '';
             }
 
-            
-            var rating = await Rating.getAvgRating({receiverId:ObjectID(data._id)});
-            
-            
-            data['ratings']     = (rating[0])?parseFloat(rating[0].rating).toFixed(2):0;
             data['review']      = await Rating.getRatingInUser({receiverId:ObjectID(data._id)});
             data['rentals']     = Math.floor(Math.random() * 150);
             
+            var whereData = {
+              ratingQuery:{receiverId:ObjectID(data._id)}
+            }
+
+
+            var rating =  Rating.getAvgRating(whereData,function(result){
+                
+                data['rating']   = result['rating'];
+                data['review']   = result['review'];
+                data['rentals']  = result['rentals'];
+                
+                return res.send({success:true, code:200, msg:"success.", data:data});
+            });
+        
         }else{
           data = {};
         }
-        return res.send({success:true, code:200, msg:"success.", data:data});
+        
     }catch(error){
         return res.send({success:true, code:500, msg:"error"});
     }

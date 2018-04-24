@@ -30,11 +30,12 @@ RatingModel.getRatingInUser = (where) => {
     return RatingModel.find(where,{_id:0,__v:0});
 }
 
-RatingModel.getAvgRating = (where) => {
-	var data = RatingModel.aggregate([
+RatingModel.getAvgRating = (where,cb) => {
+
+	RatingModel.aggregate([
 	    { "$match": {
                   $and: [ 
-                      where, 
+                      where.ratingQuery, 
                       {"ratingType":'USER'}
                   ]
                 }
@@ -43,8 +44,16 @@ RatingModel.getAvgRating = (where) => {
 	        "_id": null,
 	        "rating": { "$avg": "$rating" }
 	    }}
-	]);
-	return data;
+	]).then( async function(result) {
+
+        var arr = {
+            rating  : (result[0])?parseFloat(result[0].rating).toFixed(2):"0", 
+            review  : await RatingModel.find(where.ratingQuery),
+            rentals : "50"
+        };
+
+        cb(arr); 
+    });
 }
 
 export default RatingModel;
