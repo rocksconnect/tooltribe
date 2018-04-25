@@ -270,16 +270,15 @@ service.getDetailsOfTool = async (req,res)=>{
                 let ratings = await Rating.getAvgRating(where);
 
                 data[x]['ratings']    = (ratings[0])?ratings[0].rating:0;
-                data[x]['rentedUser'] = (ratings[0])?ratings[0].rating:0;
+                data[x]['rentedUser'] = Math.floor(Math.random() * 150);
+                data[x]['toolRented'] = Math.floor(Math.random() * 150);
 
 
                 var userRatingWhere = {
                     query : {receiverId:ObjectID(data[x]['userId'])},
                     query1 : {"ratingType":'USER'}
                 };
-
                 let userRatingData = await Rating.getAvgRating(userRatingWhere);
-
                 data[x]['userRating'] = (userRatingData[0])?userRatingData[0].rating:0;
             }
         }
@@ -295,47 +294,94 @@ service.getDetailsOfTool = async (req,res)=>{
 * @ Function : getCategoryToolList
 */
 service.getCategoryToolList = async (req,res)=>{
-    if(!req.body.categoryId){
-        return res.send({success:false, code:500, msg:"categoryId is missing"})
+    
+
+    /*if(!req.body.page){
+        return res.send({success:false, code:500, msg:"page is missing"})
+    }*/
+    
+    var condition = [];
+
+
+    if(req.body.toolName){
+        condition.push({toolName:{ $regex: new RegExp('^'+req.body.toolName), $options:'i'  } })
     }
 
-    if(!req.body.page){
-        return res.send({success:false, code:500, msg:"page is missing"})
+
+    /*
+    if(req.body.startDate){
+       condition.push({categoryId:ObjectID(req.body.startDate)})
     }
-    var condition = [];
-    if(req.body.brandId){
-        condition.push({brandId:ObjectID(req.body.brandId)})
+
+    if(req.body.endDate){
+       condition.push({categoryId:ObjectID(req.body.endDate)})
     }
-    if(req.body.categoryId){
-        condition.push({categoryId:ObjectID(req.body.categoryId)})
+
+
+    if(req.body.lat){
+       condition.push({categoryId:ObjectID(req.body.lat)})
     }
-    if(req.body.shipment){
-        condition.push({shipment:req.body.shipment})
+
+    if(req.body.long){
+       condition.push({categoryId:ObjectID(req.body.long)})
     }
-    if(req.body.searchKeyword){
-        condition.push({toolName:{ $regex: new RegExp('^'+req.body.searchKeyword), $options:'i'  } })
+
+    if(req.body.distance){
+       condition.push({categoryId:ObjectID(req.body.distance)})
     }
-    if(req.body.accessories){
-        condition.push({accessories:{$ne: null}})
-    }
+    */
+
+
     if(req.body.sellingPriceTo && req.body.sellingPriceFrom ){
         let temp = {"sellingPrice" : { 
             "$gte" : req.body.sellingPriceTo,
             "$lte" : req.body.sellingPriceFrom
         }}
-        
         condition.push(temp)
     }
+
+    //delivery, pickup
+    if(req.body.shipment){
+        condition.push({shipment:req.body.shipment})
+    }
+
+    if(req.body.brandId){
+        condition.push({brandId:ObjectID(req.body.brandId)})
+    }
+
+
+    if(req.body.categoryId){
+       condition.push({categoryId:ObjectID(req.body.categoryId)})
+    }
+
+
+    /*
+    if(req.body.rating){
+       condition.push({categoryId:ObjectID(req.body.rating)})
+    }
+    */
+
+    //yes , no
+    if(req.body.accessories){
+        condition.push({accessories:{$ne: null}})
+    }
+
+    //buy , rent, both
+    if(req.body.sellingType){
+        condition.push({accessories:{$ne: null}})
+    }
+    
+    
     condition.push({hideTool:"NO"})
     // if(req.body.reviews){
     //     condition.push({reviews:req.body.categoryId})
     // }
-    var param = {
-        query:{
-            $and:condition
-        },
-        page:req.body.page
-    };
+    
+    let param = {
+            query:{$and:condition},
+            page:req.body.page
+        };
+    
     try{
 
         var data  = await Tools.getCategoryToolList(param);

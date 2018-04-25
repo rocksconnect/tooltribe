@@ -175,9 +175,11 @@ ToolModel.getRecentViewToolData = ()=>{
 
 ToolModel.getCategoryToolList = (param)=>{
     console.log("query == ",JSON.stringify(param.query))
-    console.log(param.page);
-    let page = common.pageLimit * Math.max(0, param.page);
-    return  ToolModel.find(param.query).skip(page).limit(common.pageLimit).lean().sort({createAt:-1}); 
+
+    return  ToolModel.find(param.query).lean().sort({createAt:-1}); 
+    
+    //let page = common.pageLimit * Math.max(0, param.page);
+    //return  ToolModel.find(param.query).skip(page).limit(common.pageLimit).lean().sort({createAt:-1}); 
 
 }
 
