@@ -114,7 +114,7 @@ service.getHomeScreenData = async (req,res)=>{
 */
 service.homeScreenSearch = async (req,res)=>{
    
-    if(req.body.location){
+    if(req.body.location=='true'){
         if(!req.body.latitude){
             return res.send({success:false, code:500, msg:"latitude is missing"});
         }
@@ -303,20 +303,15 @@ service.getCategoryToolList = async (req,res)=>{
     if(req.body.startDate){
        condition.push({categoryId:ObjectID(req.body.startDate)})
     }
-
     if(req.body.endDate){
        condition.push({categoryId:ObjectID(req.body.endDate)})
     }
-
-
     if(req.body.lat){
        condition.push({categoryId:ObjectID(req.body.lat)})
     }
-
     if(req.body.long){
        condition.push({categoryId:ObjectID(req.body.long)})
     }
-
     if(req.body.distance){
        condition.push({categoryId:ObjectID(req.body.distance)})
     }
