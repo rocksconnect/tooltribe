@@ -124,8 +124,6 @@ service.homeScreenSearch = async (req,res)=>{
         if(!req.body.longitude){
             return res.send({success:false, code:500, msg:"longitude is missing"});
         }
-    }else{
-        return res.send({success:false, code:500, msg:"search is missing"});
     }
 
     try{
@@ -154,69 +152,70 @@ service.homeScreenSearch = async (req,res)=>{
         }
         
 
-        
+      
         var insertArray = [];
-
+        if(req.body.search){
         
-        /*--- search category data ---*/
-        var whereCategoryData = {
-            query:{category:{ $regex: new RegExp('^'+req.body.search), $options:'i'  }},
-            projection:{trash:false}
-        }
-        var data = await Category.getSearchCategory(whereCategoryData);
-        if(data){
-            for (var x in data) {
-                var insertdata = {
-                    "name" : data[x].category,
-                    "type" : 'category',
-                    "_id"  : data[x]._id,
-                    
-                };
-                insertArray.push(insertdata);
+            /*--- search category data ---*/
+            var whereCategoryData = {
+                query:{category:{ $regex: new RegExp('^'+req.body.search), $options:'i'  }},
+                projection:{trash:false}
             }
-        }
+            var data = await Category.getSearchCategory(whereCategoryData);
+            if(data){
+                for (var x in data) {
+                    var insertdata = {
+                        "name" : data[x].category,
+                        "type" : 'category',
+                        "_id"  : data[x]._id,
+                        
+                    };
+                    insertArray.push(insertdata);
+                }
+            }
 
+
+            /*--- search tool data ---*/
+            var whereToolData = {
+                query:{toolName:{ $regex: new RegExp('^'+req.body.search), $options:'i'  }},
+                projection:{hideTool:"NO"}
+            }
+
+            var toolData = await Tools.getSearchTool(whereToolData);
+            if(toolData){
+                for (var x in toolData) {
+                    var insertdata = {
+                        "name" : toolData[x].toolName,
+                        "type" : 'tool',
+                        "_id"  : toolData[x]._id,
+                        
+                    };
+                    insertArray.push(insertdata);
+                }
+            }
+
+
+            /*--- search brand data ---*/
+            var whereBrandData = {
+                query:{brandName:{ $regex: new RegExp('^'+req.body.search), $options:'i'  }},
+                projection:{status:"true"}
+            }
+            var brandData = await brand.getSearchBrand(whereBrandData);
+            if(brandData){
+                for (var x in brandData) {
+                    var insertdata = {
+                        "name" : brandData[x].brandName,
+                        "type" : 'brand',
+                        "_id"  : brandData[x]._id,
+                        
+                    };
+                    insertArray.push(insertdata);
+                }
+            }
+
+        }
         
-        /*--- search tool data ---*/
-        var whereToolData = {
-            query:{toolName:{ $regex: new RegExp('^'+req.body.search), $options:'i'  }},
-            projection:{hideTool:"NO"}
-        }
-
-        var toolData = await Tools.getSearchTool(whereToolData);
-        if(toolData){
-            for (var x in toolData) {
-                var insertdata = {
-                    "name" : toolData[x].toolName,
-                    "type" : 'tool',
-                    "_id"  : toolData[x]._id,
-                    
-                };
-                insertArray.push(insertdata);
-            }
-        }
-
-
-
-        /*--- search brand data ---*/
-        var whereBrandData = {
-            query:{brandName:{ $regex: new RegExp('^'+req.body.search), $options:'i'  }},
-            projection:{status:"true"}
-        }
-        var brandData = await brand.getSearchBrand(whereBrandData);
-        if(brandData){
-            for (var x in brandData) {
-                var insertdata = {
-                    "name" : brandData[x].brandName,
-                    "type" : 'brand',
-                    "_id"  : brandData[x]._id,
-                    
-                };
-                insertArray.push(insertdata);
-            }
-        }
-        
-        if(data){
+        if(insertArray){
             return res.send({success:true, code:200, msg:"Success", data:insertArray});
         }else{
             return res.send({success:false, code:500, msg:"Error"});
