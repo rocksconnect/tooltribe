@@ -30,7 +30,7 @@ RatingModel.getRatingInUser = (where) => {
     return RatingModel.find(where,{_id:0,__v:0});
 }
 
-RatingModel.getAvgRating = (where,cb) => {
+RatingModel.getUserAvgRating = (where,cb) => {
 
 	RatingModel.aggregate([
 	    { "$match": {
@@ -54,6 +54,25 @@ RatingModel.getAvgRating = (where,cb) => {
 
         cb(arr); 
     });
+}
+
+
+RatingModel.getAvgRating = (where) => {
+
+    //return RatingModel.find();
+
+    return RatingModel.aggregate([
+        { "$match": {
+                  $and: [ 
+                      where.query,where.query1
+                  ]
+                }
+        },
+        { "$group": {
+            "_id": null,
+            "rating": { "$avg": "$rating" }
+        }}
+    ]);
 }
 
 export default RatingModel;

@@ -887,15 +887,11 @@ service.getUserProfile = async (req,res)=>{
                 data['companyName'] = '';
             }
 
-
-
-
             var whereData = {
               ratingQuery:{receiverId:ObjectID(data._id)}
             }
-
-
-            var rating =  Rating.getAvgRating(whereData,function(result){
+            
+            var rating =  Rating.getUserAvgRating(whereData,function(result){
                 
                 data['rating']   = result['rating'];
                 data['review']   = result['review'];

@@ -5,6 +5,7 @@
  * @lastModifed 26-March-2018
  * @lastModifedBy Shakshi
  */
+import Rating from '../models/rating.model'
 import brand from '../models/brand.model'
 import Category from '../models/category.model'
 import ViewdTools from '../models/viewdTool.model'
@@ -51,23 +52,32 @@ service.getHomeScreenData = async (req,res)=>{
             viewdToolData = await ViewdTools.getViewdTool(dataToFind);
 
             if(viewdToolData){
-                viewdToolData.map(function(result){
-                    result['ratings']    = Math.floor(Math.random() * 5);
-                    result['rentedUser'] = Math.floor(Math.random() * 150);
-                    return result;
-                });
+                for(var x in viewdToolData){
+                    var where = {
+                        query : {receiverId:ObjectID(viewdToolData[x]['_id'])},
+                        query1 : {"ratingType":'TOOL'}
+                    };
+
+                    let ratings = await Rating.getAvgRating(where);
+                    viewdToolData[x]['ratings']    = (ratings[0])?parseFloat(ratings[0].rating).toFixed(2):"0";
+                    viewdToolData[x]['rentedUser'] = Math.floor(Math.random() * 150);
+                }
             }
-            
         }
        
         /*--- get recent tool data---*/
         var recentToolData = await Tools.getToolList();
         if(recentToolData){
-            recentToolData.map(function(result){
-                result['ratings']    = Math.floor(Math.random() * 5);
-                result['rentedUser'] = Math.floor(Math.random() * 150);
-                return result;
-            });
+            for(var x in recentToolData){
+                var where = {
+                    query : {receiverId:ObjectID(recentToolData[x]['_id'])},
+                    query1 : {"ratingType":'TOOL'}
+                };
+
+                let ratings = await Rating.getAvgRating(where);
+                recentToolData[x]['ratings']    = (ratings[0])?parseFloat(ratings[0].rating).toFixed(2):"0";
+                recentToolData[x]['rentedUser'] = Math.floor(Math.random() * 150);
+            }
         }
         
 
@@ -125,6 +135,15 @@ service.homeScreenSearch = async (req,res)=>{
             var data = await Tools.getToolList();
 
             for (var x in data) {
+
+                var where = {
+                    query : {receiverId:ObjectID(recentToolData[x]['_id'])},
+                    query1 : {"ratingType":'TOOL'}
+                };
+
+                let ratings = await Rating.getAvgRating(where);
+                data[x]['rating'] = 4;
+
                data[x]['distance'] = distance(lat1, long1, data[x]['toolLocation']['latitude'], data[x]['toolLocation']['longitude']);
             }
 
