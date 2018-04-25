@@ -74,6 +74,7 @@ ToolModel.getUserToolCount = (where) => {
 
 
 ToolModel.getDeatilsToolById = (toolToFind) => {
+    console.log("toolToFind == ",toolToFind)
     return ToolModel.aggregate([
         {
             $match:toolToFind.query
@@ -149,7 +150,7 @@ ToolModel.getDeatilsToolById = (toolToFind) => {
                 userId:"$userDocs._id",
                 userName:"$userDocs.fullName",
                 userEmail:"$userDocs.email",
-                userProfileImg:"$userDocs.pathOfProfileImg",
+                userProfileImg:"$userDocs.pathOfProfileImg"
             }
         }
 

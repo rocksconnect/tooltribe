@@ -261,19 +261,29 @@ service.getDetailsOfTool = async (req,res)=>{
         var data = await Tools.getDeatilsToolById(dataToFind);
         
         if(data){
+            for(var x in data){
+                var where = {
+                    query : {receiverId:ObjectID(data[x]['_id'])},
+                    query1 : {"ratingType":'TOOL'}
+                };
 
-            data.forEach(function(result,index){
-                data[index].ratings    = 0;
-                data[index].rentedUser = Math.floor(Math.random() * 150);
-            });
+                let ratings = await Rating.getAvgRating(where);
 
+                data[x]['ratings']    = (ratings[0])?ratings[0].rating:0;
+                data[x]['rentedUser'] = (ratings[0])?ratings[0].rating:0;
+
+
+                var userRatingWhere = {
+                    query : {receiverId:ObjectID(data[x]['userId'])},
+                    query1 : {"ratingType":'USER'}
+                };
+
+                let userRatingData = await Rating.getAvgRating(userRatingWhere);
+
+                data[x]['userRating'] = (userRatingData[0])?userRatingData[0].rating:0;
+            }
         }
 
-        /*
-            rating:"3",
-            rentals:"5",
-            userRating:"4.5"
-        */
         return res.send({success:true, code:200, msg:"successfully found", data:data});
        
     }catch(error){
