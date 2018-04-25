@@ -59,7 +59,7 @@ service.getHomeScreenData = async (req,res)=>{
                     };
 
                     let ratings = await Rating.getAvgRating(where);
-                    viewdToolData[x]['ratings']    = (ratings[0])?parseFloat(ratings[0].rating).toFixed(2):"0";
+                    viewdToolData[x]['ratings']    = (ratings[0])?ratings[0].rating:0;
                     viewdToolData[x]['rentedUser'] = Math.floor(Math.random() * 150);
                 }
             }
@@ -75,7 +75,7 @@ service.getHomeScreenData = async (req,res)=>{
                 };
 
                 let ratings = await Rating.getAvgRating(where);
-                recentToolData[x]['ratings']    = (ratings[0])?parseFloat(ratings[0].rating).toFixed(2):"0";
+                recentToolData[x]['ratings']    = (ratings[0])?ratings[0].rating:0;
                 recentToolData[x]['rentedUser'] = Math.floor(Math.random() * 150);
             }
         }
@@ -113,17 +113,19 @@ service.getHomeScreenData = async (req,res)=>{
 |------------------------------------------
 */
 service.homeScreenSearch = async (req,res)=>{
-    if(!req.body.search){
+   /* if(!req.body.search){
         return res.send({success:false, code:500, msg:"search is missing"});
-    }
-
-    if(req.body.location){
+    }else{*/
+        
+    if(req.body.location=='true'){
         if(!req.body.latitude){
             return res.send({success:false, code:500, msg:"latitude is missing"});
         }
         if(!req.body.longitude){
             return res.send({success:false, code:500, msg:"longitude is missing"});
         }
+    }else{
+        return res.send({success:false, code:500, msg:"search is missing"});
     }
 
     try{
@@ -137,12 +139,12 @@ service.homeScreenSearch = async (req,res)=>{
             for (var x in data) {
 
                 var where = {
-                    query : {receiverId:ObjectID(recentToolData[x]['_id'])},
+                    query : {receiverId:ObjectID(data[x]['_id'])},
                     query1 : {"ratingType":'TOOL'}
                 };
 
                 let ratings = await Rating.getAvgRating(where);
-                data[x]['rating'] = 4;
+                data[x]['ratings'] = (ratings[0])?ratings[0].rating:0;
 
                data[x]['distance'] = distance(lat1, long1, data[x]['toolLocation']['latitude'], data[x]['toolLocation']['longitude']);
             }
@@ -249,7 +251,7 @@ service.getToolList = async (req,res)=>{
 */
 service.getDetailsOfTool = async (req,res)=>{
     if(!req.body.toolId){
-        return res.send({success:false, code:500, msg:"tool _id is missing"});
+        return res.send({success:false, code:500, msg:"toolId _id is missing"});
     }
     try{
         
@@ -257,10 +259,24 @@ service.getDetailsOfTool = async (req,res)=>{
             query:{_id:ObjectID(req.body.toolId)}
         }
         var data = await Tools.getDeatilsToolById(dataToFind);
+        
+        if(data){
+
+            data.forEach(function(result,index){
+                data[index].ratings    = 0;
+                data[index].rentedUser = Math.floor(Math.random() * 150);
+            });
+
+        }
+
+        /*
+            rating:"3",
+            rentals:"5",
+            userRating:"4.5"
+        */
         return res.send({success:true, code:200, msg:"successfully found", data:data});
        
     }catch(error){
-        console.log(error)
         return res.send({success:false, code:500, msg:"Error in finding getDetailsOfTool", err:error});
     }
 }

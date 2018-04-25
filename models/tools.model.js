@@ -74,7 +74,6 @@ ToolModel.getUserToolCount = (where) => {
 
 
 ToolModel.getDeatilsToolById = (toolToFind) => {
-    console.log("toolToFind == ",toolToFind)
     return ToolModel.aggregate([
         {
             $match:toolToFind.query
@@ -144,7 +143,6 @@ ToolModel.getDeatilsToolById = (toolToFind) => {
                 toolImages:1,
                 accessories: 1,
                 toolStatus :1,
-                rating:"3",
                 brandName:"$brandDocs.brandName",
                 brandDescription:"$brandDocs.brandDescription",
                 category:"$categoryDocs.category",
@@ -152,8 +150,6 @@ ToolModel.getDeatilsToolById = (toolToFind) => {
                 userName:"$userDocs.fullName",
                 userEmail:"$userDocs.email",
                 userProfileImg:"$userDocs.pathOfProfileImg",
-                rentals:"5",
-                userRating:"4.5"
             }
         }
 

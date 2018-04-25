@@ -893,7 +893,7 @@ service.getUserProfile = async (req,res)=>{
             
             var rating =  Rating.getUserAvgRating(whereData,function(result){
                 
-                data['rating']   = result['rating'];
+                data['ratings']   = result['rating'];
                 data['review']   = result['review'];
                 data['rentals']  = result['rentals'];
                 

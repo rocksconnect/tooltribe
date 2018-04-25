@@ -47,7 +47,7 @@ RatingModel.getUserAvgRating = (where,cb) => {
 	]).then( async function(result) {
 
         var arr = {
-            rating  : (result[0])?parseFloat(result[0].rating).toFixed(2):"0", 
+            rating  : (result[0])?result[0].rating:0, 
             review  : await RatingModel.find(where.ratingQuery),
             rentals : "50"
         };
