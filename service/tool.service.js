@@ -113,10 +113,7 @@ service.getHomeScreenData = async (req,res)=>{
 |------------------------------------------
 */
 service.homeScreenSearch = async (req,res)=>{
-   /* if(!req.body.search){
-        return res.send({success:false, code:500, msg:"search is missing"});
-    }else{*/
-        
+   
     if(req.body.location){
         if(!req.body.latitude){
             return res.send({success:false, code:500, msg:"latitude is missing"});
@@ -151,8 +148,6 @@ service.homeScreenSearch = async (req,res)=>{
             return res.send({success:true, code:200, msg:"Success", data:data});
         }
         
-
-      
         var insertArray = [];
         if(req.body.search){
         
@@ -293,7 +288,6 @@ service.getDetailsOfTool = async (req,res)=>{
 * @ Function : getCategoryToolList
 */
 service.getCategoryToolList = async (req,res)=>{
-    
 
     /*if(!req.body.page){
         return res.send({success:false, code:500, msg:"page is missing"})
@@ -301,11 +295,9 @@ service.getCategoryToolList = async (req,res)=>{
     
     var condition = [];
 
-
     if(req.body.toolName){
         condition.push({toolName:{ $regex: new RegExp('^'+req.body.toolName), $options:'i'  } })
     }
-
 
     /*
     if(req.body.startDate){
@@ -330,52 +322,52 @@ service.getCategoryToolList = async (req,res)=>{
     }
     */
 
-
-    if(req.body.sellingPriceTo && req.body.sellingPriceFrom ){
+    let sellingPriceTo = (req.body.sellingPriceTo)?req.body.sellingPriceTo:'20';
+    if(sellingPriceTo && req.body.sellingPriceFrom ){
         let temp = {"sellingPrice" : { 
-            "$gte" : req.body.sellingPriceTo,
+            "$gte" : sellingPriceTo,
             "$lte" : req.body.sellingPriceFrom
         }}
-        condition.push(temp)
+        condition.push(temp);
     }
 
     //delivery, pickup
-    if(req.body.shipment){
-        condition.push({shipment:req.body.shipment})
+    if(req.body.shipment=='delivery'){
+        condition.push({deliveryAvailable:'YES'})
+    }
+    if(req.body.shipment=='pickup'){
+        condition.push({pickupAvailable:'YES'})
     }
 
     if(req.body.brandId){
         condition.push({brandId:ObjectID(req.body.brandId)})
     }
 
-
     if(req.body.categoryId){
        condition.push({categoryId:ObjectID(req.body.categoryId)})
     }
 
 
-    /*
     if(req.body.rating){
-       condition.push({categoryId:ObjectID(req.body.rating)})
+       condition.push({ "ratings": { "$lte": req.body.rating } })
     }
-    */
 
     //yes , no
     if(req.body.accessories){
-        condition.push({accessories:{$ne: null}})
+        condition.push({accessories:{$ne: []}})
     }
 
-    //buy , rent, both
+    //buy, rent, both
     if(req.body.sellingType){
-        condition.push({accessories:{$ne: null}})
+        condition.push({shipment:req.body.sellingType.toUpperCase()})
     }
     
     
     condition.push({hideTool:"NO"})
-    // if(req.body.reviews){
-    //     condition.push({reviews:req.body.categoryId})
-    // }
-    
+
+    console.log(condition)
+
+
     let param = {
             query:{$and:condition},
             page:req.body.page
@@ -386,7 +378,6 @@ service.getCategoryToolList = async (req,res)=>{
         var data  = await Tools.getCategoryToolList(param);
         var originalData = [];
         data.forEach(function(result,index){
-            console.log("index  = ",index)
             data[index].ratings    = Math.floor(Math.random() * 5);
             data[index].rentedUser = Math.floor(Math.random() * 150);
             //data[index].distance = distance(29.309532,78.233889,result.toolLocation.latitude,result.toolLocation.longitude);
@@ -405,7 +396,7 @@ service.getCategoryToolList = async (req,res)=>{
         //var count = await Tools.getCategoryToolCount({categoryId:req.body.categoryId});
 
         // if(addOn){
-        console.log("Stop")
+        
             return res.send({success:true, code:200, msg:"succes", data:originalData});
         // }else{
         //     return res.send({success:false, code:500, msg:"Error in finding getToolList"});
@@ -521,6 +512,8 @@ service.addTool = async (req,res)=>{
             country:(req.body.country)?req.body.country:'',
             zipCode:(req.body.zipCode)?req.body.zipCode:'',
         },
+        ratings:0,
+        rentedUser:0,
         toolAvailability:{
             from:(req.body.fromTime)?req.body.fromTime:'',
             to:(req.body.toTime)?req.body.toTime:''

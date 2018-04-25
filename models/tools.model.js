@@ -36,8 +36,8 @@ const ToolSchema = mongoose.Schema({
         country:{type: String },
         zipCode:{type:String}
     },
-    ratings:{type:String},
-    rentedUser:{type:String},
+    ratings:{type:Number},
+    rentedUser:{type:Number},
     distance:{type:String},
     toolAvailability:{
         from:{type:Date, default: Date.now},
@@ -174,7 +174,7 @@ ToolModel.getRecentViewToolData = ()=>{
 }
 
 ToolModel.getCategoryToolList = (param)=>{
-    console.log("query == ",JSON.stringify(param.query))
+    
 
     return  ToolModel.find(param.query).lean().sort({createAt:-1}); 
     
