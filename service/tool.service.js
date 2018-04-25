@@ -117,7 +117,7 @@ service.homeScreenSearch = async (req,res)=>{
         return res.send({success:false, code:500, msg:"search is missing"});
     }else{*/
         
-    if(req.body.location=='true'){
+    if(req.body.location){
         if(!req.body.latitude){
             return res.send({success:false, code:500, msg:"latitude is missing"});
         }
@@ -130,7 +130,7 @@ service.homeScreenSearch = async (req,res)=>{
 
     try{
 
-        if(req.body.location){
+        if(req.body.location=='true'){
             var lat1  = (req.body.latitude)?req.body.latitude:22.753285;
             var long1 = (req.body.longitude)?req.body.longitude:75.893696;
 
@@ -154,6 +154,7 @@ service.homeScreenSearch = async (req,res)=>{
         }
         
 
+        
         var insertArray = [];
 
         
@@ -272,7 +273,6 @@ service.getDetailsOfTool = async (req,res)=>{
                 data[x]['ratings']    = (ratings[0])?ratings[0].rating:0;
                 data[x]['rentedUser'] = Math.floor(Math.random() * 150);
                 data[x]['toolRented'] = Math.floor(Math.random() * 150);
-
 
                 var userRatingWhere = {
                     query : {receiverId:ObjectID(data[x]['userId'])},
