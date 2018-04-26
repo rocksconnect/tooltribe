@@ -338,9 +338,6 @@ service.getCategoryToolList = async (req,res)=>{
     
     condition.push({hideTool:"NO"})
 
-    console.log(condition)
-
-
     let param = {
             query:{$and:condition},
             page:req.body.page

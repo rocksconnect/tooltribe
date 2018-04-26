@@ -49,6 +49,7 @@ const UserSchema = mongoose.Schema({
         country:{type: String },
         zipCode:{type:String}
     }],
+    userRating:{type: Number},
     adminAssignedRole:{type: String },
     createAt:{type: Date, default: Date.now},
     updatedAt:{type: Date, default: Date.now}

@@ -279,6 +279,7 @@ service.addUser = async (req, res) => {
             country: (req.body.country) ? req.body.country : '',
             zipCode: (req.body.zipCode) ? req.body.zipCode : ''
         }],
+      userRating:0,
       createAt: new Date(),
       updatedAt: new Date()
     });
