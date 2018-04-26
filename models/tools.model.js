@@ -169,6 +169,12 @@ ToolModel.getToolList = (dataToFind)=>{
     return ToolModel.find(query).lean().sort({createAt:-1});
 }
 
+
+/*
+ToolModel.getToolListSearch = ()=>{
+    return ToolModel.find({},{toolId:1}).sort({createAt:-1}).lean();
+}*/
+
 ToolModel.getRecentViewToolData = ()=>{
     return ToolModel.find().lean().sort({updatedAt:-1});
 }

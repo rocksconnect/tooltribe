@@ -131,21 +131,29 @@ service.homeScreenSearch = async (req,res)=>{
 
             var data = await Tools.getToolList();
 
+            let arr = [];
+
             for (var x in data) {
 
-                var where = {
+                /*var where = {
                     query : {receiverId:ObjectID(data[x]['_id'])},
                     query1 : {"ratingType":'TOOL'}
                 };
 
-                let ratings = await Rating.getAvgRating(where);
-                data[x]['ratings'] = (ratings[0])?ratings[0].rating:0;
+                let ratings = await Rating.getAvgRating(where);*/
 
-               data[x]['distance'] = distance(lat1, long1, data[x]['toolLocation']['latitude'], data[x]['toolLocation']['longitude']);
+                let result = {
+                    '_id' : data[x]['_id'],
+                    'toolName' : data[x]['toolName'],
+                    'toolLocation' : data[x]['toolLocation'],
+                    'ratings' : data[x]['ratings'],
+                    'distance' : distance(lat1, long1, data[x]['toolLocation']['latitude'], data[x]['toolLocation']['longitude'])
+                };
+                arr.push(result);
             }
 
             //var a = distance(22.753285, 75.893696, 22.962267, 76.050795);
-            return res.send({success:true, code:200, msg:"Success", data:data});
+            return res.send({success:true, code:200, msg:"Success", data:arr});
         }
         
         var insertArray = [];
@@ -373,7 +381,7 @@ service.getCategoryToolList = async (req,res)=>{
         var data  = await Tools.getCategoryToolList(param);
         var originalData = [];
         data.forEach(function(result,index){
-            data[index].ratings    = Math.floor(Math.random() * 5);
+            //data[index].ratings    = Math.floor(Math.random() * 5);
             data[index].rentedUser = Math.floor(Math.random() * 150);
             //data[index].distance = distance(29.309532,78.233889,result.toolLocation.latitude,result.toolLocation.longitude);
 
