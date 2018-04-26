@@ -5,7 +5,8 @@
  * @lastModifed 5-Feb-2018
  * @lastModifedBy Shakshi
  */
-
+import Tools from '../models/tools.model'
+import Rating from '../models/rating.model'
 import User from '../models/user.model'
 import Company from '../models/company.model'
 import logger from '../core/logger/app.logger'
@@ -108,12 +109,12 @@ service.addUser = async (req, res) => {
       return res.send({success:false, code:500, msg:"idProof is missing"});
     }
     if(!req.body.socialType){
-      return res.send({success:false, code:500, msg:"SocialType is missing"});
+      return res.send({success:false, code:500, msg:"socialType is missing"});
     }
 
     if(req.body.socialType=='other'){
         if(!req.body.password){
-            return res.send({success:false, code:500, msg:"Password is missing"});
+            return res.send({success:false, code:500, msg:"password is missing"});
         }
     }else{
         if(!req.body.socialId){
@@ -255,7 +256,7 @@ service.addUser = async (req, res) => {
       socialType: req.body.socialType,
       
       
-      tradeId:req.body.tradeId,
+      trade:req.body.tradeId,
       companyId:savedCompany?savedCompany._id:req.body.companyId,
       idProof:req.body.idProof,
       idProofNubmer: req.body.idProofNubmer,
@@ -550,7 +551,11 @@ service.userLogin = async (req, res) =>{
        
         const loggedUser = await User.userLogin(query);
 
-        if(loggedUser){   
+        if(loggedUser){ 
+
+          let userToolCount = await Tools.getUserToolCount({userId:ObjectID(loggedUser._id)});
+
+          loggedUser.userToolCount = (userToolCount)?userToolCount.length:0;  
 
             var temp    = loggedUser.salt;
             var hash_db = loggedUser.password;
@@ -874,31 +879,31 @@ service.getUserProfile = async (req,res)=>{
 
         if(userData){
 
-            
-
-            userData['ratings']    = Math.floor(Math.random() * 5);
-            userData['rentedUser'] = Math.floor(Math.random() * 150);
-            userData['reviews']    = [
-            {
-                'ratings':Math.floor(Math.random() * 5),
-                'reviews':'The map() method creates a new array with the results of calling a function for every array element. The map() method calls the provided function once for each element in an array, in order. Note: map() does not execute the function for array elements without values. Note: map() does not change the original array.',
-                'name':'amit yadav'
-            },
-            {
-                'ratings':Math.floor(Math.random() * 5),
-                'reviews':'The map() method creates a new array with the results of calling a function for every array element. The map() method calls the provided function once for each element in an array, in order. Note: map() does not execute the function for array elements without values. Note: map() does not change the original array.',
-                'name':'amit yadav'
-            },
-            {
-                'ratings':Math.floor(Math.random() * 5),
-                'reviews':'The map() method creates a new array with the results of calling a function for every array element. The map() method calls the provided function once for each element in an array, in order. Note: map() does not execute the function for array elements without values. Note: map() does not change the original array.',
-                'name':'amit yadav'
+            var data = userData[0];
+            if(data.companyId){
+                var companyData = await Company.getOneCompany({_id:ObjectID(data.companyId)});
+                data['companyName'] = (companyData.company)?companyData.company:'';
+            }else{
+                data['companyName'] = '';
             }
-            ];
+
+            var whereData = {
+              ratingQuery:{receiverId:ObjectID(data._id)}
+            }
+            
+            var rating =  Rating.getUserAvgRating(whereData,function(result){
+                
+                data['ratings']   = result['rating'];
+                data['review']   = result['review'];
+                data['rentals']  = result['rentals'];
+                
+                return res.send({success:true, code:200, msg:"success.", data:data});
+            });
+        
         }else{
-          userData = {};
+          data = {};
         }
-        return res.send({success:true, code:200, msg:"success.", data:userData});
+        
     }catch(error){
         return res.send({success:true, code:500, msg:"error"});
     }

@@ -28,13 +28,15 @@ CompanyModel.addCompany = (CompanyToAdd) => {
 CompanyModel.findCompany = (CompanyToFind) =>{
 	return CompanyModel.find(CompanyToFind.query);
 }
+
+
 CompanyModel.editCompany =(CompanyToEdit) =>{
 	return CompanyModel.update(CompanyToEdit.query,CompanyToEdit.data);
 }
 
 
 CompanyModel.getOneCompany =(where) =>{
-	return CompanyModel.findOne(where,{});
+    return CompanyModel.findOne(where,{_id:0,company:1}).lean();
 }
 
 export default CompanyModel;

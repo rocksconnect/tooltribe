@@ -39,4 +39,12 @@ brandModel.editBrand = (data)=>{
 }
 
 
+brandModel.getSearchBrand = (where)=>{
+    return brandModel.find(where.query,{brandName:1});
+}
+
+
+
+
+
 export default brandModel;

@@ -36,8 +36,8 @@ const ToolSchema = mongoose.Schema({
         country:{type: String },
         zipCode:{type:String}
     },
-    ratings:{type:String},
-    rentedUser:{type:String},
+    ratings:{type:Number},
+    rentedUser:{type:Number},
     distance:{type:String},
     toolAvailability:{
         from:{type:Date, default: Date.now},
@@ -65,6 +65,12 @@ let ToolModel = mongoose.model('tools',ToolSchema);
 ToolModel.addTools = (toolsToAdd) => {
     return toolsToAdd.save();
 }
+
+
+ToolModel.getUserToolCount = (where) => {
+    return ToolModel.find(where);
+}
+
 
 
 ToolModel.getDeatilsToolById = (toolToFind) => {
@@ -138,16 +144,13 @@ ToolModel.getDeatilsToolById = (toolToFind) => {
                 toolImages:1,
                 accessories: 1,
                 toolStatus :1,
-                rating:"3",
                 brandName:"$brandDocs.brandName",
                 brandDescription:"$brandDocs.brandDescription",
                 category:"$categoryDocs.category",
                 userId:"$userDocs._id",
                 userName:"$userDocs.fullName",
                 userEmail:"$userDocs.email",
-                userProfileImg:"$userDocs.pathOfProfileImg",
-                rentals:"5",
-                userRating:"4.5"
+                userProfileImg:"$userDocs.pathOfProfileImg"
             }
         }
 
@@ -171,10 +174,12 @@ ToolModel.getRecentViewToolData = ()=>{
 }
 
 ToolModel.getCategoryToolList = (param)=>{
-    console.log("query == ",JSON.stringify(param.query))
-    console.log(param.page);
-    let page = common.pageLimit * Math.max(0, param.page);
-    return  ToolModel.find(param.query).skip(page).limit(common.pageLimit).lean().sort({createAt:-1}); 
+    
+
+    return  ToolModel.find(param.query).lean().sort({createAt:-1}); 
+    
+    //let page = common.pageLimit * Math.max(0, param.page);
+    //return  ToolModel.find(param.query).skip(page).limit(common.pageLimit).lean().sort({createAt:-1}); 
 
 }
 

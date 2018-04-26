@@ -5,6 +5,8 @@
  * @lastModifed 26-March-2018
  * @lastModifedBy Shakshi
  */
+import Rating from '../models/rating.model'
+import brand from '../models/brand.model'
 import Category from '../models/category.model'
 import ViewdTools from '../models/viewdTool.model'
 import Tools from '../models/tools.model'
@@ -50,23 +52,32 @@ service.getHomeScreenData = async (req,res)=>{
             viewdToolData = await ViewdTools.getViewdTool(dataToFind);
 
             if(viewdToolData){
-                viewdToolData.map(function(result){
-                    result['ratings']    = Math.floor(Math.random() * 5);
-                    result['rentedUser'] = Math.floor(Math.random() * 150);
-                    return result;
-                });
+                for(var x in viewdToolData){
+                    var where = {
+                        query : {receiverId:ObjectID(viewdToolData[x]['_id'])},
+                        query1 : {"ratingType":'TOOL'}
+                    };
+
+                    let ratings = await Rating.getAvgRating(where);
+                    viewdToolData[x]['ratings']    = (ratings[0])?ratings[0].rating:0;
+                    viewdToolData[x]['rentedUser'] = Math.floor(Math.random() * 150);
+                }
             }
-            
         }
        
         /*--- get recent tool data---*/
         var recentToolData = await Tools.getToolList();
         if(recentToolData){
-            recentToolData.map(function(result){
-                result['ratings']    = Math.floor(Math.random() * 5);
-                result['rentedUser'] = Math.floor(Math.random() * 150);
-                return result;
-            });
+            for(var x in recentToolData){
+                var where = {
+                    query : {receiverId:ObjectID(recentToolData[x]['_id'])},
+                    query1 : {"ratingType":'TOOL'}
+                };
+
+                let ratings = await Rating.getAvgRating(where);
+                recentToolData[x]['ratings']    = (ratings[0])?ratings[0].rating:0;
+                recentToolData[x]['rentedUser'] = Math.floor(Math.random() * 150);
+            }
         }
         
 
@@ -102,11 +113,8 @@ service.getHomeScreenData = async (req,res)=>{
 |------------------------------------------
 */
 service.homeScreenSearch = async (req,res)=>{
-    if(!req.body.search){
-        return res.send({success:false, code:500, msg:"search is missing"});
-    }
-
-    if(req.body.location){
+   
+    if(req.body.location=='true'){
         if(!req.body.latitude){
             return res.send({success:false, code:500, msg:"latitude is missing"});
         }
@@ -117,13 +125,22 @@ service.homeScreenSearch = async (req,res)=>{
 
     try{
 
-        if(req.body.location){
+        if(req.body.location=='true'){
             var lat1  = (req.body.latitude)?req.body.latitude:22.753285;
             var long1 = (req.body.longitude)?req.body.longitude:75.893696;
 
             var data = await Tools.getToolList();
 
             for (var x in data) {
+
+                var where = {
+                    query : {receiverId:ObjectID(data[x]['_id'])},
+                    query1 : {"ratingType":'TOOL'}
+                };
+
+                let ratings = await Rating.getAvgRating(where);
+                data[x]['ratings'] = (ratings[0])?ratings[0].rating:0;
+
                data[x]['distance'] = distance(lat1, long1, data[x]['toolLocation']['latitude'], data[x]['toolLocation']['longitude']);
             }
 
@@ -131,50 +148,72 @@ service.homeScreenSearch = async (req,res)=>{
             return res.send({success:true, code:200, msg:"Success", data:data});
         }
         
-
         var insertArray = [];
-
-        var whereCategoryData = {
-            query:{category:{ $regex: new RegExp('^'+req.body.search), $options:'i'  }},
-            projection:{trash:false}
-        }
-        var data = await Category.getSearchCategory(whereCategoryData);
-
-        var whereToolData = {
-            query:{toolName:{ $regex: new RegExp('^'+req.body.search), $options:'i'  }},
-            projection:{hideTool:"NO"}
-        }
-
-        var toolData = await Tools.getSearchTool(whereToolData);
-
-        if(data){
-            for (var x in data) {
-                var insertdata = {
-                    "name" : data[x].category,
-                    "type" : 'category',
-                    "_id"  : data[x]._id,
-                    
-                };
-                insertArray.push(insertdata);
+        if(req.body.search){
+        
+            /*--- search category data ---*/
+            var whereCategoryData = {
+                query:{category:{ $regex: new RegExp('^'+req.body.search), $options:'i'  }},
+                projection:{trash:false}
             }
-        }
-
-        if(toolData){
-            for (var x in toolData) {
-                var insertdata = {
-                    "name" : toolData[x].toolName,
-                    "type" : 'tool',
-                    "_id"  : toolData[x]._id,
-                    
-                };
-                insertArray.push(insertdata);
+            var data = await Category.getSearchCategory(whereCategoryData);
+            if(data){
+                for (var x in data) {
+                    var insertdata = {
+                        "name" : data[x].category,
+                        "type" : 'category',
+                        "_id"  : data[x]._id,
+                        
+                    };
+                    insertArray.push(insertdata);
+                }
             }
-        }
 
-        if(data){
+
+            /*--- search tool data ---*/
+            var whereToolData = {
+                query:{toolName:{ $regex: new RegExp('^'+req.body.search), $options:'i'  }},
+                projection:{hideTool:"NO"}
+            }
+
+            var toolData = await Tools.getSearchTool(whereToolData);
+            if(toolData){
+                for (var x in toolData) {
+                    var insertdata = {
+                        "name" : toolData[x].toolName,
+                        "type" : 'tool',
+                        "_id"  : toolData[x]._id,
+                        
+                    };
+                    insertArray.push(insertdata);
+                }
+            }
+
+
+            /*--- search brand data ---*/
+            var whereBrandData = {
+                query:{brandName:{ $regex: new RegExp('^'+req.body.search), $options:'i'  }},
+                projection:{status:"true"}
+            }
+            var brandData = await brand.getSearchBrand(whereBrandData);
+            if(brandData){
+                for (var x in brandData) {
+                    var insertdata = {
+                        "name" : brandData[x].brandName,
+                        "type" : 'brand',
+                        "_id"  : brandData[x]._id,
+                        
+                    };
+                    insertArray.push(insertdata);
+                }
+            }
+
+        }
+        
+        if(insertArray){
             return res.send({success:true, code:200, msg:"Success", data:insertArray});
         }else{
-            return res.send({success:false, code:500, msg:"Error in finding getToolList"});
+            return res.send({success:false, code:500, msg:"Error"});
         }
 
     }catch(error){
@@ -207,7 +246,7 @@ service.getToolList = async (req,res)=>{
 */
 service.getDetailsOfTool = async (req,res)=>{
     if(!req.body.toolId){
-        return res.send({success:false, code:500, msg:"tool _id is missing"});
+        return res.send({success:false, code:500, msg:"toolId _id is missing"});
     }
     try{
         
@@ -215,10 +254,32 @@ service.getDetailsOfTool = async (req,res)=>{
             query:{_id:ObjectID(req.body.toolId)}
         }
         var data = await Tools.getDeatilsToolById(dataToFind);
+        
+        if(data){
+            for(var x in data){
+                var where = {
+                    query : {receiverId:ObjectID(data[x]['_id'])},
+                    query1 : {"ratingType":'TOOL'}
+                };
+
+                let ratings = await Rating.getAvgRating(where);
+
+                data[x]['ratings']    = (ratings[0])?ratings[0].rating:0;
+                data[x]['rentedUser'] = Math.floor(Math.random() * 150);
+                data[x]['toolRented'] = Math.floor(Math.random() * 150);
+
+                var userRatingWhere = {
+                    query : {receiverId:ObjectID(data[x]['userId'])},
+                    query1 : {"ratingType":'USER'}
+                };
+                let userRatingData = await Rating.getAvgRating(userRatingWhere);
+                data[x]['userRating'] = (userRatingData[0])?userRatingData[0].rating:0;
+            }
+        }
+
         return res.send({success:true, code:200, msg:"successfully found", data:data});
        
     }catch(error){
-        console.log(error)
         return res.send({success:false, code:500, msg:"Error in finding getDetailsOfTool", err:error});
     }
 }
@@ -227,53 +288,91 @@ service.getDetailsOfTool = async (req,res)=>{
 * @ Function : getCategoryToolList
 */
 service.getCategoryToolList = async (req,res)=>{
-    if(!req.body.categoryId){
-        return res.send({success:false, code:500, msg:"categoryId is missing"})
+
+    /*if(!req.body.page){
+        return res.send({success:false, code:500, msg:"page is missing"})
+    }*/
+    
+    var condition = [];
+
+    if(req.body.toolName){
+        condition.push({toolName:{ $regex: new RegExp('^'+req.body.toolName), $options:'i'  } })
     }
 
-    if(!req.body.page){
-        return res.send({success:false, code:500, msg:"page is missing"})
+    /*
+    if(req.body.startDate){
+       condition.push({categoryId:ObjectID(req.body.startDate)})
     }
-    var condition = [];
+    if(req.body.endDate){
+       condition.push({categoryId:ObjectID(req.body.endDate)})
+    }
+    if(req.body.lat){
+       condition.push({categoryId:ObjectID(req.body.lat)})
+    }
+    if(req.body.long){
+       condition.push({categoryId:ObjectID(req.body.long)})
+    }
+    if(req.body.distance){
+       condition.push({categoryId:ObjectID(req.body.distance)})
+    }
+    */
+
+    let sellingPriceTo = (req.body.sellingPriceTo)?req.body.sellingPriceTo:'20';
+    if(sellingPriceTo && req.body.sellingPriceFrom ){
+        let temp = {"sellingPrice" : { 
+            "$gte" : sellingPriceTo,
+            "$lte" : req.body.sellingPriceFrom
+        }}
+        condition.push(temp);
+    }
+
+    //delivery, pickup
+    if(req.body.shipment=='delivery'){
+        condition.push({deliveryAvailable:'YES'})
+    }
+    if(req.body.shipment=='pickup'){
+        condition.push({pickupAvailable:'YES'})
+    }
+
     if(req.body.brandId){
         condition.push({brandId:ObjectID(req.body.brandId)})
     }
+
     if(req.body.categoryId){
-        condition.push({categoryId:ObjectID(req.body.categoryId)})
+       condition.push({categoryId:ObjectID(req.body.categoryId)})
     }
-    if(req.body.shipment){
-        condition.push({shipment:req.body.shipment})
+
+
+    if(req.body.rating){
+       condition.push({ "ratings": { "$lte": req.body.rating } })
     }
-    if(req.body.searchKeyword){
-        condition.push({toolName:{ $regex: new RegExp('^'+req.body.searchKeyword), $options:'i'  } })
-    }
+
+    //yes , no
     if(req.body.accessories){
-        condition.push({accessories:{$ne: null}})
+        condition.push({accessories:{$ne: []}})
     }
-    if(req.body.sellingPriceTo && req.body.sellingPriceFrom ){
-        let temp = {"sellingPrice" : { 
-            "$gte" : req.body.sellingPriceTo,
-            "$lte" : req.body.sellingPriceFrom
-        }}
-        
-        condition.push(temp)
+
+    //buy, rent, both
+    if(req.body.sellingType){
+        condition.push({shipment:req.body.sellingType.toUpperCase()})
     }
+    
+    
     condition.push({hideTool:"NO"})
-    // if(req.body.reviews){
-    //     condition.push({reviews:req.body.categoryId})
-    // }
-    var param = {
-        query:{
-            $and:condition
-        },
-        page:req.body.page
-    };
+
+    console.log(condition)
+
+
+    let param = {
+            query:{$and:condition},
+            page:req.body.page
+        };
+    
     try{
 
         var data  = await Tools.getCategoryToolList(param);
         var originalData = [];
         data.forEach(function(result,index){
-            console.log("index  = ",index)
             data[index].ratings    = Math.floor(Math.random() * 5);
             data[index].rentedUser = Math.floor(Math.random() * 150);
             //data[index].distance = distance(29.309532,78.233889,result.toolLocation.latitude,result.toolLocation.longitude);
@@ -292,7 +391,7 @@ service.getCategoryToolList = async (req,res)=>{
         //var count = await Tools.getCategoryToolCount({categoryId:req.body.categoryId});
 
         // if(addOn){
-        console.log("Stop")
+        
             return res.send({success:true, code:200, msg:"succes", data:originalData});
         // }else{
         //     return res.send({success:false, code:500, msg:"Error in finding getToolList"});
@@ -408,6 +507,8 @@ service.addTool = async (req,res)=>{
             country:(req.body.country)?req.body.country:'',
             zipCode:(req.body.zipCode)?req.body.zipCode:'',
         },
+        ratings:0,
+        rentedUser:0,
         toolAvailability:{
             from:(req.body.fromTime)?req.body.fromTime:'',
             to:(req.body.toTime)?req.body.toTime:''

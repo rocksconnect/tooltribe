@@ -14,14 +14,15 @@ import refral from './routes/refral.router.js';
 import category from './routes/category.router.js';
 import idProofType from './routes/idProofType.router.js';
 import tool from './routes/tool.router.js';
-
 import brand from './routes/brand.router.js';
+import rating from './routes/rating.router.js';//4/24/2018
 
 
 import userservice from './service/user.service.js';
 import index from './routes/index.router.js';
 import company from './routes/company.router.js';
 import cart from './routes/cart.router.js';
+
 import net from 'net';
 import cors from 'cors';
 import jwt from 'jsonwebtoken'
@@ -106,7 +107,8 @@ app.use(function(req, res, next) {
                 '/getHomeScreenData',
                 '/homeScreenSearch',
                 '/getBrandCategory',
-                '/getUserProfile'
+                '/getUserProfile',
+                '/getRating'
             ];
   //req.url == '/getAllList' || req.url == '/allIdProof' || req.url == '/getCompany' || req.url == '/updateIdProofType' || req.url == '/getTrade' || req.url == '/login' || req.url == '/userLogin' || req.url == '/register' || req.url == '/account_email_validation' || req.url == '/forgetPassword' || req.url == '/forgetPasswordReset' || req.url == '/' || req.url == '/terms' || req.url == '/privacy' || req.url == '/aboutus' || req.url == '/support' || req.url == '/getCategory'
 
@@ -177,6 +179,7 @@ app.use(company);
 app.use(tool);
 app.use(cart);
 app.use(refral);
+app.use(rating);
 
 
 
