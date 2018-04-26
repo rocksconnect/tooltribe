@@ -10,6 +10,7 @@ import connectToDb from './db/connect';
 import usertype from './routes/usertype.router.js';
 import user from './routes/user.router.js';
 import trade from './routes/trade.router.js';
+import refral from './routes/refral.router.js';
 import category from './routes/category.router.js';
 import idProofType from './routes/idProofType.router.js';
 import tool from './routes/tool.router.js';
@@ -175,6 +176,7 @@ app.use(brand);
 app.use(company);
 app.use(tool);
 app.use(cart);
+app.use(refral);
 
 
 
