@@ -144,13 +144,15 @@ ToolModel.getDeatilsToolById = (toolToFind) => {
                 toolImages:1,
                 accessories: 1,
                 toolStatus :1,
+                ratings :1,
                 brandName:"$brandDocs.brandName",
                 brandDescription:"$brandDocs.brandDescription",
                 category:"$categoryDocs.category",
                 userId:"$userDocs._id",
                 userName:"$userDocs.fullName",
                 userEmail:"$userDocs.email",
-                userProfileImg:"$userDocs.pathOfProfileImg"
+                userProfileImg:"$userDocs.pathOfProfileImg",
+                userRating:'$userDocs.userRating'
             }
         }
 
@@ -161,32 +163,33 @@ ToolModel.addAccessoriesImage = (objToUpdate) => {
     return ToolModel.update(objToUpdate.query,objToUpdate.data);
 }
 
-ToolModel.getToolList = (dataToFind)=>{
+ToolModel.getToolList = (dataToFind,cb)=>{
     var query = {};
     if(dataToFind){
         query = dataToFind.query;
     }
-    return ToolModel.find(query).lean().sort({createAt:-1});
+    return ToolModel.find(query).sort({createAt:-1}).lean();
 }
 
 
-/*
-ToolModel.getToolListSearch = ()=>{
-    return ToolModel.find({},{toolId:1}).sort({createAt:-1}).lean();
-}*/
+
+ToolModel.getToolListSearchData = (cb)=>{
+    return ToolModel.find({}, {"_id":1,"toolLocation":1,"toolName":1,"ratings":1}).sort({createAt:-1}).lean().exec(function (err, frt){
+        if(err){
+            cb({'error':err})
+        } else { cb(frt)}
+       
+    });
+}
 
 ToolModel.getRecentViewToolData = ()=>{
     return ToolModel.find().lean().sort({updatedAt:-1});
 }
 
 ToolModel.getCategoryToolList = (param)=>{
-    
-
     return  ToolModel.find(param.query).lean().sort({createAt:-1}); 
-    
     //let page = common.pageLimit * Math.max(0, param.page);
     //return  ToolModel.find(param.query).skip(page).limit(common.pageLimit).lean().sort({createAt:-1}); 
-
 }
 
 

@@ -63,9 +63,7 @@ RatingModel.getAvgRating = (where) => {
 
     return RatingModel.aggregate([
         { "$match": {
-                  $and: [ 
-                      where.query,where.query1
-                  ]
+                  $and: where
                 }
         },
         { "$group": {

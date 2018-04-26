@@ -52,10 +52,10 @@ service.addRating = async (req,res) =>{
 
             if(req.body.ratingType=="tool"){
 
-                var where = {
-                        query : {receiverId:ObjectID(req.body.receiverId)},
-                        query1 : {"ratingType":'TOOL'}
-                    };
+                var where = [
+                        {"receiverId":ObjectID(req.body.receiverId)},
+                        {"ratingType":'TOOL'}
+                    ];
 
                 let ratings = await Rating.getAvgRating(where);
                 let updateData = {
@@ -95,7 +95,7 @@ service.getRating = async (req,res) =>{
     try{
 
     }catch(error){
-        
+
     }
 }
 

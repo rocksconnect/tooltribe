@@ -35,13 +35,18 @@ const service = {};
 */
 service.getHomeScreenData = async (req,res)=>{
     try{
-        /*--- get category data---*/
-        var categoryToFind = {
-            query:{trash:"false"},
-            projection:{trash:0},
-            page:0
+
+
+        /*--- get recent tool data---*/
+        var recentToolData = await Tools.getToolList();
+        if(recentToolData){
+            for(var x in recentToolData){
+                recentToolData[x]['rentedUser'] = Math.floor(Math.random() * 150);
+            }
         }
-        var categoryData = await Category.findCategory(categoryToFind);
+
+
+
 
         /*--- get recent viewed tool data---*/
         var viewdToolData = [];
@@ -53,34 +58,20 @@ service.getHomeScreenData = async (req,res)=>{
 
             if(viewdToolData){
                 for(var x in viewdToolData){
-                    var where = {
-                        query : {receiverId:ObjectID(viewdToolData[x]['_id'])},
-                        query1 : {"ratingType":'TOOL'}
-                    };
-
-                    let ratings = await Rating.getAvgRating(where);
-                    viewdToolData[x]['ratings']    = (ratings[0])?ratings[0].rating:0;
                     viewdToolData[x]['rentedUser'] = Math.floor(Math.random() * 150);
                 }
             }
         }
-       
-        /*--- get recent tool data---*/
-        var recentToolData = await Tools.getToolList();
-        if(recentToolData){
-            for(var x in recentToolData){
-                var where = {
-                    query : {receiverId:ObjectID(recentToolData[x]['_id'])},
-                    query1 : {"ratingType":'TOOL'}
-                };
 
-                let ratings = await Rating.getAvgRating(where);
-                recentToolData[x]['ratings']    = (ratings[0])?ratings[0].rating:0;
-                recentToolData[x]['rentedUser'] = Math.floor(Math.random() * 150);
-            }
+
+
+        /*--- get category data---*/
+        var categoryToFind = {
+            query:{trash:"false"},
+            projection:{trash:0},
+            page:0
         }
-        
-
+        var categoryData = await Category.findCategory(categoryToFind);
 
         if(!req.body.type){
             var data = {
@@ -129,31 +120,18 @@ service.homeScreenSearch = async (req,res)=>{
             var lat1  = (req.body.latitude)?req.body.latitude:22.753285;
             var long1 = (req.body.longitude)?req.body.longitude:75.893696;
 
-            var data = await Tools.getToolList();
+            var data = await Tools.getToolListSearchData(function(resultData){
+                for (var x in resultData) {
+                    resultData[x]['distance'] = distance(lat1, long1, resultData[x]['toolLocation']['latitude'], resultData[x]['toolLocation']['longitude'])
+                }
 
-            let arr = [];
+                return res.send({success:true, code:200, msg:"Success", data:resultData});
+            });
 
-            for (var x in data) {
-
-                /*var where = {
-                    query : {receiverId:ObjectID(data[x]['_id'])},
-                    query1 : {"ratingType":'TOOL'}
-                };
-
-                let ratings = await Rating.getAvgRating(where);*/
-
-                let result = {
-                    '_id' : data[x]['_id'],
-                    'toolName' : data[x]['toolName'],
-                    'toolLocation' : data[x]['toolLocation'],
-                    'ratings' : data[x]['ratings'],
-                    'distance' : distance(lat1, long1, data[x]['toolLocation']['latitude'], data[x]['toolLocation']['longitude'])
-                };
-                arr.push(result);
-            }
+                
 
             //var a = distance(22.753285, 75.893696, 22.962267, 76.050795);
-            return res.send({success:true, code:200, msg:"Success", data:arr});
+            
         }
         
         var insertArray = [];
@@ -265,23 +243,8 @@ service.getDetailsOfTool = async (req,res)=>{
         
         if(data){
             for(var x in data){
-                var where = {
-                    query : {receiverId:ObjectID(data[x]['_id'])},
-                    query1 : {"ratingType":'TOOL'}
-                };
-
-                let ratings = await Rating.getAvgRating(where);
-
-                data[x]['ratings']    = (ratings[0])?ratings[0].rating:0;
                 data[x]['rentedUser'] = Math.floor(Math.random() * 150);
                 data[x]['toolRented'] = Math.floor(Math.random() * 150);
-
-                var userRatingWhere = {
-                    query : {receiverId:ObjectID(data[x]['userId'])},
-                    query1 : {"ratingType":'USER'}
-                };
-                let userRatingData = await Rating.getAvgRating(userRatingWhere);
-                data[x]['userRating'] = (userRatingData[0])?userRatingData[0].rating:0;
             }
         }
 
@@ -305,6 +268,13 @@ service.getCategoryToolList = async (req,res)=>{
 
     if(req.body.toolName){
         condition.push({toolName:{ $regex: new RegExp('^'+req.body.toolName), $options:'i'  } })
+    }
+
+    if(req.body.startDate){
+       condition.push({'toolAvailability.from':{$gte:req.body.startDate}})
+    }
+    if(req.body.endDate){
+       condition.push({'toolAvailability.to':{$lte:req.body.endDate}})
     }
 
     /*
@@ -381,11 +351,11 @@ service.getCategoryToolList = async (req,res)=>{
         var data  = await Tools.getCategoryToolList(param);
         var originalData = [];
         data.forEach(function(result,index){
-            //data[index].ratings    = Math.floor(Math.random() * 5);
+            
             data[index].rentedUser = Math.floor(Math.random() * 150);
             //data[index].distance = distance(29.309532,78.233889,result.toolLocation.latitude,result.toolLocation.longitude);
 
-            if(req.body.distanceTo && req.body.distanceFrom){
+            /*if(req.body.distanceTo && req.body.distanceFrom){
                 if(data[index].distance>=req.body.distanceTo && data[index].distance<=req.body.distanceFrom){
                     
                      originalData.push(data[index]);
@@ -393,17 +363,13 @@ service.getCategoryToolList = async (req,res)=>{
             }else{
                 
                  originalData.push(data[index]);
-            }
+            }*/
           
         });
-        //var count = await Tools.getCategoryToolCount({categoryId:req.body.categoryId});
-
-        // if(addOn){
         
-            return res.send({success:true, code:200, msg:"succes", data:originalData});
-        // }else{
-        //     return res.send({success:false, code:500, msg:"Error in finding getToolList"});
-        // }
+        
+        return res.send({success:true, code:200, msg:"succes", data:data});
+        
     }catch(error){
         console.log(error)
         return res.send({success:false, code:500, msg:"Error in finding getToolList", err:error});
